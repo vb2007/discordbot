@@ -1,73 +1,69 @@
-// Import modules
-const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
+// Require the necessary discord.js classes
+const fs = require('node:fs');
+const path = require('node:path');
+const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require('discord.js');
 const { Routes } = require('discord-api-types/v9');
-const { REST } = require('@discordjs/rest');
-require('dotenv').config();
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { token } = require('./config.json');
 
+// Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-console.log("client created");
 
-client.once('ready', () => {
-  console.log('Ready!');
+client.once(Events.ClientReady, readyClient => {
+	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
-client.on('messageCreate', async message => {
-  if (!message.content.startsWith('!') || message.author.bot) return;
+client.commands = new Collection();
 
-  const args = message.content.slice(1).trim().split(/ +/);
-  const command = args.shift().toLowerCase();
+const foldersPath = path.join(__dirname, 'commands');
+const commandFolders = fs.readdirSync(foldersPath);
 
-  if (command === 'ping') {
-      message.channel.send('Pong!');
-  }
+for (const folder of commandFolders) {
+	const commandsPath = path.join(foldersPath, folder);
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+	for (const file of commandFiles) {
+		const filePath = path.join(commandsPath, file);
+		const command = require(filePath);
+
+		// Set a new item in the Collection with the key as the command name and the value as the exported module
+		if ('data' in command && 'execute' in command) {
+			client.commands.set(command.data.name, command);
+		}
+        else {
+			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+		}
+	}
+}
+
+client.on(Events.InteractionCreate, async interaction => {
+	if (!interaction.isChatInputCommand()) return;
+
+	const command = interaction.client.commands.get(interaction.commandName);
+
+	if (!command) {
+		console.error(`No command matching ${interaction.commandName} was found.`);
+		return;
+	}
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		if (interaction.replied || interaction.deferred) {
+			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+		} else {
+			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		}
+	}
 });
-
-const token = process.env.TOKEN;
-console.log("token processed");
-client.login(token);
-console.log("logged in");
-
-const clientId = process.env.CLIENTID;
-console.log("clientid set")
 
 client.on('ready', (c) => {
-  client.user.setActivity({
-    name: 'Support the Resistance, make the frogs cry.',
-    type: ActivityType.Playing,
-    url: 'http://vb2007.hu',
-  });
+    client.user.setActivity({
+      name: 'Femboys are attractive as fuck.',
+      type: ActivityType.Streaming,
+      url: 'https://vb2007.hu/ref/D0ld',
+    });
 });
 
-const pingCommand = new SlashCommandBuilder()
-    .setName('ping')
-    .setDescription('Replies with Pong!');
-client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
-
-    const { commandName } = interaction;
-
-    if (commandName === 'ping') {
-        await interaction.reply('Pong!\nJust for the fucking active developer badge.\nI hate slash commands.');
-    }
-});
-
-// Create a rest instance
-const rest = new REST({ version: '9' }).setToken(token);
-
-// Register the ping command as a global command
-(async () => {
-  try {
-    console.log('Started refreshing application (/) commands.');
-
-    await rest.put(
-      Routes.applicationCommands(clientId),
-      { body: [pingCommand.toJSON()] },
-    );
-
-    console.log('Successfully reloaded application (/) commands.');
-  }
-  catch (error) {
-    console.error(error);
-  }
-})();
+// Log in to Discord with your client's token
+client.login(token);
