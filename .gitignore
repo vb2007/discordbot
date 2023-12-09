@@ -2,3 +2,4 @@
 config.json
 logo.png
 /node_modules
+/log

@@ -25,7 +25,7 @@ module.exports = {
 
         try{
             await interaction.guild.members.ban(targetUser, { reason: reason });
-            await interaction.reply({ content: `Successfully banned ${targetUser.tag} for ${reason}`, ephemeral: true});
+            await interaction.reply({ content: `Successfully banned user ${targetUser.tag} for: ${reason}`, ephemeral: true});
         }
         catch (error){
             console.error(error);
