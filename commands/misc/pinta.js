@@ -5,6 +5,6 @@ module.exports = {
         .setName('pinta')
         .setDescription('igen.'),
     async execute(interaction) {
-        await interaction.reply('Pintarics Dévényi Zsombor')
+        await interaction.reply('Pintarics Dévényi Zsombor');
     }
 }
