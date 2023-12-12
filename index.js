@@ -8,13 +8,13 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 //szól ha kész a kliens
 client.once(Events.ClientReady, readyClient => {
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+	console.log("Ready! Logged in as ${readyClient.user.tag}");
 });
 
 client.commands = new Collection();
 
 //kiszedi a parancsokat a commands mappából és annak almappáiból
-const foldersPath = path.join(__dirname, 'commands');
+const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
@@ -69,7 +69,7 @@ client.on('ready', (c) => {
     client.user.setActivity({
       name: 'Femboys are attractive as fuck.',
       type: ActivityType.Streaming,
-      url: 'https://vb2007.hu/ref/D0ld',
+      url: "https://vb2007.hu/ref/D0ld",
     });
 });
 

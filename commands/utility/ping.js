@@ -8,7 +8,7 @@ module.exports = {
         const reply = new EmbedBuilder()
             .setColor(0x0099FF)
             .setTitle("Pong!")
-            .setDescription("Ping.")
+            .setDescription("Ping.");
         
         await interaction.reply({ embeds: [reply] });
     }

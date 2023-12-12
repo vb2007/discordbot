@@ -2,8 +2,8 @@ const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("ban")
-        .setDescription("Bans a member from the server.")
+        .setName("timeout")
+        .setDescription("Times out a member from the server.")
         .addUserOption(option =>
             option
                 .setName("target")
@@ -14,20 +14,17 @@ module.exports = {
                 .setName("reason")
                 .setDescription("Give a reason.")
                 .setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
-        // if (interaction.user.id === 'id') {
-        //     // ...
-        // }
+        .setDefaultMemberPermissions(PermissionFlagsBits.MuteMembers),
     async execute(interaction) {
         const targetUser = interaction.options.getUser("target");
         const reason = interaction.options.getString("reason") || "No reason provided";
 
-        if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)) {
-            return interaction.reply({content: "Bot lacks the ban permission, cannot ban the member.", ephemeral: true });
+        if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.MuteMembers)) {
+            return interaction.reply({content: "Bot lacks the timeout(aka. mute) permission, cannot ban the member.", ephemeral: true });
         }
 
         try{
-            await interaction.guild.members.ban(targetUser, { reason: reason });
+            await interaction.guild.members.timeout(targetUser, { reason: reason });
             await interaction.reply({ content: `Successfully banned user ${targetUser.tag} for: ${reason}`, ephemeral: true});
         }
         catch (error){
