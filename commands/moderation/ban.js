@@ -15,7 +15,7 @@ module.exports = {
                 .setDescription("Give a reason.")
                 .setRequired(false))
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
-        // if (interaction.user.id === 'id') {
+        // if (interaction.user.id === "id") {
         //     // ...
         // }
     async execute(interaction) {

@@ -27,13 +27,14 @@ module.exports = {
         const [hour, minute] = time.split(":");
 
         if(hour > 24 || minute > 60){
-            await interaction.reply("The entered time format isn't correct. Please try again with the **HH:mm** format.")
+            await interaction.reply("The entered time format isn't correct. Please try again with the **HH:mm** format.");
+            return;
         }
 
-        cron.schedule(`${minute} ${hour} * * *`, () => {
+        cron.schedule(`0 ${minute} ${hour} * * *`, () => {
             channel.send(`<@${remindedUser.id}> - ${reminderMessage}`);
         });
 
-        await interaction.reply(`Reminder set successfully. I will remind <@${remindedUser.id} at ${time} every day.`);
+        await interaction.reply(`Reminder set successfully. I will remind <@${remindedUser.id}> at ${time} every day.`);
     }
 }

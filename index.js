@@ -8,7 +8,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 //szól ha kész a kliens
 client.once(Events.ClientReady, readyClient => {
-	console.log("Ready! Logged in as ${readyClient.user.tag}");
+	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
 client.commands = new Collection();
