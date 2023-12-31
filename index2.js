@@ -2,7 +2,7 @@
 const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
 const { Routes } = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
-require('dotenv').config();
+const { token, clientId } = require('./config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -12,12 +12,10 @@ client.once('ready', () => {
   console.log('Ready!');
 });
 
-const token = process.env.TOKEN;
 console.log("token processed");
 client.login(token);
 console.log("logged in");
 
-const clientId = process.env.CLIENTID;
 console.log("clientid set")
 
 client.on('ready', (c) => {
