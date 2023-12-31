@@ -18,6 +18,6 @@ module.exports = {
         }
 
         await interaction.channel.bulkDelete(messageAmount);
-        await interaction.reply("Messages deleted.");
+        await interaction.reply(`Deleted ${messageAmount} messages successfully.`);
     }
 }

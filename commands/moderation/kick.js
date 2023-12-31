@@ -20,12 +20,12 @@ module.exports = {
         const reason = interaction.options.getString("reason") || "No reason provided";
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.KickMembers)) {
-            return interaction.reply({content: "Bot lacks the ban permission, cannot ban kick member.", ephemeral: true });
+            return interaction.reply({content: "Bot lacks the kick permission, cannot kick member.", ephemeral: true });
         }
 
         try{
             await interaction.guild.members.kick(targetUser, { reason: reason });
-            await interaction.reply({ content: `Successfully kick user ${targetUser.tag} for: ${reason}`, ephemeral: true});
+            await interaction.reply({ content: `Successfully kicked user ${targetUser.tag} for: ${reason}`, ephemeral: true});
         }
         catch (error){
             console.error(error);

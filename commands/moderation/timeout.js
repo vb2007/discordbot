@@ -12,25 +12,28 @@ module.exports = {
         .addStringOption(option =>
             option
                 .setName("time")
-                .setDescription("Specify the time in minutes.")
+                .setDescription("Specify the time in seconds, minutes (m), hours (h), or days (d).")
                 .setRequired(true))
         .addStringOption(option =>
             option
                 .setName("reason")
                 .setDescription("Give a reason.")
-                .setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.MuteMembers),
+                .setRequired(false)),
+        //.setDefaultMemberPermissions(PermissionFlagsBits.MuteMembers),
     async execute(interaction) {
         const targetUser = interaction.options.getUser("target");
+        const timeInput = interaction.options.getString("time");
+        const time = parseDuration(timeInput);
         const reason = interaction.options.getString("reason") || "No reason provided";
-        const time = interaction.options.getInteger("time");
+        //const timeInSeconds = time * 60000;
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.MuteMembers)) {
-            return interaction.reply({content: "Bot lacks the timeout(aka. mute) permission, cannot ban the member.", ephemeral: true });
+            return interaction.reply({content: "Bot lacks the timeout(aka. mute) permission, cannot time out the member.", ephemeral: true });
         }
 
         try{
-            await interaction.guild.members.timeout(targetUser, { reason: reason });
+            await member.timeout(ms(time), reason);
+            //await interaction.guild.members.timeout(targetUser, { reason: reason });
             await interaction.reply({ content: `Successfully timed out user ${targetUser.tag} for ${time} minutes, because of: ${reason}`, ephemeral: true});
         }
         catch (error){

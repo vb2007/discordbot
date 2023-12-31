@@ -23,18 +23,6 @@ module.exports = {
             "https://cdn.discordapp.com/attachments/1181726473623715921/1182428553581711443/theevilapple4.jpg",
             "https://cdn.discordapp.com/attachments/1181726473623715921/1182762500119343224/bsmaci1.png"
         ];
-        // const labkepek = [
-        //     "http://vb2007.hu/cdn/feet/bsmaci1.jpg",
-        //     "http://vb2007.hu/cdn/feet/py1.png",
-        //     "http://vb2007.hu/cdn/feet/py2.webp",
-        //     "http://vb2007.hu/cdn/feet/skelly1.jpg",
-        //     "http://vb2007.hu/cdn/feet/skelly2.jpg",
-        //     "http://vb2007.hu/cdn/feet/skelly3.jpg",
-        //     "http://vb2007.hu/cdn/feet/skelly4.jpg",
-        //     "http://vb2007.hu/cdn/feet/theevilapple1.jpg",
-        //     "http://vb2007.hu/cdn/feet/theevilapple2.jpg",
-        //     "http://vb2007.hu/cdn/feet/theevilapple3.jpg"
-        // ]
 
         //random képet választ a listából
         const randomFeet = labkepek[Math.floor(Math.random() * labkepek.length)];
