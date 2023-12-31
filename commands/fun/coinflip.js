@@ -8,10 +8,10 @@ module.exports = {
         const random = (Math.floor(Math.random() * 2) == 0);
 
         if (random){
-            const result = "head";
+            var result = "head";
         }
         else{
-            const result = "tails";
+            var result = "tails";
         }
 
         await interaction.reply(`You've flipped ${result}.`);

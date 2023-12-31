@@ -6,7 +6,7 @@ module.exports = {
         .setDescription('Replies with Pong!'),
     async execute(interaction) {
         const reply = new EmbedBuilder()
-            .setColor(0x0099FF)
+            .setColor(0x5F0FD6)
             .setTitle("Pong!")
             .setDescription("Ping.");
         
