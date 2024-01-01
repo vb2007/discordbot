@@ -6,17 +6,17 @@ module.exports = {
 		.setDescription("Provides information about the current server."),
 	async execute(interaction) {
 		if(!interaction.inGuild()){
-			interaction.reply({content: "only server", ephemeral: true,});
+			interaction.reply({content: "This function is only avalible on servers. Sowwy :(", ephemeral: true,});
 			return;
 		}
 
 		const { guild } = interaction;
-
-		const serverInfoEmbed = new EmbedBuilder({
+		const serverInfo = new EmbedBuilder({
+			color: 0x5F0FD6,
 			author: { name: guild.name, iconUrl: guild.iconURL({ size: 256}) },
-
 			fields: [
 				{ name: "Creation date", value: guild.createdAt.toDateString(), inline : true },
+				{ name: "Members", value: guild.memberCount, inline: true },
 				{ name: "Owner", value: (await guild.fetchOwner()).user.tag, inline: true },
 				//channel(c).type:
 				//0 = text channels
@@ -25,16 +25,18 @@ module.exports = {
 				{ name: "Text channels", value: guild.channels.cache.filter((c) => c.type === 0).toJSON().length, inline: true },
 				{ name: "Voice channels", value: guild.channels.cache.filter((c) => c.type === 2).toJSON().length, inline: true },
 				{ name: "Categories", value: guild.channels.cache.filter((c) => c.type === 4).toJSON().length, inline: true },
-				{ name: "Members", value: guild.memberCount, inline: true },
 				//size - 1 --> @everyone excluded
 				{ name: "Roles (@everyone included)", value: guild.roles.cache.size, inline: true },
-				{ name: "Role list", value: guild.roles.cache.toJSON().join(", ") }
+				{ name: "Role list", value: guild.roles.cache.toJSON().join(", ") },
+				{ name: "Server Id", value: guild.id },
 			],
-
-			footer: { text: `Server Id: ${guild.id}` }
+			timestamp: new Date().toISOString(),
+			footer: {
+				text: `Requested by: ${interaction.user.username}` ,
+				icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+			}
 		});
 		
-		// await interaction.reply(`This server is ${interaction.guild.name} and has ${interaction.guild.memberCount} members.`);
-		await interaction.reply({ embeds: [serverInfoEmbed] })
+		await interaction.reply({ embeds: [serverInfo] })
 	},
 };

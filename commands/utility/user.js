@@ -10,18 +10,24 @@ module.exports = {
 				.setDescription("Choose a user.")
 				.setRequired(false)),
 	async execute(interaction) {
-		// interaction.user is the object representing the User who ran the command
+		// interaction.user = user who ran the command
 		// interaction.member is the GuildMember object, which represents the user in the specific guild
 		const targetUser = interaction.options.getUser("user");
 
-		const reply = new EmbedBuilder()
-			.setColor(0x07669D)
-			.setTitle("User information.")
-			.setDescription(`Command ran by: ${interaction.user.username}.`)
-			.setDescription(`User joined the sevrer on ${interaction.member.joinedAt}`)
-			.setFooter(Date());
+		const embedReply = new EmbedBuilder({
+			color: 0x5F0FD6,
+			title: "User information.",
+			fields: [
+				{ name: "Username", value: interaction.user.username, inline : true },
+				{ name: "Joined at", value: interaction.member.joinedAt.toDateString(), inline: true },
+			],
+			timestamp: new Date().toISOString(),
+			footer: {
+				text: `Requested by: ${interaction.user.username}` ,
+				icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+			},
+		});
 
-		await interaction.reply({ embeds: [reply]});
-		//await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);
+		await interaction.reply({ embeds: [embedReply]});
 	},
 };

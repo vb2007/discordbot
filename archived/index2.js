@@ -2,7 +2,7 @@
 const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
 const { Routes } = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
-const { token, clientId } = require('./config.json');
+const { token, clientId } = require('../config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });

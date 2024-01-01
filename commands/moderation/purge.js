@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,10 +14,30 @@ module.exports = {
         const messageAmount = interaction.options.get("amount").value;
         
         if (messageAmount > 100){
-            return await interaction.reply("Cannot delete more than 100 messages at once due to Discord's limitations.");
+            var replyContent = "Cannot delete more than 100 messages at once due to Discord's limitations.";
+        }
+        else{
+            try{
+                await interaction.channel.bulkDelete(messageAmount);
+                var replyContent = `Deleted ${messageAmount} messages successfully.`;
+            }
+            catch (error){
+                console.error(error);
+                var replyContent = "There was an error trying to purge the messages.";
+            }
         }
 
-        await interaction.channel.bulkDelete(messageAmount);
-        await interaction.reply(`Deleted ${messageAmount} messages successfully.`);
+        const embedReply = new EmbedBuilder({
+            color: 0x5F0FD6,
+            title: "Purging messages.",
+            description: `${replyContent}`,
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: `Requested by: ${interaction.user.username}` ,
+                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+            },
+        });
+
+        await interaction.reply({ embeds: [embedReply] });
     }
 }
