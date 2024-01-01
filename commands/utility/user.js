@@ -11,7 +11,7 @@ module.exports = {
 				.setRequired(false)),
 	async execute(interaction) {
 		// interaction.user = user who ran the command
-		// interaction.member is the GuildMember object, which represents the user in the specific guild
+		// interaction.member = a specified user in a guild
 		const targetUser = interaction.options.getUser("user");
 
 		const embedReply = new EmbedBuilder({

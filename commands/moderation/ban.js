@@ -20,18 +20,15 @@ module.exports = {
         const reason = interaction.options.getString("reason") || "No reason provided";
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)) {
-            // return interaction.reply({content: "Bot lacks the ban permission, cannot ban the member.", ephemeral: true });
             var replyContent = "Bot lacks the ban permission, cannot ban the member.";
         }
         else{
             try{
                 await interaction.guild.members.ban(targetUser, { reason: reason });
-                //await interaction.reply({ content: `Successfully banned user ${targetUser.tag} for: ${reason}`, ephemeral: true});
                 var replyContent = `Successfully banned user ${targetUser.tag} for: ${reason}`;
             }
             catch (error){
                 console.error(error);
-                //await interaction.reply({ content: "There was an error trying to ban the user.", ephemeral: true});
                 var replyContent = "There was an error trying to ban the user.";
             }
         }        

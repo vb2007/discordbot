@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, time } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,6 +14,18 @@ module.exports = {
             var result = "tails";
         }
 
-        await interaction.reply(`You've flipped ${result}.`);
+        const embedReply = new EmbedBuilder({
+            color: 0x5F0FD6,
+            title: "Coinflip.",
+            description: `You've flipped **${result}**.`,
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: `Requested by: ${interaction.user.username}` ,
+                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+            },
+        });
+
+        await interaction.reply({ embeds: [embedReply]});
+        //await interaction.reply(`You've flipped ${result}.`);
     }
 }
