@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,16 +20,30 @@ module.exports = {
         const reason = interaction.options.getString("reason") || "No reason provided";
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.KickMembers)) {
-            return interaction.reply({content: "Bot lacks the kick permission, cannot kick member.", ephemeral: true });
+            var replyContent = "Bot lacks the kick permission, cannot kick member.";
+        }
+        else{
+            try{
+                await interaction.guild.members.kick(targetUser, { reason: reason });
+                var replyContent = `Successfully kicked user **${targetUser.tag}** for: **${reason}**`;
+            }
+            catch (error){
+                console.error(error);
+                var replyContent = "There was an error trying to kick the user.";
+            }
         }
 
-        try{
-            await interaction.guild.members.kick(targetUser, { reason: reason });
-            await interaction.reply({ content: `Successfully kicked user ${targetUser.tag} for: ${reason}`, ephemeral: true});
-        }
-        catch (error){
-            console.error(error);
-            await interaction.reply({ content: "There was an error trying to kick the user.", ephemeral: true});
-        }
+        const embedReply = new EmbedBuilder({
+            color: 0x5F0FD6,
+            title: "Kicking a user out.",
+            description: `${replyContent}`,
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: `Requested by: ${interaction.user.username}` ,
+                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+            },
+        });
+
+        await interaction.reply({ embeds: [embedReply] });
     }
 }    
