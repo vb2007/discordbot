@@ -29,6 +29,10 @@ module.exports = {
             const units = timeInput.slice(-1);
             const time = parseInt(timeInput.slice(0, -1));
             let timeString = "";
+            
+            if (time === 0) {
+                return ["Time cannot be zero.", ""]
+            }
 
             switch(units) {
                 case "s":
@@ -44,15 +48,17 @@ module.exports = {
                     timeString = time === 1 ? `${time} day` : `${time} days`;
                     return [time * 1000 * 60 * 60 * 24, timeString];
                 default:
-                    // In case of invalid input
-                    return [NaN, timeString];
+                    return ["Invalid time unit. Please use **s**, **m**, **h**, or **d**.", ""];
             }
         }
 
         const [ time, timeString ] = timeInMs(timeInput);
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.MuteMembers)) {
-            var replyContent = "Bot lacks the timeout(aka. mute) permission, cannot time out the member."
+            var replyContent = "Bot **lacks the timeout(aka. mute) permission**, cannot time out the member.";
+        }
+        else if(isNaN(time)) {
+            var replyContent = time;
         }
         else{
             try{
