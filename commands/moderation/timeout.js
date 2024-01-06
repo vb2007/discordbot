@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits, time } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, time } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,33 +12,70 @@ module.exports = {
         .addStringOption(option =>
             option
                 .setName("time")
-                .setDescription("Specify the time in seconds, minutes (m), hours (h), or days (d).")
+                .setDescription("Specify the time in seconds (s), minutes (m), hours (h), or days (d). For example: 12m")
                 .setRequired(true))
         .addStringOption(option =>
             option
                 .setName("reason")
                 .setDescription("Give a reason.")
-                .setRequired(false)),
-        //.setDefaultMemberPermissions(PermissionFlagsBits.MuteMembers),
+                .setRequired(false))
+        .setDefaultMemberPermissions(PermissionFlagsBits.MuteMembers),
     async execute(interaction) {
-        const targetUser = interaction.options.getUser("target");
+        const targetUser = interaction.options.getMember("target");
         const timeInput = interaction.options.getString("time");
-        const time = parseDuration(timeInput);
         const reason = interaction.options.getString("reason") || "No reason provided";
-        //const timeInSeconds = time * 60000;
+
+        function timeInMs(timeInput) {
+            const units = timeInput.slice(-1);
+            const time = parseInt(timeInput.slice(0, -1));
+            let timeString = "";
+
+            switch(units) {
+                case "s":
+                    timeString = time === 1 ? `${time} second` : `${time} seconds`;
+                    return [time * 1000, timeString];
+                case "m":
+                    timeString = time === 1 ? `${time} minute` : `${time} minutes`;
+                    return [time * 1000 * 60, timeString];
+                case "h":
+                    timeString = time === 1 ? `${time} hour` : `${time} hours`;
+                    return [time * 1000 * 60 * 60, timeString];
+                case "d":
+                    timeString = time === 1 ? `${time} day` : `${time} days`;
+                    return [time * 1000 * 60 * 60 * 24, timeString];
+                default:
+                    // In case of invalid input
+                    return [NaN, timeString];
+            }
+        }
+
+        const [ time, timeString ] = timeInMs(timeInput);
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.MuteMembers)) {
-            return interaction.reply({content: "Bot lacks the timeout(aka. mute) permission, cannot time out the member.", ephemeral: true });
+            var replyContent = "Bot lacks the timeout(aka. mute) permission, cannot time out the member."
+        }
+        else{
+            try{
+                await targetUser.timeout(time, reason);
+                var replyContent = `Successfully timed out user ${targetUser} for **${timeString}**, with reason: **${reason}**`;
+            }
+            catch (error){
+                console.error(error);
+                var replyContent = "There was an error trying to time out the user.";
+            }
         }
 
-        try{
-            await member.timeout(ms(time), reason);
-            //await interaction.guild.members.timeout(targetUser, { reason: reason });
-            await interaction.reply({ content: `Successfully timed out user ${targetUser.tag} for ${time} minutes, because of: ${reason}`, ephemeral: true});
-        }
-        catch (error){
-            console.error(error);
-            await interaction.reply({ content: "There was an error trying to time out the user.", ephemeral: true});
-        }
+        const embedReply = new EmbedBuilder({
+            color: 0x5F0FD6,
+            title: "Timeout.",
+            description: `${replyContent}`,
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: `Requested by: ${interaction.user.username}` ,
+                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+            },
+        });
+
+        await interaction.reply({ embeds: [embedReply] });
     }
 }    
