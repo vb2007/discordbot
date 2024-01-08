@@ -26,6 +26,5 @@ module.exports = {
         });
 
         await interaction.reply({ embeds: [embedReply]});
-        //await interaction.reply(`You've flipped ${result}.`);
     }
 }
