@@ -13,7 +13,10 @@ module.exports = {
     async execute(interaction) {
         const messageAmount = interaction.options.get("amount").value;
         
-        if (messageAmount > 100){
+        if (!interaction.inGuild()) {
+            var replyContent = "You can only purge messages in a server.";
+        }
+        else if (messageAmount > 100){
             var replyContent = "Cannot delete more than 100 messages at once due to Discord's limitations.";
         }
         else{

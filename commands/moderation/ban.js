@@ -19,7 +19,10 @@ module.exports = {
         const targetUser = interaction.options.getUser("target");
         const reason = interaction.options.getString("reason") || "No reason provided";
 
-        if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)) {
+        if (!interaction.inGuild()) {
+            var replyContent = "You can only ban members in a server.";
+        }
+        else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)) {
             var replyContent = "Bot lacks the ban permission, cannot ban the member.";
         }
         else{

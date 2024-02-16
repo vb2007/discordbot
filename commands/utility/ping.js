@@ -5,12 +5,13 @@ module.exports = {
         .setName('ping')
         .setDescription('Replies with Pong!'),
     async execute(interaction) {
-        
+
         const embedReply = new EmbedBuilder({
             color : 0x5F0FD6,
             title : "Ping.",
             fields: [
-                { name: "Pong!", value: ""},
+                { name: "Pong! :ping_pong:", value: ""},
+                { name: "Response time: ", value: `${Date.now() - interaction.createdTimestamp}ms`},
             ],
             timestamp: new Date().toISOString(),
             footer: {

@@ -19,7 +19,10 @@ module.exports = {
         const targetUser = interaction.options.getUser("target");
         const reason = interaction.options.getString("reason") || "No reason provided";
 
-        if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.KickMembers)) {
+        if (!interaction.inGuild()) {
+            var replyContent = "You can only kick members in a server.";
+        }
+        else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.KickMembers)) {
             var replyContent = "Bot lacks the kick permission, cannot kick member.";
         }
         else{

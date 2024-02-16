@@ -54,6 +54,9 @@ module.exports = {
 
         const [ time, timeString ] = timeInMs(timeInput);
 
+        if (!interaction.inGuild()) {
+            var replyContent = "You can only timeout members in a server.";
+        }
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.MuteMembers)) {
             var replyContent = "Bot **lacks the timeout(aka. mute) permission**, cannot time out the member.";
         }
