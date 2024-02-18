@@ -11,7 +11,7 @@ module.exports = {
             title : "Ping.",
             fields: [
                 { name: "Pong! :ping_pong:", value: ""},
-                { name: "Response time: ", value: `${Date.now() - interaction.createdTimestamp}ms`},
+                { name: "Response time: ", value: `${Date.now() - interaction.createdTimestamp}ms`, inline: true },
             ],
             timestamp: new Date().toISOString(),
             footer: {

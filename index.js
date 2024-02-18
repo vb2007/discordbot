@@ -67,9 +67,9 @@ client.on(Events.InteractionCreate, async interaction => {
 
 client.on('ready', (c) => {
     client.user.setActivity({
-      name: 'Femboys are attractive as fuck.',
-      type: ActivityType.Streaming,
-      url: "https://vb2007.hu/ref/D0ld",
+		status: 'online',
+		type: ActivityType.Playing,
+		name: 'Femboys are attractive as fuck.',
     });
 });
 
