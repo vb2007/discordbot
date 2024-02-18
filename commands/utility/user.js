@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, Client } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -15,21 +15,22 @@ module.exports = {
 		const targetUser = interaction.options.getUser("user") || interaction.user;
 		const targetMember = await interaction.guild.members.fetch(targetUser.id);
 
-
 		const embedReply = new EmbedBuilder({
 			color: 0x5F0FD6,
 			title: "User information.",
+			// thumbnail: targetUser.displayAvatarURL({ dynamic: true }),
 			fields: [
 				{ name: "Username", value: targetUser.username, inline : true },
+				{ name: "Display name", value: targetUser.globalName, inline : true },
 				{ name: "Nickname", value: targetMember.nickname || "None", inline : true },
-				{ name: "Avatar", value: `${targetMember.displayAvatarURL({ dynamic: true })}`, inline : true },
+				{ name: "Avatar", value: `${targetMember.displayAvatarURL({ dynamic: true })}` },
 				{ name: "Joined at", value: `<t:${parseInt(targetMember.joinedAt / 1000)}:R>`, inline: true },
 				{ name: "Created at", value: `<t:${parseInt(targetUser.createdAt / 1000)}:R>`, inline: true },
 				{ name: "Roles", value: targetMember.roles.cache.toJSON().join(" ") },
 				{ name: "Highest role", value: targetMember.roles.highest.name },
 				// { name: "Permissions", value: targetMember.permissions.toArray().join(", "), inline : true },
-				{ name: "Status", value: targetMember.status || "offline", inline : true },
-				{ name: "Activity", value: targetMember.presence?.activities[0] ? targetMember.presence.activities[0] : "None", inline : true },
+				// { name: "Status", value: usersStatus, inline : true },
+				// { name: "Activity", value: targetMember.presence?.activities[0] ? targetMember.presence.activities[0] : "None", inline : true },
 				{ name: "Bot?", value: targetUser.bot, inline : true },
 				{ name: "User Id", value: targetUser.id, inline: true },
 				// { name: "Is online?", value: targetUser.presence.status === "online", inline : true },

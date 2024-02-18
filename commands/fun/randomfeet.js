@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder, AttachmentBuilder } = require("discord.js");
+const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
 const path = require("path").basename;
 
@@ -66,7 +66,7 @@ module.exports = {
         const logMessage =
             `Command: ${interaction.commandName}\n` +
             `User: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
-            `Server: ${interaction.guild.name} (ID: ${interaction.guild.id})\n` +
+            `Server: ${interaction.guild.name || "Not in server"} (ID: ${interaction.guild.id || "-"})\n` +
             `Time: ${new Date(interaction.createdTimestamp).toLocaleString}\n` +
             `Response: Sent ${randomFeet}\n\n`;
 
