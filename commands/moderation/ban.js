@@ -29,6 +29,24 @@ module.exports = {
             try{
                 await interaction.guild.members.ban(targetUser, { reason: reason });
                 var replyContent = `Successfully banned user ${targetUser.tag} for: ${reason}`;
+                try{
+                    const embedDmReply = new EmbedBuilder({
+                        color: 0x5F0FD6,
+                        title: "You have been banned.",
+                        description: `You have banned from **${interaction.guild.name}** for: **${reason}** \nIf you believe this was a mistake, please contact a moderator.`,
+                        timestamp: new Date().toISOString(),
+                        footer: {
+                            text: `Moderator: ${interaction.user.username}` ,
+                            icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+                        },
+                    });
+                    await targetUser.send({ embeds: [embedDmReply] });
+                    replyContent += "\nThe user was notified about the reason in their DMs.";
+                }
+                catch (error){
+                    console.error(error);
+                    replyContent += "\nThere was an error while trying to DM the user.";
+                }
             }
             catch (error){
                 console.error(error);
