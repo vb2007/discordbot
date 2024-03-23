@@ -69,7 +69,7 @@ client.on('ready', (c) => {
     client.user.setActivity({
 		status: 'online',
 		type: ActivityType.Playing,
-		name: 'Femboys are attractive as fuck.',
+		name: 'with stolen user data.',
     });
 });
 

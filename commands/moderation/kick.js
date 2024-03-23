@@ -32,7 +32,7 @@ module.exports = {
             }
             catch (error){
                 console.error(error);
-                var replyContent = "There was an error trying to kick the user.";
+                var replyContent = "There was an error while trying to kick the user.";
             }
         }
 

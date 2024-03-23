@@ -1,6 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
-const path = require("path").basename;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,20 +8,6 @@ module.exports = {
     async execute(interaction) {
         //vár ha egyszerre túl sok a lábkép kérelem...
         await interaction.deferReply();
-
-        //lábkép adatbázis
-        // const labkepek = [
-        //     "https://cdn.discordapp.com/attachments/1181726473623715921/1182428481385148577/py1.png",
-        //     "https://cdn.discordapp.com/attachments/1181726473623715921/1182428490780389387/py2.webp",
-        //     "https://cdn.discordapp.com/attachments/1181726473623715921/1182428495306035230/skelly1.jpg",
-        //     "https://cdn.discordapp.com/attachments/1181726473623715921/1182428504986505266/skelly2.jpg",
-        //     "https://cdn.discordapp.com/attachments/1181726473623715921/1182428508383875162/skelly3.jpg",
-        //     "https://cdn.discordapp.com/attachments/1181726473623715921/1182428523638554684/theevilapple1.jpg",
-        //     "https://cdn.discordapp.com/attachments/1181726473623715921/1182428531553210448/theevilapple2.jpg",
-        //     "https://cdn.discordapp.com/attachments/1181726473623715921/1182428543779602553/theevilapple3.jpg",
-        //     "https://cdn.discordapp.com/attachments/1181726473623715921/1182428553581711443/theevilapple4.jpg",
-        //     "https://cdn.discordapp.com/attachments/1181726473623715921/1182762500119343224/bsmaci1.png"
-        // ];
 
         const labkepek = [
             "https://vb2007.hu/extended-cdn/feetpics/bsmaci1.jpg",
@@ -67,7 +52,7 @@ module.exports = {
             `Command: ${interaction.commandName}\n` +
             `User: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
             `Server: ${interaction.guild.name || "Not in server"} (ID: ${interaction.guild.id || "-"})\n` +
-            `Time: ${new Date(interaction.createdTimestamp).toLocaleString}\n` +
+            `Time: ${new Date(interaction.createdTimestamp).toLocaleString()}\n` +
             `Response: Sent ${randomFeet}\n\n`;
 
         //console.log(logMessage);

@@ -19,7 +19,7 @@ module.exports = {
                 .setName("reason")
                 .setDescription("Give a reason.")
                 .setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.MuteMembers),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
     async execute(interaction) {
         const targetUser = interaction.options.getMember("target");
         const timeInput = interaction.options.getString("time");
@@ -70,7 +70,7 @@ module.exports = {
             }
             catch (error){
                 console.error(error);
-                var replyContent = "There was an error trying to time out the user.";
+                var replyContent = "There was an error while trying to time out the user.";
             }
         }
 
