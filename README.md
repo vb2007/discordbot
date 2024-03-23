@@ -3,7 +3,8 @@ A simple discord bot of mine developed with discord.js (Node.js).
 I mainly use it to get the active developer badge on Discord.
 
 ## Invite the bot
-**You can invite the bot to your server using [THIS](https://discord.com/oauth2/authorize?client_id=1163073430309044234&scope=bot&permissions=8) link. The bot requires administartor permissions.
+**You can invite the bot to your server using [THIS](https://discord.com/oauth2/authorize?client_id=1163073430309044234&scope=bot&permissions=8) link.**
+The bot requires administartor permissions.
 It should be online 24/7.
 
 ## How to run the application
