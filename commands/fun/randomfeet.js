@@ -72,8 +72,6 @@ module.exports = {
         //random képet választ a listából
         const randomFeet = links[Math.floor(Math.random() * links.length)];
 
-        console.log(randomFeet);
-
         const embedReply = new EmbedBuilder({
             color: 0x5F0FD6,
             title: "Randomfeet.",
