@@ -2,7 +2,7 @@ const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("py")
+        .setName("pie")
         .setDescription("facts.")
         .addStringOption(option =>
             option
@@ -20,7 +20,7 @@ module.exports = {
             var replyContent = "Szekeres Dávid Krisztián";
         }
         else if (extraOption == "facts_value"){
-            var replyContent = ".py egy autista geci"
+            var replyContent = "pie egy autista geci"
         }
 
         const embedReply = new EmbedBuilder({

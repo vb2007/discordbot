@@ -34,7 +34,7 @@ async function loadLinks() {
     catch {
         links = await scrapeLinks("https://vb2007.hu/extended-cdn/feetpics/");
 
-        // await fs.writeFileSync(linksFile, JSON.stringify(links));
+        await fs.writeFileSync(linksFile, JSON.stringify(links));
     }
 
     return links;
@@ -43,7 +43,7 @@ async function loadLinks() {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("randomfeet")
-        .setDescription("Elküld egy random lábképet."),
+        .setDescription("Sends a random feetpic."),
     async execute(interaction) {
         //vár ha egyszerre túl sok a lábkép kérelem...
         await interaction.deferReply();

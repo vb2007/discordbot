@@ -2,8 +2,8 @@ const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('ping')
-        .setDescription('Replies with Pong!'),
+        .setName("ping")
+        .setDescription("Checks the bot\'s response time."),
     async execute(interaction) {
 
         const embedReply = new EmbedBuilder({
