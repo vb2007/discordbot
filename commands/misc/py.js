@@ -20,7 +20,7 @@ module.exports = {
             var replyContent = "Szekeres Dávid Krisztián";
         }
         else if (extraOption == "facts_value"){
-            var replyContent = "pie egy autista geci"
+            var replyContent = "pie egy autista geci";
         }
 
         const embedReply = new EmbedBuilder({

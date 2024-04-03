@@ -72,10 +72,25 @@ module.exports = {
         //random képet választ a listából
         const randomFeet = links[Math.floor(Math.random() * links.length)];
 
+        var embedReplyColor;
+        var embedReplyTitle;
+        var embedReplyDescription;
+        
+        if (randomFeet == "https://vb2007.hu/extended-cdn/feetpics/145.jpg") {
+            embedReplyColor = 0xEBB22F;
+            embedReplyTitle = "CONGRATULATIONS!";
+            embedReplyDescription = "You found the hidden feetpic! :tada:";
+        }
+        else{
+            embedReplyColor = 0x5F0FD6;
+            embedReplyTitle = "Randomfeet.";
+            embedReplyDescription = "Here is a random feetpic:";
+        }
+
         const embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Randomfeet.",
-            description: "Here is a random feetpic:",
+            color: embedReplyColor,
+            title: embedReplyTitle,
+            description: embedReplyDescription,
             image: {
                 url: `${randomFeet}`
             },
