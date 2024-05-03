@@ -4,7 +4,7 @@ const fs = require("fs");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("randompic")
-        .setDescription("Send a random image using the picsum.photos API."),
+        .setDescription("Send a random picture using the picsum.photos API."),
     async execute(interaction) {
         // There are currently 1084 photos on picsum.images
         // And we need an ID to keep a requested image
@@ -35,7 +35,7 @@ module.exports = {
 
         //console.log(logMessage);
 
-        fs.appendFile("log/command-randomimg.log", logMessage, (err) => {
+        fs.appendFile("log/command-randompic.log", logMessage, (err) => {
             if (err) {
                 console.error("Error while writing the logs: ", err);
             }

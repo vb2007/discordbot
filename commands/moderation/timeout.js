@@ -110,7 +110,7 @@ module.exports = {
         const logMessage =
             `Command: ${interaction.commandName}\n` +
             `Executer: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
-            `Server: ${interaction.guild.name || "Not in server"} (ID: ${interaction.guild.id || "-"})\n` +
+            `Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server." }\n` +
             `Time: ${new Date(interaction.createdTimestamp).toLocaleString()}\n\n`
 
         //console.log(logMessage);

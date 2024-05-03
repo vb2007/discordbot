@@ -19,7 +19,7 @@ module.exports = {
                 },
                 { name: "Fun", value:
                 "`/coinflip` - Flips a coin that has a 50/50 chance landing on head or tails.\n" +
-                "`/randomimg` - Send a random image using the [picsum.photos](https://picsum.photos/) API.\n" +
+                "`/randompic` - Send a random picture using the [picsum.photos](https://picsum.photos/) API.\n" +
                 "`/randomfeet` - I have nothing to say about my greatest shame..."
                 },
                 { name: "Moderation", value:
@@ -44,7 +44,7 @@ module.exports = {
         const logMessage =
             `Command: ${interaction.commandName}\n` +
             `Executer: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
-            `Server: ${interaction.guild.name || "Not in server"} (ID: ${interaction.guild.id || "-"})\n` +
+            `Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server." }\n` +
             `Time: ${new Date(interaction.createdTimestamp).toLocaleString()}\n\n`
 
         //console.log(logMessage);
