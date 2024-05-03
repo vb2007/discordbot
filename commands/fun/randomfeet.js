@@ -29,6 +29,11 @@ async function loadLinks() {
     let links = [];
     
     try {
+        const dataDir = ('./data');
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir);
+        }
+
         links = JSON.parse(fs.readFileSync(linksFile));
     }
     catch {
