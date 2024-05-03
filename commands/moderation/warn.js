@@ -21,7 +21,7 @@ module.exports = {
         const reason = interaction.options.getString("reason") || "No reason provided";
 
         if (!interaction.inGuild()) {
-            var replyContent = "You can warn kick members in a server.";
+            var replyContent = "You can only warn members in a server.";
         }
         else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers)) {
             var replyContent = "Bot lacks the timeout (moderation) permission, cannot warn member.";
