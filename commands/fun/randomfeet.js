@@ -1,9 +1,9 @@
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
 const path = require("path");
-const linksFile = './data/links.json'; 
-const request = require('request-promise');
-const cheerio = require('cheerio');
+const linksFile = "./data/links.json"; 
+const request = require("request-promise");
+const cheerio = require("cheerio");
 
 async function scrapeLinks(url) {
     const res = await request(url);
@@ -13,7 +13,7 @@ async function scrapeLinks(url) {
     const links = [];
 
     $('a').each((i, link) => {
-        let href = (url + $(link).attr('href'));
+        let href = (url + $(link).attr("href"));
 
         const ext = path.extname(href);
 
@@ -29,7 +29,7 @@ async function loadLinks() {
     let links = [];
     
     try {
-        const dataDir = ('./data');
+        const dataDir = ("./data");
         if (!fs.existsSync(dataDir)) {
             fs.mkdirSync(dataDir);
         }
