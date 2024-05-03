@@ -1,4 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const fs = require("fs");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -66,5 +67,20 @@ module.exports = {
         });
 
         await interaction.reply({ embeds: [embedReply] });
+
+        //logging
+        const logMessage =
+            `Command: ${interaction.commandName}\n` +
+            `Executer: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
+            `Server: ${interaction.guild.name || "Not in server"} (ID: ${interaction.guild.id || "-"})\n` +
+            `Time: ${new Date(interaction.createdTimestamp).toLocaleString()}\n\n`
+
+        //console.log(logMessage);
+
+        fs.appendFile("log/command-ban.log", logMessage, (err) => {
+            if (err) {
+                console.error("Error while writing the logs: ", err);
+            }
+        });
     }
 }    

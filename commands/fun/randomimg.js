@@ -1,7 +1,5 @@
-//Archived for:
-//Not working well with the picsum.photos api (sends back the same image(s))
-
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const fs = require("fs");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -27,5 +25,20 @@ module.exports = {
         });
 
         await interaction.reply({ embeds: [embedReply] });
+
+        //logging
+        const logMessage =
+            `Command: ${interaction.commandName}\n` +
+            `Executer: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
+            `Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server." }\n` +
+            `Time: ${new Date(interaction.createdTimestamp).toLocaleString()}\n\n`
+
+        //console.log(logMessage);
+
+        fs.appendFile("log/command-randomimg.log", logMessage, (err) => {
+            if (err) {
+                console.error("Error while writing the logs: ", err);
+            }
+        });
     }
 }

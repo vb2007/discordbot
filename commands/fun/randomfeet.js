@@ -50,7 +50,7 @@ module.exports = {
         .setName("randomfeet")
         .setDescription("Sends a random feetpic."),
     async execute(interaction) {
-        //vár ha egyszerre túl sok a lábkép kérelem...
+        //waits (and edits it's reply later) if the host is too slow
         await interaction.deferReply();
 
         // const feetpics = [
@@ -108,10 +108,10 @@ module.exports = {
 
         await interaction.editReply({ embeds: [embedReply] });
 
-        //logol
+        //logging
         const logMessage =
             `Command: ${interaction.commandName}\n` +
-            `User: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
+            `Executer: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
             `Server: ${interaction.guild.name || "Not in server"} (ID: ${interaction.guild.id || "-"})\n` +
             `Time: ${new Date(interaction.createdTimestamp).toLocaleString()}\n` +
             `Response: Sent ${randomFeet}\n\n`;

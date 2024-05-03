@@ -1,4 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const fs = require("fs");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -18,7 +19,7 @@ module.exports = {
                 },
                 { name: "Fun", value:
                 "`/coinflip` - Flips a coin that has a 50/50 chance landing on head or tails.\n" +
-                "`/randoming` - Send a random image using the [picsum.photos](https://picsum.photos/) API.\n" +
+                "`/randomimg` - Send a random image using the [picsum.photos](https://picsum.photos/) API.\n" +
                 "`/randomfeet` - I have nothing to say about my greatest shame..."
                 },
                 { name: "Moderation", value:
@@ -38,5 +39,20 @@ module.exports = {
         })
 
         await interaction.reply({ embeds: [embedReply] });
+
+        //logging
+        const logMessage =
+            `Command: ${interaction.commandName}\n` +
+            `Executer: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
+            `Server: ${interaction.guild.name || "Not in server"} (ID: ${interaction.guild.id || "-"})\n` +
+            `Time: ${new Date(interaction.createdTimestamp).toLocaleString()}\n\n`
+
+        //console.log(logMessage);
+
+        fs.appendFile("log/command-help.log", logMessage, (err) => {
+            if (err) {
+                console.error("Error while writing the logs: ", err);
+            }
+        });
     }
 }
