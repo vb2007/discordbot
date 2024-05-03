@@ -3,7 +3,7 @@ const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('disc
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("purge")
-        .setDescription("Purges (mass deletes) the given amount of messages from the current channel.")
+        .setDescription("Purges (mass deletes) a specified amount of messages from the current channel.")
         .addNumberOption(option =>
             option
                 .setName("amount")

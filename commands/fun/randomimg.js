@@ -6,7 +6,7 @@ const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("randompic")
-        .setDescription("Send a random image using the picsum.photos api."),
+        .setDescription("Send a random image using the picsum.photos API."),
     async execute(interaction) {
         // There are currently 1084 photos on picsum.images
         // And we need an ID to keep a requested image

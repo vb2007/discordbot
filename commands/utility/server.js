@@ -11,7 +11,7 @@ module.exports = {
 		}
 
 		const { guild } = interaction;
-		const serverInfo = new EmbedBuilder({
+		const embedReply = new EmbedBuilder({
 			color: 0x5F0FD6,
 			author: { name: guild.name, iconUrl: guild.iconURL({ size: 256}) },
 			fields: [
@@ -37,6 +37,6 @@ module.exports = {
 			}
 		});
 		
-		await interaction.reply({ embeds: [serverInfo] })
+		await interaction.reply({ embeds: [embedReply] });
 	},
 };

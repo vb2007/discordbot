@@ -3,7 +3,7 @@ const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('disc
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("warn")
-        .setDescription("Warns a member on the server.")
+        .setDescription("Warns a specified member on the server.")
         .addUserOption(option =>
             option
                 .setName("target")

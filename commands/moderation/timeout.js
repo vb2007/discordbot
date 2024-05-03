@@ -3,7 +3,7 @@ const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, time } = require
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("timeout")
-        .setDescription("Times out a member from the server.")
+        .setDescription("Times out a specified member for a specified time.")
         .addUserOption(option =>
             option
                 .setName("target")
