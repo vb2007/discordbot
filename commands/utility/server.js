@@ -6,16 +6,17 @@ module.exports = {
 		.setName("server")
 		.setDescription("Provides information about the current server."),
 	async execute(interaction) {
-		if(!interaction.inGuild()){
-			interaction.reply({content: "This function is only avalible on servers. Sowwy :(", ephemeral: true,});
-			return;
+		if(!interaction.inGuild()) {
+			var authorField = { name: "" }
+			var embedFields = [
+				{ name: "Invalid command useage", value: "This function is only avalible on servers." }
+			];
 		}
+		else {
+			const { guild } = interaction;
 
-		const { guild } = interaction;
-		const embedReply = new EmbedBuilder({
-			color: 0x5F0FD6,
-			author: { name: guild.name, iconUrl: guild.iconURL({ size: 256}) },
-			fields: [
+			var authorField = { name: guild.name, iconUrl: guild.iconURL({ size: 256}) }
+			var embedFields = [
 				{ name: "Creation date", value: guild.createdAt.toDateString(), inline : true },
 				{ name: "Members", value: guild.memberCount, inline: true },
 				{ name: "Owner", value: (await guild.fetchOwner()).user.tag, inline: true },
@@ -30,7 +31,13 @@ module.exports = {
 				{ name: "Roles (@everyone included)", value: guild.roles.cache.size, inline: true },
 				{ name: "Role list", value: guild.roles.cache.toJSON().join(", ") },
 				{ name: "Server Id", value: guild.id },
-			],
+			];
+		}
+
+		const embedReply = new EmbedBuilder({
+			color: 0x5F0FD6,
+			author: authorField,
+			fields: embedFields,
 			timestamp: new Date().toISOString(),
 			footer: {
 				text: `Requested by: ${interaction.user.username}` ,
