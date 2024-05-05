@@ -1,4 +1,5 @@
 config.json
 /node_modules
+/test
 /log
 /data/links.json
