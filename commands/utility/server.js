@@ -7,10 +7,9 @@ module.exports = {
 		.setDescription("Provides information about the current server."),
 	async execute(interaction) {
 		if(!interaction.inGuild()) {
-			var authorField = { name: "" }
-			var embedFields = [
-				{ name: "Invalid command useage", value: "This function is only avalible on servers." }
-			];
+			var authorField = {};
+			var embedFields = [];
+			var embedDescription = "This function is only avalible on servers.";
 		}
 		else {
 			const { guild } = interaction;
@@ -36,6 +35,8 @@ module.exports = {
 
 		const embedReply = new EmbedBuilder({
 			color: 0x5F0FD6,
+			title: "Server information.",
+			description: embedDescription,
 			author: authorField,
 			fields: embedFields,
 			timestamp: new Date().toISOString(),
