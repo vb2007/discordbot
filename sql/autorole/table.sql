@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS `autorole` (
+    `guildId` STRING NOT NULL,
+    `roleId` STRING NOT NULL,
+    `addedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `addedBy` STRING NOT NULL,
+    PRIMARY KEY (`guildId`)
+);

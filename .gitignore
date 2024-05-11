@@ -1,4 +1,5 @@
 config.json
+db.js
 /node_modules
 /test
 /log
