@@ -1,11 +1,12 @@
-const { EmbedBuilder, SlashCommandBuilder, PermissionFlagBits } = require("discord.js");
+const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const fs = require("fs");
 const db = require("../../db");
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("autorole-disable")
         .setDescription("Disables the role that is automatically assigned to new members on join.")
-        .setDefaultMemberPermissions(PermissionFlagBits.Administartor),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
     async execute(interaction) {
         if (!interaction.inGuild()) {
             var replyContent = "You can only disable autorole in a server."

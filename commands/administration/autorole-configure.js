@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder, PermissionFlagBits } = require("discord.js");
+const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const fs = require("fs");
 const db = require("../../db");
 
 module.exports = {
@@ -10,14 +11,14 @@ module.exports = {
                 .setName("role")
                 .setDescription("Choose a role that will get assigned to the new server members.")
                 .setRequired(true))
-        .setDefaultMemberPermissions(PermissionFlagBits.Administartor),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
     async execute(interaction) {
         const targetRole = interaction.options.get("role").value;
         
         if (!interaction.inGuild()) {
             var replyContent = "You can only set autorole in a server.";
         }
-        else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administartor)) {
+        else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administrator)) {
             var replyContent = "This feature requires **administrator** *(8)* privileges witch the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges."
         }
         else {
