@@ -10,6 +10,9 @@ module.exports = {
         if (!interaction.inGuild()) {
             var replyContent = "You can only disable autorole in a server."
         }
+        else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administartor)) {
+            var replyContent = "This feature requires **administrator** *(8)* privileges witch the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges."
+        }
         else {
             try {
                 let currentGuildId = interaction.guild.id;
