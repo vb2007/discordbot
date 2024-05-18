@@ -16,10 +16,14 @@ module.exports = {
         }
         else {
             try {
-                let currentGuildId = interaction.guild.id;
-                let autoroleGuildId = await db.query("SELECT guildId FROM autorole WHERE guildId = ?", [currentGuildId]);
+                const currentGuildId = interaction.guild.id;
+                console.log(currentGuildId)
+                //we need rows, because the query gives back a messed up array
+                const [rows] = await db.query("SELECT guildId FROM autorole WHERE guildId = ?", [currentGuildId]);
+                const autoroleGuildId = rows[0];
+                console.log(autoroleGuildId)
 
-                if (autoroleGuildId == currentGuildId) {
+                if (autoroleGuildId) {
                     await db.query("DELETE FROM autorole WHERE guildId = ?", [autoroleGuildId]);
 
                     var replyContent = "The autorole feature has been disabled succesfully.\nYou can re-enable it with `/autorole-configure`."
@@ -27,22 +31,37 @@ module.exports = {
                 else {
                     var replyContent = "Autorole has not been configured for this server.\nTherefore, you can't disable it."
                 }
-
-                var embedReply = new EmbedBuilder({
-                    color: 0x5F0FD6,
-                    title: "Disabling autorole.",
-                    description: replyContent,
-                    timestamp: new Date().toISOString(),
-                    footer: {
-                        text: `Requested by: ${interaction.user.username}` ,
-                        icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-                    },
-                });
-
-                await interaction.reply({ embeds: [embedReply] });
-            } catch (error) {
+            }
+            catch (error) {
                 console.log(error);
             }
         }
+
+        var embedReply = new EmbedBuilder({
+            color: 0x5F0FD6,
+            title: "Disabling autorole.",
+            description: replyContent,
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: `Requested by: ${interaction.user.username}` ,
+                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+            },
+        });
+
+        await interaction.reply({ embeds: [embedReply] });
+
+        const logMessage = 
+            `Command: ${interaction.commandName}\n` +
+            `Executer: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
+            `Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server." }\n` +
+            `Time: ${new Date(interaction.createdTimestamp).toLocaleString()}\n\n`
+
+        //console.log(logMessage);
+
+        fs.appendFile("log/command-autoroleDisable.log", logMessage, (err) => {
+            if (err) {
+                console.error("Error while writing the logs: ", err);
+            }
+        });
     },
 };

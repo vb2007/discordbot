@@ -13,8 +13,6 @@ module.exports = {
                 .setRequired(true))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
     async execute(interaction) {
-        const targetRole = interaction.options.get("role").value;
-        
         if (!interaction.inGuild()) {
             var replyContent = "You can only set autorole in a server.";
         }
@@ -23,16 +21,17 @@ module.exports = {
         }
         else {
             try {
+                const targetRole = interaction.options.get("role").value;
                 var guildId = interaction.guild.id;
                 let autoRole = await db.query("SELECT guildId FROM autorole WHERE guildId = ?", [guildId]);
 
                 if (autoRole) {
                     if (autoRole === targetRole){
                         replyContent = "Autorole has been already configured for this server.\nRun `/autorole-disable` to disable this feature.";
-                        return;               
+                        return;
                     }
 
-                    autoRole = targetRole;
+                    roleId = targetRole;
                 }
                 else{
                     var roleId = targetRole;
@@ -40,8 +39,9 @@ module.exports = {
 
                 await db.query("INSERT INTO autorole (guildId, roleId) VALUES (?, ?) ON DUPLICATE KEY UPDATE roleId = ?", [guildId, roleId, roleId]);
                 var replyContent = "Autorole has been **successfully configured** for this server. :white_check_mark:\nRun `/autorole-disable` to disable this feature.";
-            } catch (error) {
-                console.log(error);
+            } 
+            catch (error) {
+                console.error(error);
             }
         }
 
