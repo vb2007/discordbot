@@ -1,5 +1,5 @@
-const { databaseConnectionString } = require("../config.json");
-const db = databaseConnectionString;
+// const { Client, GuildMember } = require("discord.js");
+const db = require("../../db");
 
 module.exports = {
     name: "guildMemberJoin",
@@ -13,11 +13,12 @@ module.exports = {
             if (roleId) {
                 const role = member.guild.roles.cache.get(roleId);
                 if (role) {
-                    
+                    await member.roles.add(role);
+                    console.log(`Assigned ${role.name} role to ${member.user.tag} in ${member.guild.name}`);
                 }
             }
         } catch (error) {
-            
+            console.error(error);
         }
-    }
-}
+    },
+};

@@ -21,7 +21,13 @@ Do the following for running this application locally:
 ```json
 {
   "token": "[your token]",
-  "clientId": "[your client id]"
+  "clientId": "[your client id]",
+
+  //Connecting to the MariaDB database
+  "databaseHostAddress" : "[database host ip]:[database host port]",
+  "databaseName" : "[database name]",
+  "databaseUser" : "[database username]",
+  "databasePassword" : "[database user's password]"
 }
 ```
 3. Install the dependecies with the `npm i` command
