@@ -1,6 +1,7 @@
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const fs = require("fs");
 const db = require("../../db");
+const autoroleDisable = require("./autorole-disable");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,10 +23,11 @@ module.exports = {
         else {
             try {
                 const targetRole = interaction.options.get("role").value;
-                const adderUsername = interaction.user.name;
+                const adderUsername = interaction.user.username;
                 const adderId = interaction.user.id;
                 var guildId = interaction.guild.id;
                 let autoRole = await db.query("SELECT guildId FROM autorole WHERE guildId = ?", [guildId]);
+                console.log(autoRole);
 
                 if (autoRole) {
                     if (autoRole === targetRole){
@@ -39,7 +41,7 @@ module.exports = {
                     var roleId = targetRole;
                 }
 
-                await db.query("INSERT INTO autorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, roleId, adderId, adderUsername, roleId, adderId, adderUsername]);
+                await db.query("INSERT INTO autorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, roleId, adderId, adderUsername, roleId, adderId, adderUsername]);
                 var replyContent = "Autorole has been **successfully configured** for this server. :white_check_mark:\nRun this command again to modify the role.\nRun `/autorole-disable` to disable this feature.\n";
             } 
             catch (error) {
