@@ -22,6 +22,8 @@ module.exports = {
         else {
             try {
                 const targetRole = interaction.options.get("role").value;
+                const adderUsername = interaction.user.name;
+                const adderId = interaction.user.id;
                 var guildId = interaction.guild.id;
                 let autoRole = await db.query("SELECT guildId FROM autorole WHERE guildId = ?", [guildId]);
 
@@ -37,8 +39,8 @@ module.exports = {
                     var roleId = targetRole;
                 }
 
-                await db.query("INSERT INTO autorole (guildId, roleId) VALUES (?, ?) ON DUPLICATE KEY UPDATE roleId = ?", [guildId, roleId, roleId]);
-                var replyContent = "Autorole has been **successfully configured** for this server. :white_check_mark:\nRun `/autorole-disable` to disable this feature.";
+                await db.query("INSERT INTO autorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, roleId, adderId, adderUsername, roleId, adderId, adderUsername]);
+                var replyContent = "Autorole has been **successfully configured** for this server. :white_check_mark:\nRun this command again to modify the role.\nRun `/autorole-disable` to disable this feature.\n";
             } 
             catch (error) {
                 console.error(error);
