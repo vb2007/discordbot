@@ -1,83 +1,107 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require('discord.js');
+const fs = require("node:fs");
+const path = require("node:path");
+const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require("discord.js");
 //const { Routes } = require('discord-api-types/v9');
-const { token } = require('./config.json');
+const { token } = require("./config.json");
+const db = require("./db")
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
 
-//szól ha kész a kliens
+//logs if client is ready
 client.once(Events.ClientReady, readyClient => {
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+	console.log(`Bot is ready! Logged in as ${readyClient.user.tag}`);
 });
 
 client.commands = new Collection();
 
-//kiszedi a parancsokat a commands mappából és annak almappáiból
+//gets command from the "/commands" folder's subfolders
 const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
 
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
 		const command = require(filePath);
 
-		//commandok adatainak beállítása
-		if ('data' in command && 'execute' in command) {
+		//sets command names and data
+		if ("data" in command && "execute" in command) {
 			client.commands.set(command.data.name, command);
 		}
-		//logolja ha egy parancsnak nincs data vagy execute értéke
+		//logs if a command doesn't has a critical information
         else {
 			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 		}
 	}
 }
 
-//perjeles parancsok kezelése
+//gets event listeners from the "/events" folder
+const eventsPath = path.join(__dirname, "events");
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith(".js"));
+
+for (const file of eventFiles) {
+	const filePath = path.join(eventsPath, file);
+	const event = require(filePath)
+
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args));
+	}
+	else {
+		client.on(event.name, (...args) => event.execute(...args));
+	}
+}
+
+//haldes slash commands
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
 	const command = interaction.client.commands.get(interaction.commandName);
 
-	//nincs ilyen parancs
+	//if there is no such command...
 	if (!command) {
 		console.error(`No command matching ${interaction.commandName} was found.`);
 		return;
 	}
 
-	//parancs futtatása
+	//handling interactions
 	try {
 		await command.execute(interaction);
 	}
-	//hiabkezelés
 	catch (error) {
 		console.error(error);
 
 		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+			await interaction.followUp({ content: "There was an error while executing this command!", ephemeral: true });
 		}
 		else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+			await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
 		}
 	}
 });
 
-client.on('ready', (c) => {
+//sets bot's discord activity
+client.on("ready", (c) => {
     client.user.setActivity({
-		status: 'online',
+		status: "online",
 		type: ActivityType.Playing,
-		name: 'with stolen user data.',
+		name: "with stolen user data.",
     });
 });
 
-//log mappát hoz létre ha nem létezik
+//creates log directorty if it isn't exists already
 const logDirectory = path.join(__dirname, "log");
 if(!fs.existsSync(logDirectory)){
 	fs.mkdirSync(logDirectory, { recursive: true });
 }
 
-//tokennel bejelentkezik
+//closes connection to the database when closing the application
+client.on("SIGINT", () => {
+	console.log("Closing MariaDB database pool connection(s)...");
+	db.end();
+	client.exit(0);
+})
+
+//logs in with given token
 client.login(token);

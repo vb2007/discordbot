@@ -58,7 +58,7 @@ module.exports = {
         const embedReply = new EmbedBuilder({
             color: 0x5F0FD6,
             title: "Kicking a user out.",
-            description: `${replyContent}`,
+            description: replyContent,
             timestamp: new Date().toISOString(),
             footer: {
                 text: `Requested by: ${interaction.user.username}` ,

@@ -5,6 +5,7 @@
     "cheerio": "^1.0.0-rc.12",
     "discord.js": "^14.14.1",
     "fetch": "^1.1.0",
+    "mariadb": "^3.3.0",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
     "request-promise": "^4.2.6"
