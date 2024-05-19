@@ -19,21 +19,21 @@ module.exports = {
                 const currentGuildId = interaction.guild.id;
                 console.log(currentGuildId)
                 //we need rows, because the query gives back a messed up array
-                const [rows] = await db.query("SELECT guildId FROM autorole WHERE guildId = ?", [currentGuildId]);
-                const autoroleGuildId = rows[0];
-                console.log(autoroleGuildId)
+                const query = await db.query("SELECT guildId FROM autorole WHERE guildId = ?", [currentGuildId]);
+                const autoroleGuildId = query[0]?.guildId || null;
+                console.log(autoroleGuildId);
 
                 if (autoroleGuildId) {
                     await db.query("DELETE FROM autorole WHERE guildId = ?", [autoroleGuildId]);
 
-                    var replyContent = "The autorole feature has been disabled succesfully.\nYou can re-enable it with `/autorole-configure`."
+                    var replyContent = "The autorole feature has been disabled succesfully.\nYou can re-enable it with `/autorole-configure`.";
                 }
                 else {
-                    var replyContent = "Autorole has not been configured for this server.\nTherefore, you can't disable it."
+                    var replyContent = "Autorole has not been configured for this server.\nTherefore, you can't disable it.\nYou can enable this feature with `/autorole-configure`";
                 }
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
             }
         }
 

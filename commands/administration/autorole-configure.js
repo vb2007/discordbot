@@ -25,24 +25,33 @@ module.exports = {
                 const targetRole = interaction.options.get("role").value;
                 const adderUsername = interaction.user.username;
                 const adderId = interaction.user.id;
-                var guildId = interaction.guild.id;
-                let autoRole = await db.query("SELECT guildId FROM autorole WHERE guildId = ?", [guildId]);
-                console.log(autoRole);
+                const guildId = interaction.guild.id;
 
-                if (autoRole) {
-                    if (autoRole === targetRole){
-                        replyContent = "Autorole has been already configured for this server.\nRun `/autorole-disable` to disable this feature.";
-                        return;
+                const query = await db.query("SELECT guildId, roleId FROM autorole WHERE guildId = ?", [guildId]);
+                console.log(query);
+                const autoRoleGuildId = query[0]?.guildId || null;
+                const autoRoleRoleId = query[0]?.roleId || null;
+                // console.log(autoRole);
+
+                //if autorole has already been configured at this server...
+                var doQuery = true;
+                if (autoRoleGuildId == guildId) {
+                    //if the target role is already the role that's in the database, then we don't need to insert data
+                    if (autoRoleRoleId == targetRole) {
+                        replyContent = "Autorole has been already configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.\nRun `/autorole-disable` to disable this feature.";
+                        var doQuery = false;
                     }
-
-                    roleId = targetRole;
+                    else {
+                        replyContent = `The role that will get assigned to new members has been set to @<${targetRole}> :white_check_mark:\nRun \`/autorole-disable\` to disable this feature.`;
+                    }
                 }
-                else{
+                else {
+                    var replyContent = "Autorole has been **successfully configured** for this server. :white_check_mark:\nRun this command again to modify the role.\nRun `/autorole-disable` to disable this feature.";
+                }
+                if (doQuery) {
                     var roleId = targetRole;
+                    await db.query("INSERT INTO autorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, roleId, adderId, adderUsername, roleId, adderId, adderUsername]);
                 }
-
-                await db.query("INSERT INTO autorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, roleId, adderId, adderUsername, roleId, adderId, adderUsername]);
-                var replyContent = "Autorole has been **successfully configured** for this server. :white_check_mark:\nRun this command again to modify the role.\nRun `/autorole-disable` to disable this feature.\n";
             } 
             catch (error) {
                 console.error(error);
