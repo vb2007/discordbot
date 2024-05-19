@@ -17,11 +17,9 @@ module.exports = {
         else {
             try {
                 const currentGuildId = interaction.guild.id;
-                console.log(currentGuildId)
                 //we need rows, because the query gives back a messed up array
                 const query = await db.query("SELECT guildId FROM autorole WHERE guildId = ?", [currentGuildId]);
                 const autoroleGuildId = query[0]?.guildId || null;
-                console.log(autoroleGuildId);
 
                 if (autoroleGuildId) {
                     await db.query("DELETE FROM autorole WHERE guildId = ?", [autoroleGuildId]);

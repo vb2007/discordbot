@@ -28,10 +28,8 @@ module.exports = {
                 const guildId = interaction.guild.id;
 
                 const query = await db.query("SELECT guildId, roleId FROM autorole WHERE guildId = ?", [guildId]);
-                console.log(query);
                 const autoRoleGuildId = query[0]?.guildId || null;
                 const autoRoleRoleId = query[0]?.roleId || null;
-                // console.log(autoRole);
 
                 //if autorole has already been configured at this server...
                 var doQuery = true;
