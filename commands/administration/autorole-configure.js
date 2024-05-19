@@ -32,25 +32,20 @@ module.exports = {
                 const autoRoleRoleId = query[0]?.roleId || null;
 
                 //if autorole has already been configured at this server...
-                var doQuery = true;
-                if (autoRoleGuildId == guildId) {
-                    //if the target role is already the role that's in the database, then we don't need to insert data
-                    if (autoRoleRoleId == targetRole) {
-                        replyContent = "Autorole has been already configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.\nRun `/autorole-disable` to disable this feature.";
-                        var doQuery = false;
-                    }
-                    else {
-                        replyContent = `The role that will get assigned to new members has been set to @<${targetRole}> :white_check_mark:\nRun \`/autorole-disable\` to disable this feature.`;
-                    }
+                if (autoRoleRoleId == targetRole) {
+                    replyContent = "Autorole has been already configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.\nRun `/autorole-disable` to disable this feature.";
                 }
                 else {
-                    var replyContent = "Autorole has been **successfully configured** for this server. :white_check_mark:\nRun this command again to modify the role.\nRun `/autorole-disable` to disable this feature.";
+                    if (autoRoleGuildId == guildId) {
+                        //if the target role is already the role that's in the database, then we don't need to insert data
+                        replyContent = `The role that will get assigned to new members has been **modified** to \`@<${targetRole}>\` :white_check_mark:\nRun this command again to modify the role.\nRun \`/autorole-disable\` to disable this feature.`;
+                    }
+                    else {
+                        var replyContent = `The role that will get assigned to new members has been **set** to \`@<${targetRole}>\` :white_check_mark:\nRun this command again to modify the role.\nRun \`/autorole-disable\` to disable this feature."`
+                    }
+                    await db.query("INSERT INTO autorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, targetRole, adderId, adderUsername, targetRole, adderId, adderUsername]);
                 }
-                if (doQuery) {
-                    var roleId = targetRole;
-                    await db.query("INSERT INTO autorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, roleId, adderId, adderUsername, roleId, adderId, adderUsername]);
-                }
-            } 
+            }
             catch (error) {
                 console.error(error);
             }

@@ -2,12 +2,12 @@
 const db = require("../db");
 
 module.exports = {
-    name: "guildMemberJoin",
+    name: "guildMemberAdd",
     async execute(member) {
-        const guildId = member.guildId.id;
+        const guildId = member.guild.id;
 
         try {
-            const [rows] = await db.query("SELECT roleId FROM joinrole WHERE guildId = ?", [guildId]);
+            const rows = await db.query("SELECT roleId FROM autorole WHERE guildId = ?", [guildId]);
             const roleId = rows[0].roleId;
 
             if (roleId) {

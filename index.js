@@ -9,7 +9,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 
 //logs if client is ready
 client.once(Events.ClientReady, readyClient => {
-	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+	console.log(`Bot is ready! Logged in as ${readyClient.user.tag}`);
 });
 
 client.commands = new Collection();
