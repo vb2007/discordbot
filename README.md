@@ -14,6 +14,8 @@ I'm hosting it, should be online 24/7.
 
 ## Running the application
 
+### Setting up the bot
+
 Do the following for running this application locally:
 
 1. Clone the repo
