@@ -35,3 +35,13 @@ Do the following for running this application locally:
 3. Install the dependecies with the `npm i` command
 4. Run the app with the `npm run app` command
 5. (Optional) To redeploy the / commands, run `npm run deploy`
+
+### Setting up a database for the bot
+
+Some of the bot's features require a MariaDB database.
+
+If you already have a working database, and filled up the details in the `config.json` file for the connection, you can run `npm run create-tables`.
+
+This will automatically create the tables based on the SQL queries that can be found in the [sql folder](sql/).
+
+Otherwise, please refer to [THIS](documentation/mariadb-setup.md) documentation for addittional help about setting up a database.
