@@ -1,4 +1,3 @@
-// const { Client, GuildMember } = require("discord.js");
 const db = require("../db");
 
 module.exports = {

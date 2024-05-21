@@ -29,7 +29,11 @@ Do the following for setting up the application from sratch:
   "databaseHostAddress" : "[database host ip]:[database host port]",
   "databaseName" : "[database name]",
   "databaseUser" : "[database username]",
-  "databasePassword" : "[database user's password]"
+  "databasePassword" : "[database user's password]",
+
+  //Logging settings
+  "logToFile": "[True/False]",
+  "logToDatabase": "[True/False]",
 }
 ```
 3. Like you would with any other node.js app, install dependencies with with the `npm i` command.

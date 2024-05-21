@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `log` (
     `command` TEXT(50),
     `executerUserName` TEXT,
     `executerUserId` INT,
-    `isInServer` TINYINT(1),
+    `isInServer` BOOLEAN,
     `serverName` TEXT,
     `serverId` INT,
     `channelName` TEXT,
