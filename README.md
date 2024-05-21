@@ -16,10 +16,10 @@ I'm hosting it, should be online 24/7.
 
 ### Setting up the bot
 
-Do the following for running this application locally:
+Do the following for setting up the application from sratch:
 
-1. Clone the repo
-2. Create a `config.json` file in it's folder and insert the following:
+1. Clone the repo.
+2. Create a `config.json` file in the repo's folder and paste the content above, then fill it out with the correct details:
 ```json
 {
   "token": "[your token]",
@@ -32,11 +32,9 @@ Do the following for running this application locally:
   "databasePassword" : "[database user's password]"
 }
 ```
-3. Install the dependecies with the `npm i` command
-4. Run the app with the `npm run app` command
-5. (Optional) To redeploy the / commands, run `npm run deploy`
+3. Like you would with any other node.js app, install dependencies with with the `npm i` command.
 
-### Setting up a database for the bot
+## Setting up a database for the bot
 
 Some of the bot's features require a MariaDB database.
 
@@ -45,3 +43,10 @@ If you already have a working database, and filled up the details in the `config
 This will automatically create the tables based on the SQL queries that can be found in the [sql folder](sql/).
 
 Otherwise, please refer to [THIS](documentation/mariadb-setup.md) documentation for addittional help about setting up a database.
+
+### Running the bot
+
+If everything above checks out, you can prepare for the first run:
+
+1. Deploy the slash (/) commands with `npm run deploy`. You might want to do this again if you modify / add commands.
+2. Finally, run the bot with `npm run app`.
