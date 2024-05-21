@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `log` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
-    `command` TEXT(50),
+    `commandName` TEXT(50),
     `executorUserName` TEXT,
     `executorUserId` INT,
     `isInServer` BOOLEAN,

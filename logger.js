@@ -42,7 +42,7 @@ const logToFileAndDatabase = async (interaction, response) => {
 
             //insert data into the log table
             await db.query(
-                `INSERT INTO log (command, executorUserName, executorUserId, isInServer, serverName, serverId, channelName, channelId, time, response) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                `INSERT INTO log (commandName, executorUserName, executorUserId, isInServer, serverName, serverId, channelName, channelId, time, response) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     interaction.commandName,
                     interaction.user.username,
