@@ -3,7 +3,7 @@ const path = require("path");
 const db = require("./db");
 const { logToFile, logToDatabase } = require("./config.json");
 
-const logDirectory = path.join(__dirname, "logs");
+const logDirectory = path.join(__dirname, "command-logs");
 
 if (!fs.existsSync(logDirectory)) {
     fs.mkdirSync(logDirectory, { recursive: true });
@@ -20,11 +20,11 @@ const logToFileAndDatabase = async (interaction, response) => {
 
     //logging to file
     if (logToFile == "True") {
-        const logToFile = path.join(logDirectory, `${interaction.commandName}.log`);
+        const logFilePath = path.join(logDirectory, `${interaction.commandName}.log`);
 
-        fs.appendFile(logFilePath, logMessage, (err) => {
-            if (err) {
-                console.error("Error while wrinting logs to fie: ", err);
+        fs.appendFile(logFilePath, logMessage, (error) => {
+            if (error) {
+                console.error("Error while wrinting logs to fie: ", error);
             }
         });
     }
@@ -46,13 +46,13 @@ const logToFileAndDatabase = async (interaction, response) => {
                 [
                     interaction.commandName,
                     interaction.user.username,
-                    interaction.user.id,
+                    parseInt(interaction.user.id),
                     isInServer,
                     interaction.guild.name,
-                    interaction.guild.id,
+                    parseInt(interaction.guild.id),
                     interaction.channel.name,
-                    interaction.channel.id,
-                    new Date(interaction.createdTimestamp).toLocaleString(),
+                    parseInt(interaction.channel.id),
+                    new Date(interaction.createdTimestamp).toISOString().slice(0, 19).replace('T', ' '),
                     response
                 ]
             );

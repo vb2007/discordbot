@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 const db = require("./db");
 // const { db, databaseName } = require("./db");
 
@@ -18,7 +19,7 @@ function readSQLFiles(dir) {
 
 async function createTables() {
     try {
-        // // Would create a database if it didn't existed already, but let's just stick to the tables
+        // // Would create a database if it didn't existed already, but let's just stick to the tables for now
         // await db.query(`CREATE DATABASE IF NOT EXISTS ${databaseName}`);
         // console.log(`Database ${databaseName} created or already exists.`);
 
@@ -58,3 +59,5 @@ async function createTables() {
         if (db) db.end();
     }
 }
+
+createTables();
