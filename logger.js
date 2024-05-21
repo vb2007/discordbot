@@ -11,7 +11,7 @@ if (!fs.existsSync(logDirectory)) {
 
 const logToFileAndDatabase = async (interaction, response) => {
     const logMessage = `Command: ${interaction.commandName}
-    Executer: ${interaction.user.tag} (ID: ${interaction.user.id})
+    Executor: ${interaction.user.tag} (ID: ${interaction.user.id})
     Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server."}
     Channel: ${interaction.channel.name} (ID ${interaction.channel.id})
     Time: ${new Date(interaction.createdTimestamp).toLocaleString()}
@@ -42,7 +42,7 @@ const logToFileAndDatabase = async (interaction, response) => {
 
             //insert data into the log table
             await db.query(
-                `INSERT INTO log (command, executerUserName, executerUserId, isInServer, serverName, serverId, channelName, channelId, time, response) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                `INSERT INTO log (command, executorUserName, executorUserId, isInServer, serverName, serverId, channelName, channelId, time, response) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     interaction.commandName,
                     interaction.user.username,

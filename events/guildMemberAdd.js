@@ -16,7 +16,8 @@ module.exports = {
                     console.log(`Assigned ${role.name} role to ${member.user.tag} in ${member.guild.name}`);
                 }
             }
-        } catch (error) {
+        }
+        catch (error) {
             console.error(error);
         }
     },

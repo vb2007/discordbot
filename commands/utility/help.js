@@ -18,17 +18,22 @@ module.exports = {
                 "`/user` - Provides information about a specified user."
                 },
                 { name: "Fun", value:
-                "`/coinflip` - Flips a coin that has a 50/50 chance landing on head or tails.\n" +
+                "`/coinflip` - Flips a coin that has a 50/50 chance landing on heads or tails.\n" +
                 "`/randompic` - Send a random picture using the [picsum.photos](https://picsum.photos/) API.\n" +
                 "`/randomfeet` - I have nothing to say about my greatest shame..."
                 },
                 { name: "Moderation", value:
-                "**__NOTE__**: The following commands require relevant moderation permissions for both the bot and the command's executer to work.\n" +
+                "**__NOTE__**: The following commands require relevant **moderation permissions** for both the bot and the command's executor to work.\n" +
                 "`/warn` - Warns a specified member on the server.\n" +
                 "`/timeout` - Times out a specified member for a specified time.\n" +
                 "`/kick` - Kicks a specified member from the server.\n" +
                 "`/ban` - Bans a specified member from the server.\n" +
                 "`/purge` - Purges (mass deletes) a specified amount of messages from the current channel."
+                },
+                { name: "Administration", value:
+                "**__NOTE__**: The following commands require relevant **administration permissions** for both the bot and the command's executor to work.\n" +
+                "`/autorole-configure` - Sets / modifies the autorole feature. When a new member joins the server, a specified role will get assigned to them automatically.\n" +
+                "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n"
                 },
             ],
             timestamp: new Date().toISOString(),
