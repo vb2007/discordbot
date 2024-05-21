@@ -16,6 +16,7 @@
   "scripts": {
     "app": "node index.js",
     "dev": "nodemon index.js",
-    "deploy": "node deploy-commands.js"
+    "deploy": "node deploy-commands.js",
+    "create-tables": "node create-tables.js"
   }
 }
