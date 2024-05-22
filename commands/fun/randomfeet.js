@@ -4,6 +4,7 @@ const path = require("path");
 const linksFile = "./data/links.json"; 
 const request = require("request-promise");
 const cheerio = require("cheerio");
+const { logToFileAndDatabase } = require("../../logger");
 
 async function scrapeLinks(url) {
     const res = await request(url);
@@ -90,19 +91,7 @@ module.exports = {
         await interaction.editReply({ embeds: [embedReply] });
 
         //logging
-        const logMessage =
-            `Command: ${interaction.commandName}\n` +
-            `Executer: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
-            `Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server." }\n` +
-            `Time: ${new Date(interaction.createdTimestamp).toLocaleString()}\n` +
-            `Response: Sent ${randomFeet}\n\n`;
-
-        //console.log(logMessage);
-
-        fs.appendFile("log/command-randomfeet.log", logMessage, (err) => {
-            if (err) {
-                console.error("Error while writing the logs: ", err);
-            }
-        });
+        const response = `Replied with: ${embedReply.toJSON()}`;
+		await logToFileAndDatabase(interaction, response);
     }
 }

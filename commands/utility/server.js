@@ -1,6 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const { logToFileAndDatabase } = require("../../logger");
-const fs = require("fs");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -49,21 +48,7 @@ module.exports = {
 		
 		await interaction.reply({ embeds: [embedReply] });
 
-		const response = `Replied with: ${embedReply}`;
+		const response = `Replied with: ${embedReply.toJSON()}`;
 		await logToFileAndDatabase(interaction, response);
-		// //logging
-        // const logMessage =
-        //     `Command: ${interaction.commandName}\n` +
-        //     `Executer: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
-        //     `Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server." }\n` +
-        //     `Time: ${new Date(interaction.createdTimestamp).toLocaleString()}\n\n`
-
-        // //console.log(logMessage);
-
-        // fs.appendFile("log/command-server.log", logMessage, (err) => {
-        //     if (err) {
-        //         console.error("Error while writing the logs: ", err);
-        //     }
-        // });
 	},
 };
