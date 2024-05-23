@@ -1,5 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const fs = require("fs");
+const { logToFileAndDatabase } = require("../../logger");
 const db = require("../../db");
 
 module.exports = {
@@ -48,18 +48,8 @@ module.exports = {
 
         await interaction.reply({ embeds: [embedReply] });
 
-        const logMessage = 
-            `Command: ${interaction.commandName}\n` +
-            `Executer: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
-            `Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server." }\n` +
-            `Time: ${new Date(interaction.createdTimestamp).toLocaleString()}\n\n`
-
-        //console.log(logMessage);
-
-        fs.appendFile("log/command-autoroleDisable.log", logMessage, (err) => {
-            if (err) {
-                console.error("Error while writing the logs: ", err);
-            }
-        });
+        //logging
+        const response = `Replied with: ${embedReply.toJSON()}`;
+		await logToFileAndDatabase(interaction, response);
     },
 };

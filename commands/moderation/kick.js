@@ -1,5 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const fs = require("fs");
+const { logToFileAndDatabase } = require("../../logger");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -69,18 +69,7 @@ module.exports = {
         await interaction.reply({ embeds: [embedReply] });
 
         //logging
-        const logMessage =
-            `Command: ${interaction.commandName}\n` +
-            `Executer: ${interaction.user.tag} (ID: ${interaction.user.id})\n` +
-            `Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server." }\n` +
-            `Time: ${new Date(interaction.createdTimestamp).toLocaleString()}\n\n`
-
-        //console.log(logMessage);
-
-        fs.appendFile("log/command-kick.log", logMessage, (err) => {
-            if (err) {
-                console.error("Error while writing the logs: ", err);
-            }
-        });
+        const response = `Replied with: ${embedReply.toJSON()}`;
+		await logToFileAndDatabase(interaction, response);
     }
 }    
