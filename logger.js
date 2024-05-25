@@ -10,13 +10,14 @@ if (!fs.existsSync(logDirectory)) {
 }
 
 const logToFileAndDatabase = async (interaction, response) => {
-    const logMessage = `Command: ${interaction.commandName}
-    Executor: ${interaction.user.tag} (ID: ${interaction.user.id})
-    Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server."}
-    Channel: ${interaction.channel.name} (ID ${interaction.channel.id})
-    Time: ${new Date(interaction.createdTimestamp).toLocaleString()}
-    Response: ${response}
-    `;
+    const logMessage = `
+Command: ${interaction.commandName}
+Executor: ${interaction.user.tag} (ID: ${interaction.user.id})
+Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server."}
+Channel: ${interaction.channel.name} (ID ${interaction.channel.id})
+Time: ${new Date(interaction.createdTimestamp).toLocaleString()}
+Response: ${response} \n
+`;
 
     //logging to file
     if (logToFile == "True") {
