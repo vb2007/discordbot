@@ -22,18 +22,16 @@ Do the following for setting up the application from sratch:
 2. Create a `config.json` file in the repo's folder and paste the content above, then fill it out with the correct details:
 ```json
 {
-  "token": "[your token]",
-  "clientId": "[your client id]",
+  "token" : "[your token]",
+  "clientId" : "[your client id]",
 
-  //Connecting to the MariaDB database
   "databaseHostAddress" : "[database host ip]:[database host port]",
   "databaseName" : "[database name]",
   "databaseUser" : "[database username]",
   "databasePassword" : "[database user's password]",
 
-  //Logging settings
-  "logToFile": "[True/False]",
-  "logToDatabase": "[True/False]",
+  "logToFile" : "[True/False]",
+  "logToDatabase" : "[True/False]"
 }
 ```
 3. Like you would with any other node.js app, install dependencies with with the `npm i` command.
