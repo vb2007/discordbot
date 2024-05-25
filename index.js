@@ -7,7 +7,7 @@ const db = require("./db")
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
 
-//logs if client is ready
+//notifies owner on console if the app is ready
 client.once(Events.ClientReady, readyClient => {
 	console.log(`Bot is ready! Logged in as ${readyClient.user.tag}`);
 });
@@ -89,12 +89,6 @@ client.on("ready", (c) => {
 		name: "with stolen user data.",
     });
 });
-
-//creates log directorty if it isn't exists already
-const logDirectory = path.join(__dirname, "log");
-if(!fs.existsSync(logDirectory)){
-	fs.mkdirSync(logDirectory, { recursive: true });
-}
 
 //closes connection to the database when closing the application
 client.on("SIGINT", () => {
