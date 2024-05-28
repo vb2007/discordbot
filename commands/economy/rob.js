@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require("discord.js");
+const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { logToFileAndDatabase } = require("../../logger");
 const db = require("../../db");
 
@@ -20,11 +20,22 @@ module.exports = {
             const query = await db.query("SELECT lastRobTime FROM economy WHERE userId = ?", [interactionUserId]);
             const lastTimeRobbed = query[0]?.lastTimeRobbed || null;
 
-            if (lastTimeRobbed <= Date.now()) { //át kell írni fél órára vagy valamire
+            const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
 
+            if (lastTimeRobbed > thirtyMinutesAgo || !lastTimeRobbed) {
+                const targetUserName = interaction.options.getUser("target").tag;
+                const targetUserId = interaction.options.getUser("target").id;
+                const robAmount = Math.floor(Math.random() * 10000);
+
+                //adds the robbet amount to the interaction's user
+                db.query("UPDATE economy SET money = money + ?, lastRobTime = ? WHERE userId = ?", [robAmount, Date.now(), targetUserId]);
+                //removes the robbet amount from the target user
+                db.query("UPDATE economy SET money = money - ? WHERE userId = ?", [robAmount, targetUserId]);
+                var replyContent = `Successfully robbed **${robAmount}** from **${targetUserName}**.`;
             }
-
-            var replyContent = "";
+            else {
+                var replyContent = `You've already robbed in the last 30 minutes.\nPlease wait another ${Math.ceil((lastTimeRobbed.getTime() - thirtyMinutesAgo.getTime()) / 60000)} minutes before trying to rob again.`;
+            }
         }
 
         var embedReply = new EmbedBuilder({
