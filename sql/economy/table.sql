@@ -4,5 +4,7 @@ CREATE TABLE IF NOT EXISTS `economy` (
     `userId` BIGINT,
     `balance` BIGINT,
     `firstTransactionId` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `lastRobTime` DATETIME,
+    `chanceToSuccesfullyRob` FLOAT DEFAULT 1,
     PRIMARY KEY (`id`)
 );
