@@ -13,7 +13,7 @@ module.exports = {
         const userId = query[0]?.userId || null;
         const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
         
-        if (lastTimeWorked > thirtyMinutesAgo || !lastTimeRobbed) {
+        if (lastTimeWorked > thirtyMinutesAgo || !lastTimeWorked) {
             const amount = Math.floor(Math.random() * 1000000);
 
             if (userId) {

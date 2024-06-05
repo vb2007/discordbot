@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `economy` (
     `userId` BIGINT NOT NULL,
     `balance` BIGINT DEFAULT 0,
     `firstTransactionId` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `lastWorkTime` DATETIME
+    `lastWorkTime` DATETIME,
     `lastRobTime` DATETIME,
     `robSuccessChance` FLOAT DEFAULT 1,
     PRIMARY KEY (`id`)
