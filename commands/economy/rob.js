@@ -39,7 +39,7 @@ module.exports = {
         }
 
         var embedReply = new EmbedBuilder({
-            color: "#5F0FD6",
+            color: 0x5F0FD6,
             title: "Robbing a member.",
             description: replyContent,
             timestamp: new Date().toISOString(),

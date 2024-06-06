@@ -8,30 +8,32 @@ module.exports = {
         .setDescription("Gives you a random amount of money."),
     async execute(interaction) {
         const interactionUserId = interaction.user.id;
-        const query = db.query("SELECT userId, lastWorkTime FROM economy WHERE userId = ?", [interactionUserId]);
-        const lastTimeWorked = query[0]?.lastTimeWorked || null;
-        const userId = query[0]?.userId || null;
-        const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
-        
-        if (lastTimeWorked > thirtyMinutesAgo || !lastTimeWorked) {
-            const amount = Math.floor(Math.random() * 1000000);
 
-            if (userId) {
+        const query = db.query("SELECT userId, lastWorkTime FROM economy WHERE userId = ?", [interactionUserId]);
+        
+        const userId = query[0]?.userId || null;
+        const lastTimeWorked = query[0]?.lastTimeWorked || null;
+        const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+        console.log(query);
+        console.log(userId);
+        if (userId) {
+            if (lastTimeWorked > thirtyMinutesAgo || !lastTimeWorked) {
+                const amount = Math.floor(Math.random() * 1000000);
+
                 //if it's a user's first time using this command (so it's userId is not already in the database...)
-                await db.query("UPDATE economy SET money = money + ? WHERE userId = ?", [amount, userId]);
+                await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?", [amount, userId]);
+                var replyContent = `You've worked and succesfully earned $**${amount}** dollars.`;
             }
             else {
-                await db.query("INSERT INTO economy (userId, money) VALUES (?,?)", [interactionUserId, amount]);
+                var replyContent = `You've already worked in the last 30 minutes.\nPlease wait another ${Math.ceil((lastTimeWorked.getTime() - thirtyMinutesAgo.getTime()) / 60000)} minutes before trying to work again.`;
             }
-
-            var replyContent = `You've worked and succesfully earned $**${amount}**. dollars.`;
         }
         else {
-            var replyContent = `You've already worked in the last 30 minutes.\nPlease wait another ${Math.ceil((lastTimeWorked.getTime() - thirtyMinutesAgo.getTime()) / 60000)} minutes before trying to work again.`;
+            await db.query("INSERT INTO economy (userId, balance) VALUES (?,?)", [interactionUserId, amount]);
         }
         
         var embedReply = new EmbedBuilder({
-            color: "#5F0FD6",
+            color: 0x5F0FD6,
             title: "Working.",
             description: replyContent,
             timestamp: new Date().toISOString(),
