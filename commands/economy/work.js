@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const { EmbedBuilder, SlashCommandBuilder, Colors } = require("discord.js");
 const { logToFileAndDatabase } = require("../../logger");
 const db = require("../../db");
 
@@ -9,27 +9,44 @@ module.exports = {
     async execute(interaction) {
         const interactionUserId = interaction.user.id;
 
-        const query = db.query("SELECT userId, lastWorkTime FROM economy WHERE userId = ?", [interactionUserId]);
+        const query = await db.query("SELECT userId, lastWorkTime FROM economy WHERE userId = ?", [interactionUserId]);
         
         const userId = query[0]?.userId || null;
-        const lastTimeWorked = query[0]?.lastTimeWorked || null;
+        const lastWorkTime = query[0]?.lastWorkTime || null;
         const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+
         console.log(query);
         console.log(userId);
+        console.log(lastWorkTime);
+        console.log(thirtyMinutesAgo);
+
         if (userId) {
-            if (lastTimeWorked > thirtyMinutesAgo || !lastTimeWorked) {
+            if (lastWorkTime > thirtyMinutesAgo || !lastWorkTime) {
                 const amount = Math.floor(Math.random() * 1000000);
 
-                //if it's a user's first time using this command (so it's userId is not already in the database...)
-                await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?", [amount, userId]);
+                await db.query("UPDATE economy SET balance = balance + ?, lastWorkTime = ? WHERE userId = ?",
+                    [
+                        amount,
+                        new Date(interaction.createdTimestamp).toISOString().slice(0, 19).replace('T', ' '),
+                        userId
+                    ]
+                );
+                
                 var replyContent = `You've worked and succesfully earned $**${amount}** dollars.`;
             }
             else {
-                var replyContent = `You've already worked in the last 30 minutes.\nPlease wait another ${Math.ceil((lastTimeWorked.getTime() - thirtyMinutesAgo.getTime()) / 60000)} minutes before trying to work again.`;
+                var replyContent = `You've already worked in the last 30 minutes.\nPlease wait another ${Math.ceil((lastWorkTime.getTime() - thirtyMinutesAgo.getTime()) / 60000)} minutes before trying to work again.`;
             }
         }
         else {
-            await db.query("INSERT INTO economy (userId, balance) VALUES (?,?)", [interactionUserId, amount]);
+            //if it's a user's first time using this command (so it's userId is not in the database yet...)
+            await db.query("INSERT INTO economy (userId, balance, lastTimeWorked) VALUES (?, ?, ?)",
+                [
+                    interactionUserId,
+                    amount,
+                    new Date(interaction.createdTimestamp).toISOString().slice(0, 19).replace('T', ' '),
+                ]
+            );
         }
         
         var embedReply = new EmbedBuilder({
