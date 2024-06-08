@@ -11,7 +11,7 @@ You might want to look at other, more detailed guides.
 If you run the bot on an Ubuntu / Debian Linux machiene, you can install MariaDB like that:
 
 ```shell
-sudo apt install update
+sudo apt update
 sudo apt install mariadb
 ```
 

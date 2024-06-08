@@ -20,14 +20,13 @@ module.exports = {
         console.log(lastWorkTime);
         console.log(thirtyMinutesAgo);
 
+        const amount = Math.floor(Math.random() * 1000000);
         if (userId) {
             if (lastWorkTime > thirtyMinutesAgo || !lastWorkTime) {
-                const amount = Math.floor(Math.random() * 1000000);
-
                 await db.query("UPDATE economy SET balance = balance + ?, lastWorkTime = ? WHERE userId = ?",
                     [
                         amount,
-                        new Date(interaction.createdTimestamp).toISOString().slice(0, 19).replace('T', ' '),
+                        new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' '),
                         userId
                     ]
                 );
@@ -40,13 +39,15 @@ module.exports = {
         }
         else {
             //if it's a user's first time using this command (so it's userId is not in the database yet...)
-            await db.query("INSERT INTO economy (userId, balance, lastTimeWorked) VALUES (?, ?, ?)",
+            await db.query("INSERT INTO economy (userId, balance, lastWorkTime) VALUES (?, ?, ?)",
                 [
                     interactionUserId,
                     amount,
-                    new Date(interaction.createdTimestamp).toISOString().slice(0, 19).replace('T', ' '),
+                    new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' '),
                 ]
             );
+
+            var replyContent = `You've worked and succesfully earned $**${amount}** dollars.`;
         }
         
         var embedReply = new EmbedBuilder({
