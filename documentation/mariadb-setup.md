@@ -85,6 +85,24 @@ Restart MariaDB for the changes to take effect:
 sudo systemctl restart mariadb
 ```
 
+## Importing an existing database
+
+*Again, this step is optional. If you've had a database before (and you've dumped it into an .sql file) here is how you can import it.*
+
+Note that you **have to create the database** before the import, if you've used ```mysqldump``` for backing up the database.
+
+Select the ```discordbot``` database:
+
+```sql
+USE DISCORDBOT;
+```
+
+Import the data from the .sql file:
+
+```shell
+source /path/to/dump_file_name.sql
+```
+
 ## Conclusion
 
 If you're done with the installation, then you're ready to create the tables (as explained in the [original README file](../README.md)) and start using your databse.
