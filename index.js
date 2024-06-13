@@ -87,7 +87,7 @@ function setActivity() {
 		type: ActivityType.Playing,
 		name: "with stolen user data.",
 	});
-	console.log("Re-announced bot's activity.");
+	// console.log("Re-announced bot's activity.");
 }
 
 client.on("ready", () => {
