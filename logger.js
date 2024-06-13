@@ -14,7 +14,7 @@ const logToFileAndDatabase = async (interaction, response) => {
 Command: ${interaction.commandName}
 Executor: ${interaction.user.tag} (ID: ${interaction.user.id})
 Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server."}
-Channel: ${interaction.channel.name} (ID ${interaction.channel.id})
+Channel: ${interaction.inGuild() ? `${interaction.channel.name} (ID ${interaction.channel.id})` : "Not in a server."}
 Time: ${new Date(interaction.createdTimestamp).toLocaleString()}
 Response: ${response}\n\n`;
 
