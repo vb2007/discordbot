@@ -1,7 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require("discord.js");
-//const { Routes } = require('discord-api-types/v9');
 const { token } = require("./config.json");
 const db = require("./db")
 
@@ -82,13 +81,21 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 //sets bot's discord activity
-client.on("ready", (c) => {
-    client.user.setActivity({
+function setActivity() {
+	client.user.setActivity({
 		status: "online",
 		type: ActivityType.Playing,
 		name: "with stolen user data.",
-    });
-});
+	});
+	console.log("Re-announced bot's activity.");
+}
+
+client.on("ready", () => {
+	setActivity();
+})
+
+//re-announces the bot's activity in every 5 minutes (in case of an internet outage or something)
+setInterval(setActivity, 5 * 60 * 1000);
 
 //closes connection to the database when closing the application
 client.on("SIGINT", () => {
