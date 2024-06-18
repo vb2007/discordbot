@@ -15,18 +15,19 @@ module.exports = {
         const lastWorkTime = query[0]?.lastWorkTime || null;
         const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
 
-        console.log(query);
-        console.log(userId);
-        console.log(lastWorkTime);
-        console.log(thirtyMinutesAgo);
+        // console.log(userId);
+        // console.log(new Date())
+        // console.log(lastWorkTime);
+        // console.log(thirtyMinutesAgo);
 
-        const amount = Math.floor(Math.random() * 1000000);
+        const amount = Math.floor(Math.random() * 100);
         if (userId) {
-            if (lastWorkTime > thirtyMinutesAgo || !lastWorkTime) {
+            if (!lastWorkTime || lastWorkTime <= thirtyMinutesAgo) {
+                const currentTime = new Date(); //because the current time would be a Discord data center's time (probably) if i would've specified it in the query
                 await db.query("UPDATE economy SET balance = balance + ?, lastWorkTime = ? WHERE userId = ?",
                     [
                         amount,
-                        new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' '),
+                        currentTime.toISOString().slice(0, 19).replace('T', ' '),
                         userId
                     ]
                 );
@@ -34,16 +35,23 @@ module.exports = {
                 var replyContent = `You've worked and succesfully earned $**${amount}** dollars.`;
             }
             else {
-                var replyContent = `You've already worked in the last 30 minutes.\nPlease wait another ${Math.ceil((lastWorkTime.getTime() - thirtyMinutesAgo.getTime()) / 60000)} minutes before trying to work again.`;
+                const remainingTime = Math.ceil((lastWorkTime.getTime() - thirtyMinutesAgo.getTime()) / 60000);
+                var replyContent = `You've already worked in the last 30 minutes.\nPlease wait another ${remainingTime} minute(s) before trying to work again.`;
             }
         }
         else {
             //if it's a user's first time using this command (so it's userId is not in the database yet...)
+            const date = new Date();
+            console.log(date);
+            const currentTime = date.toISOString().slice(0, 19).replace('T', ' ');
+            console.log(currentTime);
+            const currentTime2 = date.toISOString();
+            console.log(currentTime2);
             await db.query("INSERT INTO economy (userId, balance, lastWorkTime) VALUES (?, ?, ?)",
                 [
                     interactionUserId,
                     amount,
-                    new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' '),
+                    currentTime,
                 ]
             );
 

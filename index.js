@@ -94,8 +94,8 @@ client.on("ready", () => {
 	setActivity();
 })
 
-//re-announces the bot's activity in every 5 minutes (in case of an internet outage or something)
-setInterval(setActivity, 5 * 60 * 1000);
+//re-announces the bot's activity in every 20 minutes (in case of an internet outage or something)
+setInterval(setActivity, 20 * 60 * 1000);
 
 //closes connection to the database when closing the application
 client.on("SIGINT", () => {
