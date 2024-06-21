@@ -15,7 +15,8 @@ module.exports = {
                 .setName("reason")
                 .setDescription("Give a reason.")
                 .setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
+        .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
+        .setDMPermission(false),
     async execute(interaction) {
         const targetUser = interaction.options.getUser("target");
         const reason = interaction.options.getString("reason") || "No reason provided";

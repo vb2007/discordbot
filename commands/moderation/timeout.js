@@ -20,7 +20,8 @@ module.exports = {
                 .setName("reason")
                 .setDescription("Give a reason.")
                 .setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
+        .setDMPermission(false),
     async execute(interaction) {
         const targetUser = interaction.options.getMember("target");
         const timeInput = interaction.options.getString("time");

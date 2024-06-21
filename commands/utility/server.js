@@ -4,7 +4,8 @@ const { logToFileAndDatabase } = require("../../logger");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("server")
-		.setDescription("Provides information about the current server."),
+		.setDescription("Provides information about the current server.")
+		.setDMPermission(false),
 	async execute(interaction) {
 		if(!interaction.inGuild()) {
 			var authorField = {};

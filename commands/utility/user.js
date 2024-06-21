@@ -9,7 +9,8 @@ module.exports = {
 			option
 				.setName("user")
 				.setDescription("Choose a user.")
-				.setRequired(false)),
+				.setRequired(false))
+		.setDMPermission(false),
 	async execute(interaction) {
 		// interaction.user = user who ran the command
 		// interaction.member = a specified user in a guild

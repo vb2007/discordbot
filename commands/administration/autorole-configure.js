@@ -11,7 +11,8 @@ module.exports = {
                 .setName("role")
                 .setDescription("Choose a role that will get assigned to the new server members.")
                 .setRequired(true))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+        .setDMPermission(false),
     async execute(interaction) {
         if (!interaction.inGuild()) {
             var replyContent = "You can only set autorole in a server.";

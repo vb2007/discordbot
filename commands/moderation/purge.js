@@ -10,7 +10,8 @@ module.exports = {
                 .setName("amount")
                 .setDescription("The amount of messages the bot will purge.")
                 .setRequired(true))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
+        .setDMPermission(false),
     async execute(interaction) {
         const messageAmount = interaction.options.get("amount").value;
         
