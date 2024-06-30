@@ -92,17 +92,17 @@ function setActivity() {
 
 client.on("ready", () => {
 	setActivity();
-})
+});
 
 //re-announces the bot's activity in every 20 minutes (in case of an internet outage or something)
 setInterval(setActivity, 20 * 60 * 1000);
 
 //closes connection to the database when closing the application
-client.on("SIGINT", () => {
+process.on("SIGINT", () => {
 	console.log("Closing MariaDB database pool connection(s)...");
 	db.end();
-	client.exit(0);
-})
+	process.exit(0);
+});
 
 //logs in with given token
 client.login(token);

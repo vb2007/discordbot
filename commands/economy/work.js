@@ -7,13 +7,9 @@ module.exports = {
         .setName("work")
         .setDescription("Gives you a random amount of money."),
     async execute(interaction) {
-        const interactionUserId = interaction.user.id;
-
-        const query = await db.query("SELECT userId, lastWorkTime FROM economy WHERE userId = ?", [interactionUserId]);
-        
+        const query = await db.query("SELECT userId, lastWorkTime FROM economy WHERE userId = ?", [interaction.user.id]);
         const userId = query[0]?.userId || null;
         const lastWorkTime = query[0]?.lastWorkTime || null; //lastWorkTime is stored as UTC
-        // const now = new Date();
         const thirtyMinutesAgoUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 30 * 60000);
 
         const amount = Math.floor(Math.random() * 100);
@@ -36,14 +32,15 @@ module.exports = {
         }
         else {
             //if it's a user's first time using this command (so it's userId is not in the database yet...)
-            await db.query("INSERT INTO economy (userId, balance, lastWorkTime) VALUES (?, ?, ?)",
+            await db.query("INSERT INTO economy (userName, userId, balance, firstTransactionId, lastWorkTime) VALUES (?, ?, ?, ?, ?)",
                 [
-                    interactionUserId,
+                    interaction.user.username,
+                    interaction.user.id,
                     amount,
+                    new Date().toISOString().slice(0, 19).replace('T', ' '),
                     new Date().toISOString().slice(0, 19).replace('T', ' '),
                 ]
             );
-
             var replyContent = `You've worked and succesfully earned $**${amount}** dollars.`;
         }
         
