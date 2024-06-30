@@ -32,7 +32,7 @@ module.exports = {
         }
         else {
             //if it's a user's first time using this command (so it's userId is not in the database yet...)
-            await db.query("INSERT INTO economy (userName, userId, balance, firstTransactionId, lastWorkTime) VALUES (?, ?, ?, ?, ?)",
+            await db.query("INSERT INTO economy (userName, userId, balance, firstTransactionDate, lastWorkTime) VALUES (?, ?, ?, ?, ?)",
                 [
                     interaction.user.username,
                     interaction.user.id,
