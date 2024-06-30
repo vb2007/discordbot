@@ -1,14 +1,16 @@
+-- discordbot.log definition
+
 CREATE TABLE IF NOT EXISTS `log` (
-    `id` BIGINT NOT NULL AUTO_INCREMENT,
-    `commandName` TEXT(50),
-    `executorUserName` TEXT,
-    `executorUserId` BIGINT,
-    `isInServer` BOOLEAN,
-    `serverName` TEXT,
-    `serverId` BIGINT,
-    `channelName` TEXT,
-    `channelId` BIGINT,
-    `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `response` TEXT,
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `commandName` tinytext DEFAULT NULL, --tinytext = max. 255 characters
+    `executorUserName` text DEFAULT NULL,
+    `executorUserId` bigint(20) DEFAULT NULL,
+    `isInServer` tinyint(1) DEFAULT NULL,
+    `serverName` text DEFAULT NULL,
+    `serverId` bigint(20) DEFAULT NULL,
+    `channelName` text DEFAULT NULL,
+    `channelId` bigint(20) DEFAULT NULL,
+    `time` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+    `response` text DEFAULT NULL COMMENT 'Embed object that the bot sends back to the command''s executor.',
     PRIMARY KEY (`id`)
 );
