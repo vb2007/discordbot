@@ -27,30 +27,43 @@ module.exports = {
         else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.KickMembers)) {
             var replyContent = "Bot lacks the kick permission, cannot kick member.";
         }
+        else if (!targetUser.kickable) {
+            var replyContent = `The bot cannot kick user **${targetUser.tag}**.\nMaybe your, or the bot's rank is lower than theirs?`;
+        }
         else{
-            try{
+            try {
+                const embedDmReply = new EmbedBuilder({
+                    color: 0x5F0FD6,
+                    title: "You have been kicked.",
+                    description: `You have kicked out from **${interaction.guild.name}** for: **${reason}** \nIf you believe this was a mistake, please contact a moderator.`,
+                    timestamp: new Date().toISOString(),
+                    footer: {
+                        text: `Moderator: ${interaction.user.username}` ,
+                        icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+                    },
+                });
+                await targetUser.send({ embeds: [embedDmReply] });
+                var successfulDM = true;
+            }
+            catch(error) {
+                console.error(error);
+                var successfulDM = false;
+            }
+            
+            // the bot MUST try to send a DM before acting, because it has a MUCH lower chance to have the right for a DM, if it has no mutual servers with the target
+            // yeah, the discord api or the app *can* fail in the meantime, and the user can end up with a false DM, but i don't have a better solution
+            try {
                 await interaction.guild.members.kick(targetUser, { reason: reason });
                 var replyContent = `Successfully kicked user **${targetUser.tag}** for: **${reason}**`;
-                try{
-                    const embedDmReply = new EmbedBuilder({
-                        color: 0x5F0FD6,
-                        title: "You have been kicked.",
-                        description: `You have kicked out from **${interaction.guild.name}** for: **${reason}** \nIf you believe this was a mistake, please contact a moderator.`,
-                        timestamp: new Date().toISOString(),
-                        footer: {
-                            text: `Moderator: ${interaction.user.username}` ,
-                            icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-                        },
-                    });
-                    await targetUser.send({ embeds: [embedDmReply] });
+            
+                if (successfulDM === true) {
                     replyContent += "\nThe user was notified about the reason in their DMs.";
                 }
-                catch (error){
-                    console.error(error);
+                else {
                     replyContent += "\nThere was an error while trying to DM the user.";
                 }
             }
-            catch (error){
+            catch(error) {
                 console.error(error);
                 var replyContent = "There was an error while trying to kick the user.";
             }

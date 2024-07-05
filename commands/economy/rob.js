@@ -32,6 +32,7 @@ module.exports = {
                     const query = await db.query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
                     const targetUserBalance = query[0]?.balance || null;
 
+                    //if target user's balance is above 50...
                     if (targetUserBalance > 50) {
                         const targetUserName = interaction.options.getUser("target").tag;
                         const robAmount = Math.floor(Math.random() * 50);
