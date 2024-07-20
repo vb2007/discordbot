@@ -44,7 +44,7 @@ module.exports = {
             }
             catch (error){
                 console.error(error);
-                var replyContent = "There was an error while trying to DM the user about the warn.";
+                var replyContent = "There was an error while trying to DM the user.";
             }
         }
 

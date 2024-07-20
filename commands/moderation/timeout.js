@@ -81,7 +81,7 @@ module.exports = {
                         },
                     });
                     await targetUser.send({ embeds: [embedDmReply] });
-                    replyContent += "\nThe user was notified about the reason in their DMs.";
+                    replyContent += "\nThe user was notified about the action & reason in their DMs.";
                 }
                 catch (error){
                     console.error(error);
