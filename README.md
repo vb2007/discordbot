@@ -36,7 +36,7 @@ Do the following for setting up the application from sratch:
 ```
 3. Like you would with any other node.js app, install dependencies with with the `npm i` command.
 
-## Setting up a database for the bot
+### Setting up a database for the bot
 
 Some of the bot's features require a MariaDB database.
 

@@ -1,13 +1,12 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require("discord.js");
-//const { Routes } = require('discord-api-types/v9');
 const { token } = require("./config.json");
 const db = require("./db")
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
 
-//logs if client is ready
+//notifies owner on console if the app is ready
 client.once(Events.ClientReady, readyClient => {
 	console.log(`Bot is ready! Logged in as ${readyClient.user.tag}`);
 });
@@ -82,26 +81,28 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 //sets bot's discord activity
-client.on("ready", (c) => {
-    client.user.setActivity({
+function setActivity() {
+	client.user.setActivity({
 		status: "online",
 		type: ActivityType.Playing,
 		name: "with stolen user data.",
-    });
-});
-
-//creates log directorty if it isn't exists already
-const logDirectory = path.join(__dirname, "log");
-if(!fs.existsSync(logDirectory)){
-	fs.mkdirSync(logDirectory, { recursive: true });
+	});
+	// console.log("Re-announced bot's activity.");
 }
 
+client.on("ready", () => {
+	setActivity();
+});
+
+//re-announces the bot's activity in every 20 minutes (in case of an internet outage or something)
+setInterval(setActivity, 20 * 60 * 1000);
+
 //closes connection to the database when closing the application
-client.on("SIGINT", () => {
+process.on("SIGINT", () => {
 	console.log("Closing MariaDB database pool connection(s)...");
 	db.end();
-	client.exit(0);
-})
+	process.exit(0);
+});
 
 //logs in with given token
 client.login(token);

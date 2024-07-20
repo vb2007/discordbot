@@ -20,7 +20,8 @@ module.exports = {
                 .setName("reason")
                 .setDescription("Give a reason.")
                 .setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
+        .setDMPermission(false),
     async execute(interaction) {
         const targetUser = interaction.options.getMember("target");
         const timeInput = interaction.options.getString("time");
@@ -80,7 +81,7 @@ module.exports = {
                         },
                     });
                     await targetUser.send({ embeds: [embedDmReply] });
-                    replyContent += "\nThe user was notified about the reason in their DMs.";
+                    replyContent += "\nThe user was notified about the action & reason in their DMs.";
                 }
                 catch (error){
                     console.error(error);
@@ -107,7 +108,7 @@ module.exports = {
         await interaction.reply({ embeds: [embedReply] });
 
         //logging
-        const response = `Replied with: ${embedReply.toJSON()}`;
+        const response = JSON.stringify(embedReply.toJSON());
 		await logToFileAndDatabase(interaction, response);
     }
 }    

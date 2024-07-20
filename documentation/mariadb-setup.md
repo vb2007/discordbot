@@ -11,7 +11,7 @@ You might want to look at other, more detailed guides.
 If you run the bot on an Ubuntu / Debian Linux machiene, you can install MariaDB like that:
 
 ```shell
-sudo apt install update
+sudo apt update
 sudo apt install mariadb
 ```
 
@@ -83,6 +83,24 @@ Restart MariaDB for the changes to take effect:
 
 ```shell
 sudo systemctl restart mariadb
+```
+
+## Importing an existing database
+
+*Again, this step is optional. If you've had a database before (and you've dumped it into an .sql file) here is how you can import it.*
+
+Note that you **have to create the database** before the import, if you've used ```mysqldump``` for backing up the database.
+
+Select the ```discordbot``` database:
+
+```sql
+USE DISCORDBOT;
+```
+
+Import the data from the .sql file:
+
+```shell
+source /path/to/dump_file_name.sql
 ```
 
 ## Conclusion

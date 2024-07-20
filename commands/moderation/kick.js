@@ -15,7 +15,8 @@ module.exports = {
                 .setName("reason")
                 .setDescription("Give a reason.")
                 .setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
+        .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
+        .setDMPermission(false),
     async execute(interaction) {
         const targetUser = interaction.options.getUser("target");
         const reason = interaction.options.getString("reason") || "No reason provided";
@@ -26,11 +27,14 @@ module.exports = {
         else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.KickMembers)) {
             var replyContent = "Bot lacks the kick permission, cannot kick member.";
         }
+        else if (!targetUser.kickable) {
+            var replyContent = `The bot cannot kick user **${targetUser.tag}**.\nMaybe your, or the bot's rank is lower than theirs?`;
+        }
         else{
-            try{
+            try {
                 await interaction.guild.members.kick(targetUser, { reason: reason });
                 var replyContent = `Successfully kicked user **${targetUser.tag}** for: **${reason}**`;
-                try{
+                try {
                     const embedDmReply = new EmbedBuilder({
                         color: 0x5F0FD6,
                         title: "You have been kicked.",
@@ -42,14 +46,14 @@ module.exports = {
                         },
                     });
                     await targetUser.send({ embeds: [embedDmReply] });
-                    replyContent += "\nThe user was notified about the reason in their DMs.";
+                    replyContent += "\nThe user was notified about the action & reason in their DMs.";
                 }
-                catch (error){
+                catch(error) {
                     console.error(error);
                     replyContent += "\nThere was an error while trying to DM the user.";
                 }
             }
-            catch (error){
+            catch(error) {
                 console.error(error);
                 var replyContent = "There was an error while trying to kick the user.";
             }
@@ -69,7 +73,7 @@ module.exports = {
         await interaction.reply({ embeds: [embedReply] });
 
         //logging
-        const response = `Replied with: ${embedReply.toJSON()}`;
+        const response = JSON.stringify(embedReply.toJSON());
 		await logToFileAndDatabase(interaction, response);
     }
 }    

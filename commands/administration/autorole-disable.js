@@ -6,7 +6,8 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("autorole-disable")
         .setDescription("Disables the role that is automatically assigned to new members on join.")
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+        .setDMPermission(false),
     async execute(interaction) {
         if (!interaction.inGuild()) {
             var replyContent = "You can only disable autorole in a server."
@@ -49,7 +50,7 @@ module.exports = {
         await interaction.reply({ embeds: [embedReply] });
 
         //logging
-        const response = `Replied with: ${embedReply.toJSON()}`;
+        const response = JSON.stringify(embedReply.toJSON());
 		await logToFileAndDatabase(interaction, response);
     },
 };

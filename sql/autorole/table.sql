@@ -1,8 +1,10 @@
+-- discordbot.autorole definition
+
 CREATE TABLE IF NOT EXISTS `autorole` (
-    `guildId` VARCHAR(50) NOT NULL,
-    `roleId` TEXT NOT NULL,
-    `addedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `adderId` TEXT,
-    `adderUsername` TEXT,
+    `guildId` varchar(50) NOT NULL,
+    `roleId` text DEFAULT NULL,
+    `addedAt` timestamp NOT NULL DEFAULT current_timestamp(),
+    `adderId` text DEFAULT NULL,
+    `adderUsername` text DEFAULT NULL,
     PRIMARY KEY (`guildId`)
 );

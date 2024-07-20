@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const db = require("./db");
 const { logToFile, logToDatabase } = require("./config.json");
+const { channel } = require("diagnostics_channel");
 
 const logDirectory = path.join(__dirname, "command-logs");
 
@@ -11,12 +12,11 @@ if (!fs.existsSync(logDirectory)) {
 
 const logToFileAndDatabase = async (interaction, response) => {
     const logMessage = `Command: ${interaction.commandName}
-    Executor: ${interaction.user.tag} (ID: ${interaction.user.id})
-    Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server."}
-    Channel: ${interaction.channel.name} (ID ${interaction.channel.id})
-    Time: ${new Date(interaction.createdTimestamp).toLocaleString()}
-    Response: ${response}
-    `;
+Executor: ${interaction.user.tag} (ID: ${interaction.user.id})
+Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server."}
+Channel: ${interaction.inGuild() ? `${interaction.channel.name} (ID ${interaction.channel.id})` : "Not in a server."}
+Time: ${new Date().toLocaleString()}
+Response: ${response}\n\n`;
 
     //logging to file
     if (logToFile == "True") {
@@ -32,12 +32,21 @@ const logToFileAndDatabase = async (interaction, response) => {
     //logging to database
     if (logToDatabase == "True") {
         try {
-            let isInServer;
+            let isInServer, guildName, guildId, channelName, channelId;
+
             if (isInServer = interaction.inGuild()){
                 isInServer = 1;
+                guildName = interaction.guild.name;
+                guildId = parseInt(interaction.guild.id);
+                channelName = interaction.channel.name;
+                channelId = parseInt(interaction.channel.id);
             }
             else {
                 isInServer = 0;
+                guildName = "Not in a server.";
+                guildId = null;
+                channelName = "Not in a server.";
+                channelId = null;
             }
 
             //insert data into the log table
@@ -48,11 +57,11 @@ const logToFileAndDatabase = async (interaction, response) => {
                     interaction.user.username,
                     parseInt(interaction.user.id),
                     isInServer,
-                    interaction.guild.name,
-                    parseInt(interaction.guild.id),
-                    interaction.channel.name,
-                    parseInt(interaction.channel.id),
-                    new Date(interaction.createdTimestamp).toISOString().slice(0, 19).replace('T', ' '),
+                    guildName,
+                    guildId,
+                    channelName,
+                    channelId,
+                    new Date().toISOString().slice(0, 19).replace('T', ' '),
                     response
                 ]
             );

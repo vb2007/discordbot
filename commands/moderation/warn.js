@@ -15,7 +15,8 @@ module.exports = {
                 .setName("reason")
                 .setDescription("Give a reason.")
                 .setRequired(false))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
+        .setDMPermission(false),
     async execute(interaction) {
         const targetUser = interaction.options.getUser("target");
         const reason = interaction.options.getString("reason") || "No reason provided";
@@ -43,7 +44,7 @@ module.exports = {
             }
             catch (error){
                 console.error(error);
-                var replyContent = "There was an error while trying to DM the user about the warn.";
+                var replyContent = "There was an error while trying to DM the user.";
             }
         }
 
@@ -61,7 +62,7 @@ module.exports = {
         await interaction.reply({ embeds: [embedReply] });
 
         //logging
-        const response = `Replied with: ${embedReply.toJSON()}`;
+        const response = JSON.stringify(embedReply.toJSON());
 		await logToFileAndDatabase(interaction, response);
     }
 }    

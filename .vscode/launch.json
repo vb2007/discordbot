@@ -16,6 +16,15 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "(Re)create SQL tables.",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/create-tables.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Launch bot.",
             "skipFiles": [
                 "<node_internals>/**"

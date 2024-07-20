@@ -9,7 +9,8 @@ module.exports = {
 			option
 				.setName("user")
 				.setDescription("Choose a user.")
-				.setRequired(false)),
+				.setRequired(false))
+		.setDMPermission(false),
 	async execute(interaction) {
 		// interaction.user = user who ran the command
 		// interaction.member = a specified user in a guild
@@ -56,7 +57,7 @@ module.exports = {
 		await interaction.reply({ embeds: [embedReply]});
 
 		//logging
-        const response = `Replied with: ${embedReply.toJSON()}`;
+        const response = JSON.stringify(embedReply.toJSON());
 		await logToFileAndDatabase(interaction, response);
 	},
 };
