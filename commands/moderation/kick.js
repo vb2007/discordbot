@@ -32,34 +32,24 @@ module.exports = {
         }
         else{
             try {
-                const embedDmReply = new EmbedBuilder({
-                    color: 0x5F0FD6,
-                    title: "You have been kicked.",
-                    description: `You have kicked out from **${interaction.guild.name}** for: **${reason}** \nIf you believe this was a mistake, please contact a moderator.`,
-                    timestamp: new Date().toISOString(),
-                    footer: {
-                        text: `Moderator: ${interaction.user.username}` ,
-                        icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-                    },
-                });
-                await targetUser.send({ embeds: [embedDmReply] });
-                var successfulDM = true;
-            }
-            catch(error) {
-                console.error(error);
-                var successfulDM = false;
-            }
-            
-            // the bot MUST try to send a DM before acting, because it has a MUCH lower chance to have the right for a DM, if it has no mutual servers with the target
-            // yeah, the discord api or the app *can* fail in the meantime, and the user can end up with a false DM, but i don't have a better solution
-            try {
                 await interaction.guild.members.kick(targetUser, { reason: reason });
                 var replyContent = `Successfully kicked user **${targetUser.tag}** for: **${reason}**`;
-            
-                if (successfulDM === true) {
+                try {
+                    const embedDmReply = new EmbedBuilder({
+                        color: 0x5F0FD6,
+                        title: "You have been kicked.",
+                        description: `You have kicked out from **${interaction.guild.name}** for: **${reason}** \nIf you believe this was a mistake, please contact a moderator.`,
+                        timestamp: new Date().toISOString(),
+                        footer: {
+                            text: `Moderator: ${interaction.user.username}` ,
+                            icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+                        },
+                    });
+                    await targetUser.send({ embeds: [embedDmReply] });
                     replyContent += "\nThe user was notified about the reason in their DMs.";
                 }
-                else {
+                catch(error) {
+                    console.error(error);
                     replyContent += "\nThere was an error while trying to DM the user.";
                 }
             }
