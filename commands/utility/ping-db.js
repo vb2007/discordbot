@@ -9,11 +9,11 @@ module.exports = {
     async execute(interaction) {
         // let conn;
         try {
-            let conn;
-            conn = await db.getConnection();
+            // let conn;
+            // conn = await db.pool.getConnection();
 
             const startTime = Date.now();
-            await conn.query("SELECT 1");
+            await db.query("SELECT 1");
             const endTime = Date.now();
 
             const latency = endTime - startTime;
@@ -23,11 +23,6 @@ module.exports = {
         catch (error) {
             console.error(error);
             var embedRespone = "**Error:** Database connection failed.\nIf this issue persists, please [report it on GitHub](https://github.com/vb2007/discordbot/issues/new).";
-        }
-        finally {
-            if (conn){
-                conn.end();
-            }
         }
 
         const embedReply = new EmbedBuilder({

@@ -54,10 +54,6 @@ async function createTables() {
     catch (error) {
         console.error("Error creating tables: ", error);
     }
-    finally {
-        //closes the database connection
-        if (db) db.end();
-    }
 }
 
 createTables();
