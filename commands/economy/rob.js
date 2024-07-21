@@ -17,7 +17,7 @@ module.exports = {
             var replyContent = "You can only rob from a member in a server.";
         }
         else {
-            const query = await db.query("SELECT lastRobTime FROM economy WHERE userId = ?", [interaction.user.id]);
+            const query = await db.query("SELECT userId, lastRobTime FROM economy WHERE userId = ?", [interaction.user.id]);
             const userId = query[0]?.userId || null;
             const lastRobTime = query[0]?.lastRobTime || null;
             const thirtyMinutesAgoUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 30 * 60000);
