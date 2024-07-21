@@ -27,7 +27,7 @@ module.exports = {
                 var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
             }
 
-            var replyContent = `${userId}'s balance is **${query[0]?.balance}**. :moneybag:`;
+            var replyContent = `<@${userId}>'s balance is **${query[0]?.balance}**. :moneybag:`;
         }
 
         var embedReply = new EmbedBuilder({
