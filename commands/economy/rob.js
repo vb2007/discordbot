@@ -18,8 +18,8 @@ module.exports = {
         }
         else {
             const query = await db.query("SELECT lastRobTime FROM economy WHERE userId = ?", [interaction.user.id]);
+            const userId = query[0]?.userId || null;
             const lastRobTime = query[0]?.lastRobTime || null;
-
             const thirtyMinutesAgoUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 30 * 60000);
 
             const targetUserId = interaction.options.getUser("target").id;
@@ -45,14 +45,28 @@ module.exports = {
                             ]
                         );
 
-                        //adds the robbed amount to the interaction's executor
-                        await db.query("UPDATE economy SET balance = balance + ?, lastRobTime = ? WHERE userId = ?",
-                            [
-                                robAmount,
-                                new Date().toISOString().slice(0, 19).replace('T', ' '),
-                                interaction.user.id
-                            ]
-                        );
+                        if(userId) {
+                            //adds the robbed amount to the interaction's executor
+                            await db.query("UPDATE economy SET balance = balance + ?, lastRobTime = ? WHERE userId = ?",
+                                [
+                                    robAmount,
+                                    new Date().toISOString().slice(0, 19).replace('T', ' '),
+                                    interaction.user.id
+                                ]
+                            );
+                        }
+                        //if it's the executor's first time using any economy command (so it's userId is not in the database yet...)
+                        else {
+                            await db.query("INSERT INTO economy (userName, userId, balance, firstTransactionDate, lastRobTime) VALUES (?, ?, ?, ?, ?)",
+                                [
+                                    interaction.user.username,
+                                    interaction.user.id,
+                                    robAmount,
+                                    new Date().toISOString().slice(0, 19).replace('T', ' '),
+                                    new Date().toISOString().slice(0, 19).replace('T', ' ')
+                                ]
+                            );
+                        }
 
                         var replyContent = `Successfully robbed $**${robAmount}** from **${targetUserName}**.`;
                     }
