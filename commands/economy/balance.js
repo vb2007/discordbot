@@ -17,17 +17,21 @@ module.exports = {
             var replyContent = "You can only check a member's balance in a server.";
         }
         else {
-            const userId = interaction.user.id;
+            const interactionUserId = interaction.user.id;
             const targetUserId = interaction.options.getUser("user")?.id || null;
 
             if(!targetUserId) {
-                var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [userId]);
+                var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
+                var userId = query[0]?.userId;
+
+                var replyContent = `<@${userId}>'s balance is **${query[0]?.balance}**. :moneybag:`;
             }
             else {
                 var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
-            }
+                var userId = query[0]?.userId;
 
-            var replyContent = `<@${userId}>'s balance is **${query[0]?.balance}**. :moneybag:`;
+                var replyContent = `<@${userId}>'s balance is **${query[0]?.balance}**. :moneybag:`;
+            }
         }
 
         var embedReply = new EmbedBuilder({
