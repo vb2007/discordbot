@@ -10,12 +10,12 @@ module.exports = {
     async execute(interaction) {
         const query = await db.query("SELECT userId, lastWorkTime FROM economy WHERE userId = ?", [interaction.user.id]);
         const userId = query[0]?.userId || null;
-        const lastWorkTime = query[0]?.lastWorkTime || null; //lastWorkTime is stored as UTC
-        const thirtyMinutesAgoUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 30 * 60000);
+        const lastWorkTime = query[0]?.lastWorkTime || null;
+        const nextApprovedWorkTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 5 * 60000);
 
         const amount = Math.floor(Math.random() * 100);
         if (userId) {
-            if (!lastWorkTime || lastWorkTime <= thirtyMinutesAgoUTC) {
+            if (!lastWorkTime || lastWorkTime <= nextApprovedWorkTimeUTC) {
                 await db.query("UPDATE economy SET balance = balance + ?, lastWorkTime = ? WHERE userId = ?",
                     [
                         amount,
@@ -27,7 +27,7 @@ module.exports = {
                 var replyContent = `You've worked and succesfully earned $**${amount}** dollars.`;
             }
             else {
-                const remainingTime = Math.ceil((lastWorkTime.getTime() - thirtyMinutesAgoUTC.getTime()) / 60000);
+                const remainingTime = Math.ceil((lastWorkTime.getTime() - nextApprovedWorkTimeUTC.getTime()) / 60000);
                 var replyContent = `You've already worked in the last 30 minutes.\nPlease wait another ${remainingTime} minute(s) before trying to work again.`;
             }
         }
