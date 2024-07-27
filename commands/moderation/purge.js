@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
 const { logToFileAndDatabase } = require("../../logger");
 
 module.exports = {
@@ -32,6 +32,14 @@ module.exports = {
             }
         }
 
+        const deleteButton = new ButtonBuilder()
+            .setCustomId("delete")
+            .setLabel("Delete message")
+            .setStyle(ButtonStyle.Danger);
+
+        const row = new ActionRowBuilder()
+            .addComponents(deleteButton);
+
         const embedReply = new EmbedBuilder({
             color: 0x5F0FD6,
             title: "Purging messages.",
@@ -43,7 +51,24 @@ module.exports = {
             },
         });
 
-        await interaction.reply({ embeds: [embedReply] });
+        await interaction.reply({
+            embeds: [embedReply],
+            components: [row]
+        });
+
+        const filter = i => i.customId === 'delete' && i.user.id === interaction.user.id;
+        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 100000 });
+
+        collector.on('collect', async i => {
+            await i.deferUpdate();
+            await i.deleteReply();
+        });
+
+        collector.on('end', collected => {
+            if (collected.size === 0) {
+                interaction.editReply({ components: [] });
+            }
+        });
 
         //logging
         const response = JSON.stringify(embedReply.toJSON());
