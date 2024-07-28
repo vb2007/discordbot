@@ -22,15 +22,13 @@ module.exports = {
 
             if(!targetUserId) {
                 var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
-                var userId = query[0]?.userId;
 
-                var replyContent = `<@${userId}>'s balance is **${query[0]?.balance}**. :moneybag:`;
+                var replyContent = `<@${interactionUserId}>'s balance is **${query[0]?.balance}**. :moneybag:`;
             }
             else {
                 var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
-                var userId = query[0]?.userId;
 
-                var replyContent = `<@${userId}>'s balance is **${query[0]?.balance}**. :moneybag:`;
+                var replyContent = `<@${targetUserId}>'s balance is **${query[0]?.balance}**. :moneybag:`;
             }
         }
 
