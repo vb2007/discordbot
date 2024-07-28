@@ -98,11 +98,11 @@ client.on("ready", () => {
 setInterval(setActivity, 20 * 60 * 1000);
 
 //closes connection to the database when closing the application
-process.on("SIGINT", () => {
-	console.log("Closing MariaDB database pool connection(s)...");
-	db.end();
-	process.exit(0);
-});
+// process.on("SIGINT", () => {
+// 	console.log("Closing MariaDB database pool connection(s)...");
+// 	db.end();
+// 	process.exit(0);
+// });
 
 //logs in with given token
 client.login(token);

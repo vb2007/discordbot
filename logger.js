@@ -2,7 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const db = require("./db");
 const { logToFile, logToDatabase } = require("./config.json");
-const { channel } = require("diagnostics_channel");
 
 const logDirectory = path.join(__dirname, "command-logs");
 
