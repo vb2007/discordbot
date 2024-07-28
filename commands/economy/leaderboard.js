@@ -28,6 +28,10 @@ module.exports = {
             var replyContent = query.map((user, index) =>
                 `${index + 1}. ${user.userName} : ${user.balance}$ :moneybag:`
             ).join("\n");
+
+            if (replyContent === "") {
+                replyContent = "No users found with a balance on this server.";
+            }
         }
 
         var embedReply = new EmbedBuilder({
