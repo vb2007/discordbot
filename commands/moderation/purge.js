@@ -57,7 +57,7 @@ module.exports = {
         });
 
         const filter = i => i.customId === 'delete' && i.user.id === interaction.user.id;
-        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 100000 });
+        const collector = interaction.channel.createMessageComponentCollector({ filter, time: 30000 });
 
         collector.on('collect', async i => {
             await i.deferUpdate();
