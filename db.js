@@ -4,25 +4,33 @@ const { databaseHostAddress, databaseName, databaseUser, databasePassword } = re
 let pool;
 
 function getConnection() {
-    try {
-        pool = mariadb.createPool({
-            host: databaseHostAddress,
-            database: databaseName,
-            user: databaseUser,
-            password: databasePassword,
-            connectionLimit: 5
-        });
-    
-        pool.getConnection()
-            .then(conn => {
-                console.log("Database connection successful.");
-                conn.release();
-            })
-            .catch(handleError);
-    }
-    catch (error) {
-        handleError(error);
-    }
+    return new Promise((resolve, reject) => {
+        if (pool) {
+            resolve(pool);
+        }
+        else {
+            try {
+                pool = mariadb.createPool({
+                    host: databaseHostAddress,
+                    database: databaseName,
+                    user: databaseUser,
+                    password: databasePassword,
+                    connectionLimit: 5
+                });
+            
+                pool.getConnection()
+                    .then(conn => {
+                        console.log("Database connection successful.");
+                        conn.release();
+                        resolve(pool);
+                    })
+                    .catch(reject);
+            }
+            catch (error) {
+                reject(error);
+            }
+        }
+    });
 }
 
 function handleError(error){
@@ -37,9 +45,8 @@ function query(...args) {
     return pool.query(...args).catch(handleError);
 }
 
-getConnection();
-
 module.exports = {
+    getConnection,
     query,
     end: () => pool && pool.end()
 };
