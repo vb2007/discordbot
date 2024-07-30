@@ -83,7 +83,19 @@ client.on(Events.InteractionCreate, async interaction => {
 	}
 });
 
-//sets bot's discord activity
+client.on('error', error => {
+	console.error("The WebSocket encountered an error: ", error);
+});
+
+client.on('shardError', error => {
+    console.error('A WebSocket connection encountered an error:', error);
+});
+
+process.on('unhandledRejection', error => {
+    console.error('Unhandled promise rejection:', error);
+});
+
+//sets the bot's discord activity
 function setActivity() {
 	client.user.setActivity({
 		status: "online",
