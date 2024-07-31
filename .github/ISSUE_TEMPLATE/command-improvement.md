@@ -1,8 +1,8 @@
 ---
 name: Command improvement
 about: Use this, if you would like to request an improvement for an existing command
-title: 'New command: '
-labels: new command
+title: 'Improvement: '
+labels: command improvement
 assignees: vb2007
 
 ---
