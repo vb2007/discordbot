@@ -7,6 +7,8 @@ assignees: vb2007
 
 ---
 
+# Submitting an issue
+
 ♥ **Every issue you describe with some effort is appreciated.** ♥
 
 You can describe the issue however you want. But if you can, please try to follow the template below. If an issue is documented poorly, and the maintainer(s) can't understand your problem, your issue might get closed as "Not planned".
