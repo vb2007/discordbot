@@ -8,7 +8,7 @@ assignees: vb2007
 
 ---
 
-# General information
+# Submitting an issue
 
 ♥ **Every issue you describe with some effort is appreciated.** ♥
 
