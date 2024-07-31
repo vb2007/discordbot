@@ -14,7 +14,7 @@ assignees: vb2007
 
 You can describe the issue however you want. But if you can, please try to follow the template below. If an issue is documented poorly, and the maintainer(s) can't understand your problem, your issue might get closed as "Not planned".
 
-# What should you include in the description (if possible)
+## What should you include in the description (if possible)
 
 - ⚠**Screenshots**:  if you've captured the events, please send screenshots about anything that's relevant. _This helps a **lot** with the issue reproduction._
 - **Pre conditions**: what should I do before trying to reproduce the bug?
