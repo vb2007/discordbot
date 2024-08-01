@@ -68,7 +68,7 @@ module.exports = {
                             );
                         }
 
-                        var replyContent = `Successfully robbed $**${robAmount}** from **${targetUserName}**.`;
+                        var replyContent = `<@${interaction.user.id}> has successfully robbed \`$${robAmount}\` from <@${targetUserId}>.`;
                     }
                     else {
                         var replyContent = `The user you're trying to rob from must have a minimum of **$50**.\nPlease choose another target.\n**TIP:** You can check how much money other memebers have with the \`/leaderboard\` command.`;

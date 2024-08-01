@@ -24,7 +24,7 @@ module.exports = {
                     ]
                 );
                 
-                var replyContent = `You've worked and succesfully earned $**${amount}** dollars.`;
+                var replyContent = `You've worked and succesfully earned \`$${amount}\` dollars.`;
             }
             else {
                 const remainingTimeInSeconds = Math.ceil((lastWorkTime.getTime() - nextApprovedWorkTimeUTC.getTime()) / 1000);
@@ -44,7 +44,7 @@ module.exports = {
                     new Date().toISOString().slice(0, 19).replace('T', ' ')
                 ]
             );
-            var replyContent = `You've worked and succesfully earned $**${amount}** dollars.`;
+            var replyContent = `You've worked and succesfully earned \`$${amount}\` dollars.`;
         }
         
         var embedReply = new EmbedBuilder({
