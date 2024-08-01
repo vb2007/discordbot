@@ -27,8 +27,10 @@ module.exports = {
                 var replyContent = `You've worked and succesfully earned $**${amount}** dollars.`;
             }
             else {
-                const remainingTime = Math.ceil((lastWorkTime.getTime() - nextApprovedWorkTimeUTC.getTime()) / 60000);
-                var replyContent = `You've already worked in the last 30 minutes.\nPlease wait another ${remainingTime} minute(s) before trying to work again.`;
+                const remainingTimeInSeconds = Math.ceil((lastWorkTime.getTime() - nextApprovedWorkTimeUTC.getTime()) / 1000);
+                const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
+                const remainingSeconds = remainingTimeInSeconds % 60;
+                var replyContent = `You've already worked in the last 5 minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to **work** again.`;
             }
         }
         else {
