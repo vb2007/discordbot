@@ -23,11 +23,11 @@ module.exports = {
             var replyContent = "Cannot display more than 100 users.\nPlease try again with a smaller amount.";
         }
         else {
-            var query = await db.query("SELECT userName, balance FROM economy ORDER BY balance DESC LIMIT ?", [amount]);
+            var query = await db.query("SELECT userId, balance FROM economy ORDER BY balance DESC LIMIT ?", [amount]);
 
             var replyContent = query.map((user, index) =>
-                `${index + 1}. ${user.userName} : ${user.balance}$ :moneybag:`
-            ).join("\n");
+                `**${index + 1}**. <@${user.userId}> : \`$${user.balance}\` :moneybag:`
+            ).join('\n');
 
             if (replyContent === "") {
                 replyContent = "No users found with a balance on this server.";
