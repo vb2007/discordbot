@@ -20,7 +20,7 @@ module.exports = {
             const query = await db.query("SELECT userId, lastRobTime FROM economy WHERE userId = ?", [interaction.user.id]);
             const userId = query[0]?.userId || null;
             const lastRobTime = query[0]?.lastRobTime || null;
-            const thirtyMinutesAgoUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 30 * 60000);
+            const nextApprovedRobTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 30 * 60000);
 
             const targetUserId = interaction.options.getUser("target").id;
 
@@ -28,13 +28,12 @@ module.exports = {
                 var replyContent = "Why are you trying to rob from yourself? :clown:\n**TIP:** If you're having trouble finding a target, try using the \`/leaderboard\` command."
             }
             else {
-                if (!lastRobTime || lastRobTime <= thirtyMinutesAgoUTC) {
+                if (!lastRobTime || lastRobTime <= nextApprovedRobTimeUTC) {
                     const query = await db.query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
                     const targetUserBalance = query[0]?.balance || null;
 
                     //if target user's balance is above 50...
                     if (targetUserBalance > 50) {
-                        const targetUserName = interaction.options.getUser("target").tag;
                         const robAmount = Math.floor(Math.random() * 50);
 
                         //removes the robbed amount from the target user
@@ -68,14 +67,17 @@ module.exports = {
                             );
                         }
 
-                        var replyContent = `Successfully robbed $**${robAmount}** from **${targetUserName}**.`;
+                        var replyContent = `<@${interaction.user.id}> has successfully robbed \`$${robAmount}\` from <@${targetUserId}>.`;
                     }
                     else {
-                        var replyContent = `The user you're trying to rob from must have a minimum of **$50**.\nPlease choose another target.\n**TIP:** You can check how much money other memebers have with the \`/leaderboard\` command.`;
+                        var replyContent = `Your target (<@${targetUserId}>) must have a minimum of \`$50\`.\nPlease choose another target.\n**TIP:** You can check how much money the top memebers have with the \`/leaderboard\` command.`;
                     }
                 }
                 else {
-                    var replyContent = `You've already robbed in the last 30 minutes.\nPlease wait another ${Math.ceil((lastRobTime.getTime() - thirtyMinutesAgoUTC.getTime()) / 60000)} minutes before trying to rob again.`;
+                    const remainingTimeInSeconds = Math.ceil((lastRobTime.getTime() - nextApprovedRobTimeUTC.getTime()) / 1000);
+                    const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
+                    const remainingSeconds = remainingTimeInSeconds % 60;
+                    var replyContent = `You've already robbed in the last 30 minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to **rob** again.`;
                 }
             }
         }
