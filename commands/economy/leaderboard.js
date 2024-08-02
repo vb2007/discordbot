@@ -25,18 +25,29 @@ module.exports = {
         else {
             var query = await db.query("SELECT userId, balance FROM economy ORDER BY balance DESC LIMIT ?", [amount]);
 
+            var actualUserAmount = query.length;
+
             var replyContent = query.map((user, index) =>
                 `**${index + 1}**. <@${user.userId}> : \`$${user.balance}\` :moneybag:`
             ).join('\n');
 
-            if (replyContent === "") {
-                replyContent = "No users found with a balance on this server.";
+            var query = await db.query("SELECT COUNT(*) FROM economy");
+            var totalUserAmount = query[0]["COUNT(*)"];
+
+            var replyContent = replyContent + `\n\nEnd of the leaderboard. :eyes:\nThis server has **${totalUserAmount}** user${totalUserAmount !== 1 ? 's' : ''} with a balance.`;
+
+            if (actualUserAmount == 0) {
+                var replyTitle = "Empty leaderboard.";
+                var replyContent = "There are no users with a balance on this server.\nUse the `/work` command to be the first one on this list! :grin:"
+            }
+            else {
+                var replyTitle = `Server leaderboard: TOP ${actualUserAmount} user${actualUserAmount !== 1 ? 's' : ''}.`;
             }
         }
 
         var embedReply = new EmbedBuilder({
             color: 0x5F0FD6,
-            title: `Server leaderboard: TOP ${amount} users.`,
+            title: replyTitle,
             description: replyContent,
             timestamp: new Date().toISOString(),
             footer: {
