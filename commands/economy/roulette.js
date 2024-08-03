@@ -1,7 +1,6 @@
 const { EmbedBuilder, SlashCommandBuilder, embedLength, Embed } = require("discord.js");
-const logToFileAndDatabase = require("../../logger");
+const { logToFileAndDatabase } = require("../../logger");
 const db = require("../../db");
-const { execute } = require("./leaderboard");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -35,14 +34,14 @@ module.exports = {
                 const randomIndex = Math.floor(Math.random() * rouletteNumbers.length);
                 const number = rouletteNumbers[randomIndex]
                 //green if number is 0, black if it's devideable by 2, red othervise 
-                const color = number === 0 ? "green" : (number % 2 === 0 ? "balck" : "red");
+                const color = number === 0 ? "green" : (number % 2 === 0 ? "black" : "red");
                 return { number, color };
             }
 
             var interactionUserId = interaction.user.id;
 
-            var amount = interaction.option.getInteger("amount");
-            var guessedColor = interaction.option.getString("color");
+            var amount = interaction.options.getInteger("amount");
+            var guessedColor = interaction.options.getString("color");
 
             var randomOutcome = generateRandomOutcome();
 
@@ -81,7 +80,7 @@ module.exports = {
                 timestamp: new Date().toISOString(),
                 footer: {
                     text: `Requested by: ${interaction.user.username}`,
-                    icon_url: interaction.user.displayAvatarUrl({ dynamic: true })
+                    icon_url: interaction.user.displayAvatarURL({ dynamic: true })
                 }
             });
 
