@@ -38,7 +38,6 @@ module.exports = {
             }
             else {
                 const rouletteNumbers = Array.from({ length: 37}, (_, index) => index + 1); //37 = european roulette. this might be configureable later.
-
                 function generateRandomOutcome() {
                     const randomIndex = Math.floor(Math.random() * rouletteNumbers.length);
                     const number = rouletteNumbers[randomIndex]
@@ -46,14 +45,12 @@ module.exports = {
                     const color = number === 0 ? "green" : (number % 2 === 0 ? "black" : "red");
                     return { number, color };
                 }
-
                 
-                var guessedColor = interaction.options.getString("color");
+                const guessedColor = interaction.options.getString("color");
 
-                var randomOutcome = generateRandomOutcome();
-
-                var randomColor = randomOutcome.color;
-                var randomNumber = randomOutcome.number;
+                const randomOutcome = generateRandomOutcome();
+                const randomColor = randomOutcome.color;
+                const randomNumber = randomOutcome.number;
 
                 switch (guessedColor) {
                     case randomColor:
@@ -79,8 +76,6 @@ module.exports = {
                     default:
                         var replyContent = "The color you've chosen is invalid.\nPlease choose from *red*, *black* or *green*.";
                 }
-
-                
             }
         }
 
