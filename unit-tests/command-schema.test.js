@@ -8,7 +8,7 @@ jest.mock('../config.json', () => ({
 const fs = require("fs");
 const path = require("path");
 
-jest.mock('../db', () => ({
+jest.mock('../helpers/db', () => ({
     
 }));
 
