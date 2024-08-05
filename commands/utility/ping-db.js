@@ -1,5 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
-const db = require("../../db");
+const db = require("../../helpers/db");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {

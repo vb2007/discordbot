@@ -1,4 +1,4 @@
-const db = require("../db");
+const db = require("../helpers/db");
 
 module.exports = {
     name: "guildMemberAdd",

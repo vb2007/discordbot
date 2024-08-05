@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const db = require("./db");
-// const { db, databaseName } = require("./db");
+const db = require("./helpers/db");
 
 // reads the SQL queries from a folder's subfolder
 function readSQLFiles(dir) {
