@@ -1,7 +1,7 @@
 const { EmbedBuilder, SlashCommandBuilder, embedLength, Embed } = require("discord.js");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const format = require("../../helpers/format");
-const db = require("../../db");
+const db = require("../../helpers/db");
 
 module.exports = {
     data: new SlashCommandBuilder()

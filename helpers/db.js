@@ -1,5 +1,5 @@
 const mariadb = require("mariadb");
-const { databaseHostAddress, databaseName, databaseUser, databasePassword } = require("./config.json");
+const { databaseHostAddress, databaseName, databaseUser, databasePassword } = require("../config.json");
 
 let pool;
 
