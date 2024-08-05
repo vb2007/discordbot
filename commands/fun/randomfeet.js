@@ -4,7 +4,7 @@ const path = require("path");
 const linksFile = "./data/links.json"; 
 const request = require("request-promise");
 const cheerio = require("cheerio");
-const { logToFileAndDatabase } = require("../../logger");
+const { logToFileAndDatabase } = require("../../helpers/logger");
 
 async function scrapeLinks(url) {
     const res = await request(url);
