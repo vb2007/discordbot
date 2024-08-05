@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `economy` (
     `firstTransactionDate` datetime NOT NULL DEFAULT current_timestamp(),
     `lastWorkTime` datetime DEFAULT NULL,
     `lastRobTime` datetime DEFAULT NULL,
+    `lastRouletteTime` datetime DEFAULT NULL,
     `robSuccessChance` float DEFAULT 1,
     PRIMARY KEY (`id`)
 );
