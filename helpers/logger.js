@@ -3,7 +3,7 @@ const path = require("path");
 const db = require("./db");
 const { logToFile, logToDatabase } = require("../config.json");
 
-const logDirectory = path.join(__dirname, "command-logs");
+const logDirectory = path.join(__dirname, "../command-logs");
 
 if (!fs.existsSync(logDirectory)) {
     fs.mkdirSync(logDirectory, { recursive: true });
