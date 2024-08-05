@@ -53,17 +53,6 @@ module.exports = {
                 const randomColor = randomOutcome.color;
                 const randomNumber = randomOutcome.number;
 
-                function formatColor(color) {
-                    switch(color){
-                        case "red":
-                            return ":red_square: Red"
-                        case "black":
-                            return ":black_square: Black"
-                        case "green":
-                            return ":green_square: Green"
-                    }
-                }
-
                 switch (guessedColor) {
                     case randomColor:
                         await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?",
@@ -73,7 +62,7 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on **${formatColor(randomColor)} ${randomNumber}**.\nYour guess was ${formatColor(randomColor)} as well! :money_mouth:`;
+                        var replyContent = `The ball landed on **${formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was ${formatRouletteColor(randomColor)} as well! :money_mouth:`;
                         break;
                     case "red" || "black" || "green":
                         await db.query("UPDATE economy SET balance = balance - ? WHERE userId = ?",
@@ -83,7 +72,7 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on **${formatColor(randomColor)} ${randomNumber}**.\nYour guess was **${formatColor(randomColor)}**.\nMaybe try your luck again. :upside_down:`;
+                        var replyContent = `The ball landed on **${formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${formatRouletteColor(randomColor)}**.\nMaybe try your luck again. :upside_down:`;
                         break
                     default:
                         var replyContent = "The color you've chosen is invalid.\nPlease choose from *red*, *black* or *green*.";
