@@ -37,6 +37,9 @@ module.exports = {
             if (userBalance < amount) {
                 var replyContent = `You can't play with that much money!\nYour current balance is only \`$${userBalance}\`.`;
             }
+            else if (amount <= 0) {
+                var replyContent = `You can't play without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.`;
+            }
             else {
                 const rouletteNumbers = Array.from({ length: 37}, (_, index) => index + 1); //37 = european roulette. this might be configureable later.
                 function generateRandomOutcome() {
