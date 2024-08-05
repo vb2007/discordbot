@@ -20,7 +20,7 @@ function getConnection() {
             
                 pool.getConnection()
                     .then(conn => {
-                        console.log("Database connection successful.");
+                        console.log(`Database connection successful to host '${databaseHostAddress}', database '${databaseName}' with user '${databaseUser}'.`);
                         conn.release();
                         resolve(pool);
                     })

@@ -6,12 +6,17 @@ function capitalizeFirstLetter(string) {
 function formatRouletteColor(color) {
     switch(color){
         case "red":
-            return ":red_square: Red";
+            return ":red_circle: Red";
         case "black":
-            return ":black_square: Black";
+            return ":black_circle: Black";
         case "green":
-            return ":green_square: Green";
+            return ":green_circle: Green";
         default:
             console.error("The color you've provided for the formatRouletteColor() function is invalid.");
     }
+}
+
+module.exports = {
+    capitalizeFirstLetter,
+    formatRouletteColor
 }

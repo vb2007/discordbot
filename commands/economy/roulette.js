@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder, embedLength, Embed } = require("discord.js");
+const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const format = require("../../helpers/format");
 const db = require("../../helpers/db");
@@ -57,6 +57,16 @@ module.exports = {
                 const randomNumber = randomOutcome.number;
 
                 switch (guessedColor) {
+                    case randomColor && guessedColor === "green":
+                        await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?",
+                            [
+                                amount * 35,
+                                interactionUserId
+                            ]
+                        );
+
+                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(randomColor)}**.\nYou hit the jackpot! :money_mouth:`;
+                        break;
                     case randomColor:
                         await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?",
                             [
@@ -65,7 +75,7 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on **${formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was ${formatRouletteColor(randomColor)} as well! :money_mouth:`;
+                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(randomColor)}** as well! :money_mouth:`;
                         break;
                     case "red" || "black" || "green":
                         await db.query("UPDATE economy SET balance = balance - ? WHERE userId = ?",
@@ -75,18 +85,8 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on **${formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${formatRouletteColor(randomColor)}**.\nMaybe try your luck again. :upside_down:`;
-                        break
-                    // case "green":
-                    //     await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?",
-                    //         [
-                    //             amount * 35,
-                    //             interactionUserId
-                    //         ]
-                    //     );
-
-                    //     var replyContent = `The ball landed on **${formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${formatRouletteColor(randomColor)}**`;
-                    //     break
+                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(randomColor)}**.\nMaybe try your luck again. :upside_down:`;
+                        break;
                     default:
                         var replyContent = "The color you've chosen is invalid.\nPlease choose from *red*, *black* or *green*.";
                 }
