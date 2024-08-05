@@ -77,6 +77,16 @@ module.exports = {
 
                         var replyContent = `The ball landed on **${formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${formatRouletteColor(randomColor)}**.\nMaybe try your luck again. :upside_down:`;
                         break
+                    // case "green":
+                    //     await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?",
+                    //         [
+                    //             amount * 35,
+                    //             interactionUserId
+                    //         ]
+                    //     );
+
+                    //     var replyContent = `The ball landed on **${formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${formatRouletteColor(randomColor)}**`;
+                    //     break
                     default:
                         var replyContent = "The color you've chosen is invalid.\nPlease choose from *red*, *black* or *green*.";
                 }
