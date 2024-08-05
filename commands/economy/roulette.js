@@ -1,5 +1,6 @@
 const { EmbedBuilder, SlashCommandBuilder, embedLength, Embed } = require("discord.js");
 const { logToFileAndDatabase } = require("../../logger");
+const format = require("../../helpers/format");
 const db = require("../../db");
 
 module.exports = {
@@ -61,7 +62,7 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on ${randomColor} ${randomNumber}.\nYour guess was ${randomColor} as well! :money_mouth:`;
+                        var replyContent = `The ball landed on **${capitalizeFirstLetter(randomColor)} ${randomNumber}**.\nYour guess was ${randomColor} as well! :money_mouth:`;
                         break;
                     case "red" || "black" || "green":
                         await db.query("UPDATE economy SET balance = balance - ? WHERE userId = ?",
