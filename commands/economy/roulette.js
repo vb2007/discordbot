@@ -1,5 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder, embedLength, Embed } = require("discord.js");
-const { logToFileAndDatabase } = require("../../logger");
+const { logToFileAndDatabase } = require("../../helpers/logger");
 const format = require("../../helpers/format");
 const db = require("../../db");
 
@@ -53,6 +53,17 @@ module.exports = {
                 const randomColor = randomOutcome.color;
                 const randomNumber = randomOutcome.number;
 
+                function formatColor(color) {
+                    switch(color){
+                        case "red":
+                            return ":red_square: Red"
+                        case "black":
+                            return ":black_square: Black"
+                        case "green":
+                            return ":green_square: Green"
+                    }
+                }
+
                 switch (guessedColor) {
                     case randomColor:
                         await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?",
@@ -62,7 +73,7 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on **${capitalizeFirstLetter(randomColor)} ${randomNumber}**.\nYour guess was ${randomColor} as well! :money_mouth:`;
+                        var replyContent = `The ball landed on **${formatColor(randomColor)} ${randomNumber}**.\nYour guess was ${formatColor(randomColor)} as well! :money_mouth:`;
                         break;
                     case "red" || "black" || "green":
                         await db.query("UPDATE economy SET balance = balance - ? WHERE userId = ?",
@@ -72,7 +83,7 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on ${randomColor} ${randomNumber}.\nYour guess was ${randomColor}.\nMaybe try your luck again. :upside_down:`;
+                        var replyContent = `The ball landed on **${formatColor(randomColor)} ${randomNumber}**.\nYour guess was **${formatColor(randomColor)}**.\nMaybe try your luck again. :upside_down:`;
                         break
                     default:
                         var replyContent = "The color you've chosen is invalid.\nPlease choose from *red*, *black* or *green*.";
