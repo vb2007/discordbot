@@ -1,6 +1,7 @@
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const format = require("../../helpers/format");
+const generate = require("../../helpers/generate");
 const db = require("../../helpers/db");
 
 module.exports = {
@@ -51,18 +52,9 @@ module.exports = {
                 var replyContent = `You can't play without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.`;
             }
             else {
-                const rouletteNumbers = Array.from({ length: 37}, (_, index) => index + 1); //37 = european roulette. this might be configureable later.
-                function generateRandomOutcome() {
-                    const randomIndex = Math.floor(Math.random() * rouletteNumbers.length);
-                    const number = rouletteNumbers[randomIndex]
-                    //green if number is 0, black if it's devideable by 2, red othervise 
-                    const color = number === 0 ? "green" : (number % 2 === 0 ? "black" : "red");
-                    return { number, color };
-                }
-                
                 const guessedColor = interaction.options.getString("color");
 
-                const randomOutcome = generateRandomOutcome();
+                const randomOutcome = generate.generateRandomOutcome();
                 const randomColor = randomOutcome.color;
                 const randomNumber = randomOutcome.number;
 
