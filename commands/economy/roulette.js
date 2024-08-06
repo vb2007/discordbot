@@ -68,9 +68,10 @@ module.exports = {
 
                 switch (guessedColor) {
                     case randomColor && guessedColor === "green":
-                        await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?",
+                        await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
                             [
                                 amount * 35,
+                                new Date().toISOString().slice(0, 19).replace('T', ' '),
                                 interactionUserId
                             ]
                         );
@@ -78,9 +79,10 @@ module.exports = {
                         var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(randomColor)}**.\nYou hit the jackpot! :money_mouth:`;
                         break;
                     case randomColor:
-                        await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?",
+                        await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
                             [
                                 amount * 2,
+                                new Date().toISOString().slice(0, 19).replace('T', ' '),
                                 interactionUserId
                             ]
                         );
@@ -88,9 +90,10 @@ module.exports = {
                         var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(randomColor)}** as well! :money_mouth:`;
                         break;
                     case "red" || "black" || "green":
-                        await db.query("UPDATE economy SET balance = balance - ? WHERE userId = ?",
+                        await db.query("UPDATE economy SET balance = balance - ?, lastRouletteTime = ? WHERE userId = ?",
                             [
                                 amount,
+                                new Date().toISOString().slice(0, 19).replace('T', ' '),
                                 interactionUserId
                             ]
                         );
