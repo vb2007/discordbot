@@ -5,36 +5,27 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch bot.",
             "type": "node",
             "request": "launch",
-            "name": "Launch bot.",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/index.js"
         },
         {
+            "name": "Deploy slash commands.",
             "type": "node",
             "request": "launch",
-            "name": "Deploy slash commands.",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/deploy-commands.js"
         },
         {
-            "type": "node",
-            "request": "launch",
-            "name": "(Re)create SQL tables.",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/create-tables.js"
-        },
-        {
-            "type": "node",
-            "request": "launch",
             "name": "Run unit test(s).",
+            "type": "node",
+            "request": "launch",
             "runtimeArgs": [
                 "--inspect-brk",
                 "${workspaceRoot}/node_modules/jest/bin/jest.js",
@@ -42,6 +33,15 @@
             ],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "name": "(Re)create SQL tables.",
+            "type": "node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/create-tables.js"
         }
     ]
 }
