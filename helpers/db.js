@@ -1,5 +1,5 @@
 const mariadb = require("mariadb");
-const { databaseHostAddress, databaseName, databaseUser, databasePassword } = require("./config.json");
+const { databaseHostAddress, databaseName, databaseUser, databasePassword } = require("../config.json");
 
 let pool;
 
@@ -20,7 +20,7 @@ function getConnection() {
             
                 pool.getConnection()
                     .then(conn => {
-                        console.log("Database connection successful.");
+                        console.log(`Database connection successful to host '${databaseHostAddress}', database '${databaseName}' with user '${databaseUser}'.`);
                         conn.release();
                         resolve(pool);
                     })
