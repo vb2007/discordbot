@@ -60,7 +60,7 @@ module.exports = {
                 const randomNumber = randomOutcome.number;
 
                 if(!validColors.includes(guessedColor)) {
-                    var replyContent = "The color you've chosen is invalid.\nPlease choose from *red*, *black* or *green*.";
+                    var replyContent = "The color you've chosen is invalid.\nPlease choose from `red`, `black` or `green`.";
                 }
                 else if (guessedColor === randomColor) {
                     if (guessedColor === "green") {
@@ -72,7 +72,7 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}**.\nYou hit the jackpot! :money_mouth:`;
+                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}**.\nYou hit the jackpot, and won \`$${amount * 35}\`! :money_mouth:`;
                     }
                     else {
                         await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
@@ -83,7 +83,7 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}** as well! :money_mouth:`;
+                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}** as well!\nYou won \`$${amount * 2}\`. :money_mouth:`;
                     }
                 }
                 else {
