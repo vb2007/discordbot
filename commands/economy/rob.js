@@ -20,7 +20,7 @@ module.exports = {
             const query = await db.query("SELECT userId, lastRobTime FROM economy WHERE userId = ?", [interaction.user.id]);
             const userId = query[0]?.userId || null;
             const lastRobTime = query[0]?.lastRobTime || null;
-            const nextApprovedRobTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 30 * 60000);
+            const nextApprovedRobTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 30 * 60000); //30 minutes
 
             const targetUserId = interaction.options.getUser("target").id;
 

@@ -31,10 +31,20 @@ module.exports = {
             const interactionUserId = interaction.user.id;
             const amount = interaction.options.getInteger("amount");
 
-            var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
-            var userBalance = query[0]?.balance;
+            const query = await db.query("SELECT balance, lastRouletteTime FROM economy WHERE userId = ?", [interactionUserId]);
+            const userBalance = query[0]?.balance;
 
-            if (userBalance < amount) {
+            const lastRouletteTime = query[0]?.lastRouletteTime;
+            const nextApprovedRouletteTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 15 * 60000); //15 minutes
+
+            if(lastRouletteTime >= nextApprovedRouletteTimeUTC) {
+                const remainingTimeInSeconds = Math.ceil((lastRouletteTime.getTime() - nextApprovedRouletteTimeUTC.getTime()) / 1000);
+                const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
+                const remainingSeconds = remainingTimeInSeconds % 60;
+
+                var replyContent = `You've already played roulette in the last 15 minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to **play roulette** again.`;
+            }
+            else if (userBalance < amount) {
                 var replyContent = `You can't play with that much money!\nYour current balance is only \`$${userBalance}\`.`;
             }
             else if (amount <= 0) {
