@@ -7,6 +7,15 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "Launch bot.",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/index.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "Deploy slash commands.",
             "skipFiles": [
                 "<node_internals>/**"
@@ -25,11 +34,14 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch bot.",
-            "skipFiles": [
-                "<node_internals>/**"
+            "name": "Run unit test(s).",
+            "runtimeArgs": [
+                "--inspect-brk",
+                "${workspaceRoot}/node_modules/jest/bin/jest.js",
+                "--runInBand"
             ],
-            "program": "${workspaceFolder}/index.js"
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
         }
     ]
 }
