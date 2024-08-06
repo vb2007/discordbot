@@ -52,14 +52,18 @@ module.exports = {
                 var replyContent = `You can't play without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.`;
             }
             else {
+                const validColors = ["red", "black", "green"];
                 const guessedColor = interaction.options.getString("color");
 
                 const randomOutcome = generate.generateRandomOutcome();
                 const randomColor = randomOutcome.color;
                 const randomNumber = randomOutcome.number;
 
-                switch (guessedColor) {
-                    case randomColor && guessedColor === "green":
+                if(!validColors.includes(guessedColor)) {
+                    var replyContent = "The color you've chosen is invalid.\nPlease choose from *red*, *black* or *green*.";
+                }
+                else if (guessedColor === randomColor) {
+                    if (guessedColor === "green") {
                         await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
                             [
                                 amount * 35,
@@ -68,9 +72,9 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(randomColor)}**.\nYou hit the jackpot! :money_mouth:`;
-                        break;
-                    case randomColor:
+                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}**.\nYou hit the jackpot! :money_mouth:`;
+                    }
+                    else {
                         await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
                             [
                                 amount * 2,
@@ -79,21 +83,19 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(randomColor)}** as well! :money_mouth:`;
-                        break;
-                    case "red" || "black" || "green":
-                        await db.query("UPDATE economy SET balance = balance - ?, lastRouletteTime = ? WHERE userId = ?",
-                            [
-                                amount,
-                                new Date().toISOString().slice(0, 19).replace('T', ' '),
-                                interactionUserId
-                            ]
-                        );
+                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}** as well! :money_mouth:`;
+                    }
+                }
+                else {
+                    await db.query("UPDATE economy SET balance = balance - ?, lastRouletteTime = ? WHERE userId = ?",
+                        [
+                            amount,
+                            new Date().toISOString().slice(0, 19).replace('T', ' '),
+                            interactionUserId
+                        ]
+                    );
 
-                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(randomColor)}**.\nMaybe try your luck again. :upside_down:`;
-                        break;
-                    default:
-                        var replyContent = "The color you've chosen is invalid.\nPlease choose from *red*, *black* or *green*.";
+                    var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}**.\nMaybe try your luck again. :upside_down:`;
                 }
             }
         }
