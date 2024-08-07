@@ -88,7 +88,7 @@ module.exports = {
             description: replyContent,
             timestamp: new Date().toISOString(),
             footer: {
-                text: `Requested by: ${interaction.user.username}` ,
+                text: `Requested by: ${interaction.user.username}`,
                 icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
             },
         });

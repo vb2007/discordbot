@@ -23,14 +23,31 @@ module.exports = {
         }
         else {
             const amount = interaction.options.getInteger("amount");
-            const targetUser = interaction.option.getUser("target");
+            const targetUserId = interaction.option.getUser("target").id;
             const interactionUserId = interaction.user.id;
 
-            const query = await db.query("SELECT balance FROM economy WHERE userId = ?", []);
+            const query = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
             const userBalance = query[0]?.balance || null;
 
             if (amount < userBalance) {
-                var replyContent = `You can't pay that much money to ${targetUser}!\nYour balance is only \`$${userBalance}\`.`;
+                var replyContent = `:x: You can't pay that much money to <@${targetUserId}>!\nYour balance is only \`$${userBalance}\`.`;
+            }
+            else {
+                await db.query("UPDATE economy SET balance = balance - ? WHERE userId = ?",
+                    [
+                        amount,
+                        interactionUserId
+                    ]
+                );
+
+                await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?",
+                    [
+                        amount,
+                        targetUserId
+                    ]
+                );
+
+                var replyContent = `:white_check_mark: <@${interactionUserId}> has successfully paid \`$${amount}\` to <@${targetUserId}>.`;
             }
         }
 
@@ -40,13 +57,15 @@ module.exports = {
             description: replyContent,
             timestamp: new Date().toISOString(),
             footer: {
-                text: `Requested by: ${interaction.user.username}` ,
+                text: `Requested by: ${interaction.user.username}`,
                 icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
             },
         });
 
         interaction.reply({ embeds: embedReply});
 
-        
+        //logging
+        const response = JSON.stringify(embedReply.toJSON());
+		await logToFileAndDatabase(interaction, response);
     }
 }
