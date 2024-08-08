@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `economy` (
     `userName` text DEFAULT NULL,
     `userId` bigint(20) NOT NULL,
     `balance` bigint(20) DEFAULT 0,
+    `balanceInBank` bigint(20) DEFAULT 0,
     `firstTransactionDate` datetime NOT NULL DEFAULT current_timestamp(),
     `lastWorkTime` datetime DEFAULT NULL,
     `lastRobTime` datetime DEFAULT NULL,
