@@ -7,10 +7,6 @@ assignees: vb2007
 
 ---
 
-# Submitting an issue
-
-♥ **Every issue you describe with some effort is appreciated.** ♥
-
 You can describe the issue however you want. But if you can, please try to follow the template below. If an issue is documented poorly, and the maintainer(s) can't understand your problem, your issue might get closed as "Not planned".
 
 Please always take a look at the project itself, and at other issues before submittint a _supposedly unique_ issue.
@@ -25,7 +21,10 @@ _Note that you can submit multiple commands as one issue, if they're related to 
 
 - What will this command / commands do?
 - What options will the command have? (e.g.: `target` (user option) in the `/kick` command)
-- In case of multiple commands: what categories will the commands belong to?
+- In case of multiple commands: what categories will specific commands belong to?
 - Any other creative ideas, future imporvements.
 
 If you're not sure about the details above, feel free to submit the issue anyways. Ideas are always great to have. Sometimes even the maintaners don't know how will the outcome look like, before getting into developing the feature.
+
+
+♥ **Every issue you describe with some effort is appreciated.** ♥
