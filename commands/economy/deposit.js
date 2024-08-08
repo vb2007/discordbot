@@ -34,6 +34,21 @@ module.ecports = {
             var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\``;
         }
 
-        
+        var embedReply = new EmbedBuilder({
+            color: 0x5F0FD6,
+            title: "Depositing.",
+            description: replyContent,
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: `Requested by: ${interaction.user.username}`,
+                icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+            }
+        });
+
+        await interaction.reply({ embeds: [embedReply] });
+
+        //logging
+        const response = JSON.stringify(embedReply.toJSON());
+		await logToFileAndDatabase(interaction, response);
     }
 }
