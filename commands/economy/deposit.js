@@ -14,6 +14,26 @@ module.ecports = {
                 .setRequired(true))
         .setDMPermission(false),
     async execute(interaction) {
+        const amount = interaction.options.getInteger("amount");
+        const interactionUserId = interaction.user.id;
+        const query = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
+        const balance = query[0]?.balance || null;
+
+        if (balance < amount) {
+            var replyContent = `You can't deposit that much money into your bank account.\nYour current balance is only \`$${balance}\``;
+        }
+        else {
+            await db.query("UPDATE economy SET balance = balance - ?, balanceInBank = balanceInBank + ? WHERE userId = ?",
+                [
+                    amount,
+                    amount,
+                    interactionUserId
+                ]
+            )
+
+            var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\``;
+        }
+
         
     }
 }
