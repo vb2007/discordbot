@@ -31,7 +31,7 @@ module.exports = {
                 ]
             );
 
-            var replyContent = ``;
+            var replyContent = `You've successfully withdrawn \`$${amount}\` from your bank account.\nYour current balance in the bank is \`$${balanceInBank - amount}\`.\nYour current balance is \`$${balance + amount}\`.`;
         }
 
         var embedReply = new EmbedBuilder({
