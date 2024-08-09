@@ -30,7 +30,7 @@ module.ecports = {
                 ]
             )
 
-            var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\``;
+            var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\`.`;
         }
 
         var embedReply = new EmbedBuilder({

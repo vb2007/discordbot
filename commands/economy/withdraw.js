@@ -23,7 +23,32 @@ module.exports = {
             var replyContent = `You can't withdraw that much money from your bank account.\nYour current bank balance is only \`$${balanceInBank}\`.`;
         }
         else {
-            
+            await db.query("UPDATE economy SET balance = balance + ?, balanceInBank = balanceInBank - ? WHERE userId = ?"
+                [
+                    amount,
+                    amount,
+                    interactionUserId
+                ]
+            );
+
+            var replyContent = ``;
         }
+
+        var embedReply = new EmbedBuilder({
+            color: 0x5F0FD6,
+            title: "Withdrawing.",
+            description: replyContent,
+            timestamp: new Date().toISOString(),
+            footer: {
+                text: `Requested by: ${interaction.user.username}`,
+                icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+            }
+        });
+
+        await interaction.reply({ embeds: [embedReply] });
+
+        //logging
+        const response = JSON.stringify(embedReply.toJSON());
+        await logToFileAndDatabase(interaction, response);
     }
 }    
