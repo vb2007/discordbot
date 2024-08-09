@@ -1,7 +1,6 @@
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
-const { execute } = require("./work");
 
 module.ecports = {
     data: new SlashCommandBuilder()
@@ -20,7 +19,7 @@ module.ecports = {
         const balance = query[0]?.balance || null;
 
         if (balance < amount) {
-            var replyContent = `You can't deposit that much money into your bank account.\nYour current balance is only \`$${balance}\``;
+            var replyContent = `You can't deposit that much money into your bank account.\nYour current balance is only \`$${balance}\`.`;
         }
         else {
             await db.query("UPDATE economy SET balance = balance - ?, balanceInBank = balanceInBank + ? WHERE userId = ?",
