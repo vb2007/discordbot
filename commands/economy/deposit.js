@@ -15,7 +15,8 @@ module.ecports = {
     async execute(interaction) {
         const amount = interaction.options.getInteger("amount");
         const interactionUserId = interaction.user.id;
-        const query = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
+        const query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [interactionUserId]);
+        const balanceInBank = query[0]?.balanceInBank || null;
         const balance = query[0]?.balance || null;
 
         if (balance < amount) {
@@ -30,7 +31,7 @@ module.ecports = {
                 ]
             )
 
-            var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\`.`;
+            var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\`.\nYour current balance in the bank is \`$${balanceInBank + amount}\`.`;
         }
 
         var embedReply = new EmbedBuilder({
