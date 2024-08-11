@@ -26,8 +26,11 @@ module.exports = {
             const targetUserId = interaction.options.getUser("target").id;
             const interactionUserId = interaction.user.id;
 
-            const query = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
-            const userBalance = query[0]?.balance || null;
+            const interactionUserBalanceQuery = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
+            const userBalance = interactionUserBalanceQuery[0]?.balance || null;
+
+            const targetUserBalanceQuery = await db.query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
+            const targetUserBalance = targetUserBalanceQuery[0]?.balance || null;
 
             if (amount > userBalance) {
                 var replyContent = `:x: You can't pay that much money to <@${targetUserId}>!\nYour balance is only \`$${userBalance}\`.`;
@@ -40,12 +43,22 @@ module.exports = {
                     ]
                 );
 
-                await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?",
-                    [
-                        amount,
-                        targetUserId
-                    ]
-                );
+                if (!targetUserBalance) {
+                    await db.query("INSERT INTO economy (userId, balance) VALUES (?, ?)",
+                        [
+                            targetUserId,
+                            amount
+                        ]
+                    );
+                }
+                else {
+                    await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?",
+                        [
+                            amount,
+                            targetUserId
+                        ]
+                    );
+                }
 
                 var replyContent = `:white_check_mark: <@${interactionUserId}> has successfully paid \`$${amount}\` to <@${targetUserId}>.`;
             }
