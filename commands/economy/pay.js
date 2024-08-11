@@ -11,7 +11,7 @@ module.exports = {
                 .setName("target")
                 .setDescription("The user who will receive the payment.")
                 .setRequired(true))
-        .addIntegerOption(otpion =>
+        .addIntegerOption(option =>
             option
                 .setName("amount")
                 .setDescription("The amount of money the target user will receive.")
@@ -23,13 +23,13 @@ module.exports = {
         }
         else {
             const amount = interaction.options.getInteger("amount");
-            const targetUserId = interaction.option.getUser("target").id;
+            const targetUserId = interaction.options.getUser("target").id;
             const interactionUserId = interaction.user.id;
 
             const query = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
             const userBalance = query[0]?.balance || null;
 
-            if (amount < userBalance) {
+            if (amount > userBalance) {
                 var replyContent = `:x: You can't pay that much money to <@${targetUserId}>!\nYour balance is only \`$${userBalance}\`.`;
             }
             else {
@@ -62,7 +62,7 @@ module.exports = {
             },
         });
 
-        interaction.reply({ embeds: embedReply});
+        await interaction.reply({ embeds: [embedReply] });
 
         //logging
         const response = JSON.stringify(embedReply.toJSON());
