@@ -14,7 +14,7 @@ function validateConfig() {
     const valid = validate(config);
 
     if (!valid) {
-        console.error($`The config.json file contains syntax errors: ${validate.errors}\nPlease follow the schema that's present on the project's GitHub page: https://github.com/vb2007/discordbot/tree/dev-bank?tab=readme-ov-file#setting-up-the-bot`);
+        console.error(`The config.json file contains syntax errors:\n${JSON.stringify(validate.errors, null, 2)}\nPlease follow the schema that's present on the project's GitHub page: https://github.com/vb2007/discordbot/tree/dev-bank?tab=readme-ov-file#setting-up-the-bot`);
         process.exit(1);
     }
     else {
