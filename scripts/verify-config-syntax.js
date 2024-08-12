@@ -22,6 +22,8 @@ function validateConfig() {
     }
 }
 
+validateConfig();
+
 module.exports = [
     validateConfig
 ];

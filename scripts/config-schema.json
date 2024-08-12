@@ -7,8 +7,8 @@
         "databaseName": { "type": "string" },
         "databaseUser": { "type": "string" },
         "databasePassword": { "type": "string" },
-        "logToFile": { "type": "string" },
-        "logToDatabase": { "type": "string" }
+        "logToFile": { "type": "string", "enum": ["True", "False"] },
+        "logToDatabase": { "type": "string", "enum": ["True", "False"] }
     },
     "required": [
         "token",
