@@ -1,0 +1,23 @@
+{
+    "type": "object",
+    "properties": {
+        "token": { "type": "string" },
+        "clientId": { "type": "string" },
+        "databaseHostAddress": { "type": "string" },
+        "databaseName": { "type": "string" },
+        "databaseUser": { "type": "string" },
+        "databasePassword": { "type": "string" },
+        "logToFile": { "type": "string" },
+        "logToDatabase": { "type": "string" }
+    },
+    "required": [
+        "token",
+        "clientId",
+        "databaseHostAddress",
+        "databaseName",
+        "databaseUser",
+        "databasePassword",
+        "logToFile",
+        "logToDatabase"
+    ]
+}
