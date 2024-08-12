@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder, Embed } = require("discord.js");
+const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
