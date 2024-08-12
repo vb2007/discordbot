@@ -1,8 +1,17 @@
 const fs = require("node:fs");
 const path = require("node:path");
+
+//checks database connection
+const db = require("./helpers/db");
+db.getConnection();
+
+//verifies the config.json file's syntax
+require("./scripts/verify-config-syntax");
+
+// validateConfig();
+
 const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require("discord.js");
 const { token } = require("./config.json");
-const db = require("./helpers/db");
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
 
@@ -12,9 +21,6 @@ client.once(Events.ClientReady, readyClient => {
 });
 
 client.commands = new Collection();
-
-//checks database connection
-db.getConnection();
 
 //gets command from the "/commands" folder's subfolders
 const foldersPath = path.join(__dirname, "commands");

@@ -19,6 +19,7 @@
     "dev": "nodemon index.js",
     "deploy": "node deploy-commands.js",
     "create-tables": "node create-tables.js",
+    "verify-config": "node ./scripts/verify-config-syntax.js",
     "test": "jest"
   }
 }
