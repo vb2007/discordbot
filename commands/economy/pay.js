@@ -35,6 +35,9 @@ module.exports = {
             if (amount > userBalance) {
                 var replyContent = `:x: You can't pay that much money to <@${targetUserId}>!\nYour balance is only \`$${userBalance}\`.`;
             }
+            else if (amount <= 0) {
+                var replyContent = ":x: You can't pay a negative or zero amount of money!\nTry again with a positive amount.";
+            }
             else {
                 await db.query("UPDATE economy SET balance = balance - ? WHERE userId = ?",
                     [
