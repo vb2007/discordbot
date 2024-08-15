@@ -2,7 +2,7 @@ const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
-module.ecports = {
+module.exports = {
     data: new SlashCommandBuilder()
         .setName("deposit")
         .setDescription("Desposits a specified amount of money to your bank account.")
@@ -16,8 +16,8 @@ module.ecports = {
         const amount = interaction.options.getInteger("amount");
         const interactionUserId = interaction.user.id;
         const query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [interactionUserId]);
-        const balanceInBank = query[0]?.balanceInBank || null;
-        const balance = query[0]?.balance || null;
+        const balanceInBank = Number(query[0]?.balanceInBank) || null;
+        const balance = Number(query[0]?.balance) || null;
 
         if (balance < amount) {
             var replyContent = `You can't deposit that much money into your bank account.\nYour current balance is only \`$${balance}\`.`;
@@ -29,8 +29,11 @@ module.ecports = {
                     amount,
                     interactionUserId
                 ]
-            )
+            );
 
+            console.log(balance);
+            console.log(amount);
+            console.log(balanceInBank);
             var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\`.\nYour current balance in the bank is \`$${balanceInBank + amount}\`.`;
         }
 
