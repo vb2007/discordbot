@@ -31,9 +31,6 @@ module.exports = {
                 ]
             );
 
-            console.log(balance);
-            console.log(amount);
-            console.log(balanceInBank);
             var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\`.\nYour current balance in the bank is \`$${balanceInBank + amount}\`.`;
         }
 
