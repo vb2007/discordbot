@@ -24,6 +24,6 @@ _Note that you can submit multiple commands as one issue, if they're related to 
 - In case of multiple commands: what categories will specific commands belong to?
 - Any other creative ideas, future improvements.
 
-If you're not sure about the details above, feel free to submit the issue anyways. Ideas are always great to have. Sometimes even the maintainers don't know how will the outcome look like, before getting into developing the feature.
+If you're not sure about the details above, feel free to submit the issue anyways. Ideas are always great to have.
 
 ♥ **Every issue you describe with some effort is appreciated.** ♥
