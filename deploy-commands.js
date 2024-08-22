@@ -1,20 +1,24 @@
+const token = process.env.TOKEN;
+const clientId = process.env.CLIENT_ID;
+console.log(token);
+
 const { REST, Routes } = require('discord.js');
-const { clientId, token } = require('./config.json');
 const fs = require('node:fs');
 const path = require('node:path');
 
 const commands = [];
-//fő (commands) mappa megadása
+
+//specifying the path to the commands
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
     
-	//almappákból .js végződésű fájlok kiszedése
+	//getting .js files from the commands folder
 	const commandsPath = path.join(foldersPath, folder);
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
-	//commandok json-ba töltése
+	//checking and storing the commands
 	for (const file of commandFiles) {
 
 		const filePath = path.join(commandsPath, file);
@@ -33,15 +37,15 @@ const rest = new REST().setToken(token);
 
 (async () => {
 	try {
-		console.log(`Started refreshing ${commands.length} application (/) commands.`);
+		console.log(`Started registering ${commands.length} slash (/) commands at Discord.`);
 
-		//commandok regisztrálása
+		//registering / re-registering the commands
 		await rest.put(
             Routes.applicationCommands(clientId),
             { body: commands },
         );
 
-		console.log(`Successfully reloaded ${commands.length} application (/) commands.`);
+		console.log(`Successfully registered ${commands.length} slash (/) commands at Discord.`);
 	}
     catch (error) {
 		console.error(error);
