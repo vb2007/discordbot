@@ -7,7 +7,7 @@ assignees: vb2007
 
 ---
 
-Please always take a look at the project itself, and at other issues before submittint a _supposedly unique_ issue.
+Please always take a look at the project itself, and at other issues before submitting a _supposedly unique_ issue.
 
 ---
 
