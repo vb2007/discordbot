@@ -1,0 +1,13 @@
+{
+  "//" : "Logging settings",
+
+  "logToFile" : "True",
+  "logToDatabase" : "True",
+
+  
+  "//": "Appearance settings",
+
+  "mainEmbedColor" : "0x123456",
+  "successEmbedColor" : "0x123456",
+  "failureEmbedColor" : "0x123456"
+}
