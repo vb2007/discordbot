@@ -2,7 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 
 function embedReply(color, title, description, interaction) {
     const embedReply = new EmbedBuilder({
-        color: color,
+        color: parseInt(color),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -17,7 +17,7 @@ function embedReply(color, title, description, interaction) {
 
 function moderationDmEmbedReply(color, title, description, interaction) {
     const embedDmReply = new EmbedBuilder({
-        color: color,
+        color: parseInt(color),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),

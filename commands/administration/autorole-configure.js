@@ -18,7 +18,7 @@ module.exports = {
     async execute(interaction) {
         if (!interaction.inGuild()) {
             var localEmbedResponse = embedReply(
-                embedColors.error,
+                embedColors.failure,
                 "Error",
                 "You can only set autorole in a server.",
                 interaction
@@ -26,7 +26,7 @@ module.exports = {
         }
         else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administrator)) {
             var localEmbedResponse = embedReply(
-                embedColors.error,
+                embedColors.failure,
                 "Error",
                 "This feature requires **administrator** *(8)* privileges witch the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges.",
                 interaction
@@ -46,7 +46,7 @@ module.exports = {
                 //if autorole has already been configured at this server...
                 if (autoRoleRoleId == targetRole) {
                     var localEmbedResponse = embedReply(
-                        embedColors.error,
+                        embedColors.failure,
                         "Error",
                         "Autorole has been already configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.\nRun `/autorole-disable` to disable this feature.",
                         interaction
