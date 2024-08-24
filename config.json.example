@@ -1,13 +1,13 @@
 {
   "//" : "Logging settings",
 
-  "logToFile" : "True",
-  "logToDatabase" : "True",
+  "logToFile" : "[True/False]",
+  "logToDatabase" : "[True/False]",
 
   
   "//": "Appearance settings",
 
-  "mainEmbedColor" : "0x123456",
-  "successEmbedColor" : "0x123456",
-  "failureEmbedColor" : "0x123456"
+  "mainEmbedColor" : "[HEX Color, like: '0x123456']",
+  "successEmbedColor" : "[HEX Color, like: '0x123456']",
+  "failureEmbedColor" : "[HEX Color, like: '0x123456']"
 }
