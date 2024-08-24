@@ -29,7 +29,8 @@ module.exports = {
                 "`/balance` - Displays the user's balance.\n" +
                 // "`/deposit` - Deposits money into the user's bank account.\n" +
                 // "`/withdraw` - Withdraws money from the user's bank account.\n" +
-                // "`/transfer` - Transfers money from one user to another.\n" +
+                // "`/pay` - Transfers money from one user to another.\n" +
+                "`/roulette` - Lets you pick a color, then gives you a great price if you guess the color right.\n" +
                 "`/leaderboard` - Displays users with the most money on the server."
                 },
                 { name: "Moderation", value:
