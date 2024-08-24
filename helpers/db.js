@@ -1,5 +1,10 @@
+require('dotenv').config()
+const databaseHostAddress = process.env.DATABASE_HOST_ADDRESS;
+const databaseName = process.env.DATABASE_NAME;
+const databaseUser = process.env.DATABASE_USER;
+const databasePassword = process.env.DATABASE_PASSWORD;
+
 const mariadb = require("mariadb");
-const { databaseHostAddress, databaseName, databaseUser, databasePassword } = require("../config.json");
 
 let pool;
 

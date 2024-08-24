@@ -1,7 +1,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-require('dotenv').config()
+require('dotenv').config();
 const token = process.env.TOKEN;
 
 //checks database connection
