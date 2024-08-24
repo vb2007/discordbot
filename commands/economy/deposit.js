@@ -2,6 +2,10 @@ const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
+//should be configureable in the future with the config.json file
+const dailyDepositLimit = 10;
+const feePercentage = 0.5;
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("deposit")
@@ -16,11 +20,32 @@ module.exports = {
         const amount = interaction.options.getInteger("amount");
         const interactionUserId = interaction.user.id;
         const query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [interactionUserId]);
-        const balanceInBank = Number(query[0]?.balanceInBank) || null;
-        const balance = Number(query[0]?.balance) || null;
+        const balanceInBank = Number(query[0]?.balanceInBank) || 0;
+        const balance = Number(query[0]?.balance) || 0;
+        const dailyDeposits = Number(query[0]?.dailyDeposits) || 0;
 
         if (balance < amount) {
             var replyContent = `You can't deposit that much money into your bank account.\nYour current balance is only \`$${balance}\`.`;
+        }
+        else if (dailyDeposits >= dailyDepositLimit) {
+            const fee = amount * feePercentage;
+            const totalAmount = amount + fee;
+
+            if (balance < totalAmount) {
+                var replyContent = `You can't deposit that much money into your bank account.\nYour balance is \`$${balance}\`,\nbut you currently can't pay the deposit fee: \`$${fee}\`.`;
+            }
+            else {
+                var embedReply = new EmbedBuilder({
+                    color: 0x5F0FD6,
+                    title: "Depositing.",
+                    description: replyContent,
+                    timestamp: new Date().toISOString(),
+                    footer: {
+                        text: `Requested by: ${interaction.user.username}`,
+                        icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+                    }
+                });
+            }
         }
         else {
             await db.query("UPDATE economy SET balance = balance - ?, balanceInBank = balanceInBank + ? WHERE userId = ?",
