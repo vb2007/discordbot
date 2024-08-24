@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 
-function embedReply(color, title, description) {
+function embedReply(color, title, description, interaction) {
     const embedReply = new EmbedBuilder({
         color: color,
         title: title,
@@ -15,7 +15,7 @@ function embedReply(color, title, description) {
     return embedReply;
 }
 
-function moderationDmEmbedReply(color, title, description) {
+function moderationDmEmbedReply(color, title, description, interaction) {
     const embedDmReply = new EmbedBuilder({
         color: color,
         title: title,
