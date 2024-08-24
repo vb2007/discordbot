@@ -1,5 +1,13 @@
 const { EmbedBuilder } = require("discord.js");
 
+/**
+ * 
+ * @param {color} color - Embed's sidebar HEX Color
+ * @param {title} title - Embed's title
+ * @param {description} description - Embed's description
+ * @param {interaction} interaction - Interaction object from the command
+ * @returns {embedReply} An embed reply object
+ */
 function embedReply(color, title, description, interaction) {
     const embedReply = new EmbedBuilder({
         color: parseInt(color),

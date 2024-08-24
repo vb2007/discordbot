@@ -19,7 +19,7 @@ module.exports = {
         if (!interaction.inGuild()) {
             var localEmbedResponse = embedReply(
                 embedColors.failure,
-                "Error",
+                "AutoRole Configure: Error",
                 "You can only set autorole in a server.",
                 interaction
             );
@@ -27,7 +27,7 @@ module.exports = {
         else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administrator)) {
             var localEmbedResponse = embedReply(
                 embedColors.failure,
-                "Error",
+                "AutoRole Configure: Error",
                 "This feature requires **administrator** *(8)* privileges witch the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges.",
                 interaction
             );
@@ -47,7 +47,7 @@ module.exports = {
                 if (autoRoleRoleId == targetRole) {
                     var localEmbedResponse = embedReply(
                         embedColors.failure,
-                        "Error",
+                        "AutoRole Configure: Error",
                         "Autorole has been already configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.\nRun `/autorole-disable` to disable this feature.",
                         interaction
                     );
@@ -57,7 +57,7 @@ module.exports = {
                         //if the target role is already the role that's in the database, then we don't need to insert data
                         var localEmbedResponse = embedReply(
                             embedColors.successSecondary,
-                            "Autorole Configuration Modified",
+                            "AutoRole Configure: Configuration Modified",
                             `The role that will get assigned to new members has been **modified** to \`@<${targetRole}>\` :white_check_mark:\nRun this command again to modify the role.\nRun \`/autorole-disable\` to disable this feature.`,
                             interaction
                         );
@@ -65,7 +65,7 @@ module.exports = {
                     else {
                         var localEmbedResponse = embedReply(
                             embedColors.success,
-                            "Autorole Configuration Set",
+                            "AutoRole Configure: Configuration Set",
                             `The role that will get assigned to new members has been **set** to \`@<${targetRole}>\` :white_check_mark:\nRun this command again to modify the role.\nRun \`/autorole-disable\` to disable this feature.`,
                             interaction
                         );
