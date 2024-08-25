@@ -1,4 +1,7 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
+const { embedReply } = require("../../helpers/embed-reply");
+const { embedColors } = require("../../config.json");
+const db = require("../../helpers/db");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -14,7 +17,12 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         if(!interaction.inGuild()) {
-            var replyContent = "You can only check a member's balance in a server.";
+            var localEmbedResponse = embedReply(
+                embedColors.failure,
+                "Balance: Error",
+                "You can only check a member's balance in a server.",
+                interaction
+            );
         }
         else {
             const interactionUserId = interaction.user.id;
@@ -23,30 +31,29 @@ module.exports = {
             if(!targetUserId) {
                 var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
 
-                var replyContent = `<@${interactionUserId}>'s balance is **${query[0]?.balance}**. :moneybag:`;
+                var localEmbedResponse = embedReply(
+                    embedColors.primary,
+                    "Balance",
+                    `<@${interactionUserId}>'s balance is **${query[0]?.balance}**. :moneybag:`,
+                    interaction
+                );
             }
             else {
                 var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
 
-                var replyContent = `<@${targetUserId}>'s balance is **${query[0]?.balance}**. :moneybag:`;
+                var localEmbedResponse = embedReply(
+                    embedColors.primary,
+                    "Balance",
+                    `<@${targetUserId}>'s balance is **${query[0]?.balance}**. :moneybag:`,
+                    interaction
+                );
             }
         }
 
-        var embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Checking user balance.",
-            description: replyContent,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}`,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-            }
-        });
-
-        await interaction.reply({ embeds: [embedReply] });
+        await interaction.reply({ embeds: [localEmbedResponse] });
 
         //logging
-        const response = JSON.stringify(embedReply.toJSON());
+        const response = JSON.stringify(localEmbedResponse.toJSON());
         await logToFileAndDatabase(interaction, response);
     }
 }

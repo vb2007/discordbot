@@ -1,0 +1,17 @@
+{
+  "//" : "Logging settings",
+
+  "logToFile" : "[True/False]",
+  "logToDatabase" : "[True/False]",
+
+  
+  "//": "Appearance settings",
+
+  "embedColors": {
+    "primary" : "[HEX Color, like: '0x5F0FD6']",
+    "success" : "[HEX Color, like: '0x0DFF00']",
+    "successSecondary" : "[HEX Color, like: '0x87FF9D']",
+    "failure" : "[HEX Color, like: '0xFF0D0D']",
+    "warning" : "[HEX Color, like: '0xE3F51B']"
+  }
+}

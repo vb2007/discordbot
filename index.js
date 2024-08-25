@@ -1,8 +1,18 @@
 const fs = require("node:fs");
 const path = require("node:path");
-const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require("discord.js");
-const { token } = require("./config.json");
+
+require('dotenv').config();
+const token = process.env.TOKEN;
+
+//checks database connection
 const db = require("./helpers/db");
+db.getConnection();
+
+//verifies the config.json file's syntax
+require("./scripts/verify-config-syntax");
+// validateConfig();
+
+const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require("discord.js");
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
 
@@ -12,9 +22,6 @@ client.once(Events.ClientReady, readyClient => {
 });
 
 client.commands = new Collection();
-
-//checks database connection
-db.getConnection();
 
 //gets command from the "/commands" folder's subfolders
 const foldersPath = path.join(__dirname, "commands");
@@ -111,13 +118,6 @@ client.on("ready", () => {
 
 //re-announces the bot's activity in every 20 minutes (in case of an internet outage or something)
 setInterval(setActivity, 20 * 60 * 1000);
-
-//closes connection to the database when closing the application
-// process.on("SIGINT", () => {
-// 	console.log("Closing MariaDB database pool connection(s)...");
-// 	db.end();
-// 	process.exit(0);
-// });
 
 //logs in with given token
 client.login(token);
