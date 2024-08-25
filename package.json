@@ -3,10 +3,15 @@
   "version": "2.2",
   "description": "A simple discord bot of mine developed with discord.js (Node.js).",
   "main": "index.js",
-  "keywords": ["discordbot", "discord", "bot", "sql", "mariadb"],
+  "keywords": [
+    "discordbot",
+    "discord",
+    "bot",
+    "sql",
+    "mariadb"
+  ],
   "author": "vb2007 <admin@vb2007.hu> (https://vb2007.hu)",
   "license": "AGPL-3.0-only",
-
   "dependencies": {
     "ajv": "^8.17.1",
     "cheerio": "^1.0.0-rc.12",
@@ -15,16 +20,13 @@
     "fetch": "^1.1.0",
     "jest": "^29.7.0",
     "mariadb": "^3.3.0",
-    "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
     "request-promise": "^4.2.6"
   },
-
   "devDependencies": {
     "jest": "^29.7.0",
     "nodemon": "^3.0.2"
   },
-
   "scripts": {
     "app": "node index.js",
     "dev": "nodemon index.js",
