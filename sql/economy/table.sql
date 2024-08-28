@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `economy` (
     `lastWorkTime` datetime DEFAULT NULL,
     `lastRobTime` datetime DEFAULT NULL,
     `lastRouletteTime` datetime DEFAULT NULL,
+    `lastDepositTime` datetime DEFAULT NULL,
     `robSuccessChance` float DEFAULT 1,
     PRIMARY KEY (`id`)
 );

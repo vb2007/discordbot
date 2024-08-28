@@ -22,7 +22,14 @@ module.exports = {
         const query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [interactionUserId]);
         const balanceInBank = Number(query[0]?.balanceInBank) || 0;
         const balance = Number(query[0]?.balance) || 0;
-        const dailyDeposits = Number(query[0]?.dailyDeposits) || 0;
+        let dailyDeposits = Number(query[0]?.dailyDeposits) || 0;
+        const lastDepositDate = query[0]?.lastDepositDate;
+        const now = new Date();
+
+        //resets daily deposits if the last deposit was not today
+        if (lastDepositDate && lastDepositDate.toDateString() !== now.toDateString()) {
+            dailyDeposits = 0;
+        }
 
         if (balance < amount) {
             var replyContent = `You can't deposit that much money into your bank account.\nYour current balance is only \`$${balance}\`.`;
@@ -48,10 +55,11 @@ module.exports = {
             }
         }
         else {
-            await db.query("UPDATE economy SET balance = balance - ?, balanceInBank = balanceInBank + ? WHERE userId = ?",
+            await db.query("UPDATE economy SET balance = balance - ?, balanceInBank = balanceInBank + ?, dailyDeposits = dailyDeposits + 1, lastDepositTime = ? WHERE userId = ?",
                 [
                     amount,
                     amount,
+                    now,
                     interactionUserId
                 ]
             );
