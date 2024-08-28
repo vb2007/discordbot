@@ -3,7 +3,6 @@ const { embedReply } = require("../../helpers/embed-reply");
 const { embedColors } = require("../../config.json");
 const db = require("../../helpers/db");
 const { logToFileAndDatabase } = require("../../helpers/logger");
-const db = require("../../helpers/db");
 
 module.exports = {
     data: new SlashCommandBuilder()

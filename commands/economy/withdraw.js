@@ -16,14 +16,14 @@ module.exports = {
         const amount = interaction.options.getInteger("amount");
         const interactionUserId = interaction.user.id;
         const query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [interactionUserId]);
-        const balance = query[0]?.balance || null;
-        const balanceInBank = query[0]?.balanceInBank || null;
+        const balance = Number(query[0]?.balance) || 0;
+        const balanceInBank = Number(query[0]?.balanceInBank) || 0;
 
         if (balanceInBank < amount) {
             var replyContent = `You can't withdraw that much money from your bank account.\nYour current bank balance is only \`$${balanceInBank}\`.`;
         }
         else {
-            await db.query("UPDATE economy SET balance = balance + ?, balanceInBank = balanceInBank - ? WHERE userId = ?"
+            await db.query("UPDATE economy SET balance = balance + ?, balanceInBank = balanceInBank - ? WHERE userId = ?",
                 [
                     amount,
                     amount,

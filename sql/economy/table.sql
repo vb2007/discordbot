@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `economy` (
     `lastRobTime` datetime DEFAULT NULL,
     `lastRouletteTime` datetime DEFAULT NULL,
     `lastDepositTime` datetime DEFAULT NULL,
+    `dailyDeposits` int DEFAULT 0 NOT NULL,
     `robSuccessChance` float DEFAULT 1,
     PRIMARY KEY (`id`)
 );
