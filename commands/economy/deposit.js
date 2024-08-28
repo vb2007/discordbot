@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require("discord.js");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -30,7 +30,7 @@ module.exports = {
         if (lastDepositTime && lastDepositTime.toDateString() !== now.toDateString()) {
             dailyDeposits = 0;
         }
-        console.log(dailyDeposits);
+        
         if (balance < amount) {
             var replyContent = `You can't deposit that much money into your bank account.\nYour current balance is only \`$${balance}\`.`;
         }
@@ -42,16 +42,43 @@ module.exports = {
                 var replyContent = `You can't deposit that much money into your bank account.\nYour balance is \`$${balance}\`,\nbut you currently can't pay the deposit fee: \`$${fee}\`.`;
             }
             else {
-                var embedReply = new EmbedBuilder({
-                    color: 0x5F0FD6,
-                    title: "Depositing.",
-                    description: replyContent,
-                    timestamp: new Date().toISOString(),
-                    footer: {
-                        text: `Requested by: ${interaction.user.username}`,
-                        icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+                const embedWarning = new MessageEmbed()
+                    .seTitle("Deposit Fee")
+                    .setDescription(`You've reached your daily free deposit limit, but you can still deposit money for a fee of \`$${fee}\`.\nDo you want to deposit the money?`)
+                    .setColor("#FF0000");
+                
+                const row = new ActionRowBuilder()
+                    .addComponents(
+                        new ButtonBuilder()
+                            .setCustomId("confirm")
+                            .setLabel("Confirm")
+                            .setStyle(ButtonStyle.Success),
+                        new ButtonBuilder()
+                            .setCustomId("cancel")
+                            .setLabel("Cancel")
+                            .setStyle(ButtonStyle.Danger)
+                    );
+                
+                const message = await interaction.reply({embeds: [embedWarning], components: [row], fetchReply: true});
+
+                const filter = i => i.user.id === interaction.user.id;
+                const collector = message.createMessageComponentCollector({ filter, time: 15000 });
+
+                collector.on("collect", async i => {
+                    if (i.customId === "confirm") {
+                        await db.query("UPDATE economy SET balance = balance - ?, balanceInBank = balanceInBank + ?, dailyDeposits = dailyDeposits + 1, lastDepositTime = ? WHERE userId = ?", [totalAmount, amount, now, userId]);
+                        await i.update({ content: 'Deposit successful!', embeds: [], components: [] });
+                    }
+                    else if (i.customId === "cancel") {
+                        await i.update({ content: 'Deposit canceled.', embeds: [], components: [] });
                     }
                 });
+
+                collector.on("end", collected => {
+                    if (collected.size === 0) {
+                        interaction.editReply({ content: "No response received. Deposit canceled.", embeds: [], components: [] });
+                    }
+                })
             }
         }
         else {
