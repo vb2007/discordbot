@@ -42,10 +42,16 @@ module.exports = {
                 var replyContent = `You can't deposit that much money into your bank account.\nYour balance is \`$${balance}\`,\nbut you currently can't pay the deposit fee: \`$${fee}\`.`;
             }
             else {
-                const embedWarning = new MessageEmbed()
-                    .seTitle("Deposit Fee")
-                    .setDescription(`You've reached your daily free deposit limit, but you can still deposit money for a fee of \`$${fee}\`.\nDo you want to deposit the money?`)
-                    .setColor("#FF0000");
+                var embedWarning = new EmbedBuilder({
+                    color: 0xFF0000,
+                    title: "Deposit Fee",
+                    description: `You've reached your daily free deposit limit, but you can still deposit money for a fee of \`$${fee}\`.\nDo you want to deposit the money?`,
+                    timestamp: new Date().toISOString(),
+                    footer: {
+                        text: `Requested by: ${interaction.user.username}`,
+                        icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+                    }
+                });
                 
                 const row = new ActionRowBuilder()
                     .addComponents(
@@ -66,7 +72,14 @@ module.exports = {
 
                 collector.on("collect", async i => {
                     if (i.customId === "confirm") {
-                        await db.query("UPDATE economy SET balance = balance - ?, balanceInBank = balanceInBank + ?, dailyDeposits = dailyDeposits + 1, lastDepositTime = ? WHERE userId = ?", [totalAmount, amount, now, userId]);
+                        await db.query("UPDATE economy SET balance = balance - ?, balanceInBank = balanceInBank + ?, dailyDeposits = dailyDeposits + 1, lastDepositTime = ? WHERE userId = ?",
+                            [
+                                totalAmount,
+                                amount,
+                                now,
+                                interactionUserId
+                            ]
+                        );
                         await i.update({ content: 'Deposit successful!', embeds: [], components: [] });
                     }
                     else if (i.customId === "cancel") {
@@ -94,21 +107,21 @@ module.exports = {
             var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\`.\nYour current balance in the bank is \`$${balanceInBank + amount}\`.`;
         }
 
-        var embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Depositing.",
-            description: replyContent,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}`,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-            }
-        });
+        // var embedReply = new EmbedBuilder({
+        //     color: 0x5F0FD6,
+        //     title: "Depositing.",
+        //     description: replyContent,
+        //     timestamp: new Date().toISOString(),
+        //     footer: {
+        //         text: `Requested by: ${interaction.user.username}`,
+        //         icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+        //     }
+        // });
 
-        await interaction.reply({ embeds: [embedReply] });
+        // await interaction.reply({ embeds: [embedReply] });
 
         //logging
-        const response = JSON.stringify(embedReply.toJSON());
-		await logToFileAndDatabase(interaction, response);
+        // const response = JSON.stringify(embedReply.toJSON());
+		// await logToFileAndDatabase(interaction, response);
     }
 }
