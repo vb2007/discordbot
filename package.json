@@ -4,9 +4,15 @@
   "description": "A simple discord bot of mine developed with discord.js (Node.js).",
   "main": "index.js",
   "keywords": [
-    "discordbot",
     "discord",
+    "discordjs",
+    "discordbot",
     "bot",
+    "economy",
+    "gambling",
+    "moderation",
+    "administration",
+    "utility",
     "sql",
     "mariadb"
   ],
