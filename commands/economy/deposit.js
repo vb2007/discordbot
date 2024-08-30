@@ -17,6 +17,8 @@ module.exports = {
                 .setRequired(true))
         .setDMPermission(false),
     async execute(interaction) {
+        let isCommandReplied = false;
+
         const amount = interaction.options.getInteger("amount");
         const interactionUserId = interaction.user.id;
         const query = await db.query("SELECT balance, balanceInBank, dailyDeposits, lastDepositTime FROM economy WHERE userId = ?", [interactionUserId]);
@@ -42,7 +44,7 @@ module.exports = {
                 var replyContent = `You can't deposit that much money into your bank account.\nYour balance is \`$${balance}\`,\nbut you currently can't pay the deposit fee: \`$${fee}\`.`;
             }
             else {
-                var embedWarning = new EmbedBuilder({
+                var embedReply = new EmbedBuilder({
                     color: 0xFF0000,
                     title: "Deposit Fee",
                     description: `You've reached your daily free deposit limit, but you can still deposit money for a fee of \`$${fee}\`.\nDo you want to deposit the money?`,
@@ -65,7 +67,7 @@ module.exports = {
                             .setStyle(ButtonStyle.Danger)
                     );
                 
-                const message = await interaction.reply({embeds: [embedWarning], components: [row], fetchReply: true});
+                const message = await interaction.reply({embeds: [embedReply], components: [row], fetchReply: true});
 
                 const filter = i => i.user.id === interaction.user.id;
                 const collector = message.createMessageComponentCollector({ filter, time: 15000 });
@@ -107,21 +109,23 @@ module.exports = {
             var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\`.\nYour current balance in the bank is \`$${balanceInBank + amount}\`.`;
         }
 
-        // var embedReply = new EmbedBuilder({
-        //     color: 0x5F0FD6,
-        //     title: "Depositing.",
-        //     description: replyContent,
-        //     timestamp: new Date().toISOString(),
-        //     footer: {
-        //         text: `Requested by: ${interaction.user.username}`,
-        //         icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        //     }
-        // });
+        if (!isCommandReplied) {
+            var embedReply = new EmbedBuilder({
+                color: 0x5F0FD6,
+                title: "Depositing.",
+                description: replyContent,
+                timestamp: new Date().toISOString(),
+                footer: {
+                    text: `Requested by: ${interaction.user.username}`,
+                    icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+                }
+            });
 
-        // await interaction.reply({ embeds: [embedReply] });
+            await interaction.reply({ embeds: [embedReply] });
+        }
 
         //logging
-        // const response = JSON.stringify(embedReply.toJSON());
-		// await logToFileAndDatabase(interaction, response);
+        const response = JSON.stringify(embedReply.toJSON());
+		await logToFileAndDatabase(interaction, response);
     }
 }
