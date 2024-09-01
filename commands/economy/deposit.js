@@ -4,7 +4,7 @@ const db = require("../../helpers/db");
 
 //should be configureable in the future with the config.json file
 const dailyDepositLimit = 10;
-const feePercentage = 0.5;
+const feePercentage = 0.3;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -69,6 +69,7 @@ module.exports = {
                     );
                 
                 const message = await interaction.reply({embeds: [embedReply], components: [row], fetchReply: true});
+                isCommandReplied = true;
 
                 const filter = i => i.user.id === interaction.user.id;
                 const collector = message.createMessageComponentCollector({ filter, time: 15000 });
@@ -121,7 +122,7 @@ module.exports = {
                     icon_url: interaction.user.displayAvatarURL({ dynamic: true })
                 }
             });
-0
+
             await interaction.reply({ embeds: [embedReply] });
         }
 

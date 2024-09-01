@@ -148,5 +148,7 @@ module.exports = {
     embedReplyPrimaryColor,
     embedReplySuccessColor,
     embedReplySuccessSecondaryColor,
+    embedReplyFailureColor,
+    embedReplyWarningColor,
     moderationDmEmbedReply,
 }
