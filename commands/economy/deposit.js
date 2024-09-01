@@ -31,6 +31,7 @@ module.exports = {
         //resets daily deposits if the last deposit was not today
         if (lastDepositTime && lastDepositTime.toDateString() !== now.toDateString()) {
             dailyDeposits = 0;
+            await db.query("UPDATE economy SET dailyDeposits = 0 WHERE userId = ?", [interactionUserId]);
         }
         
         if (balance < amount) {
@@ -120,7 +121,7 @@ module.exports = {
                     icon_url: interaction.user.displayAvatarURL({ dynamic: true })
                 }
             });
-
+0
             await interaction.reply({ embeds: [embedReply] });
         }
 
