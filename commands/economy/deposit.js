@@ -72,7 +72,7 @@ module.exports = {
                 isCommandReplied = true;
 
                 const filter = i => i.user.id === interaction.user.id;
-                const collector = message.createMessageComponentCollector({ filter, time: 15000 });
+                const collector = message.createMessageComponentCollector({ filter, time: 30000 });
 
                 collector.on("collect", async i => {
                     if (i.customId === "confirm") {
