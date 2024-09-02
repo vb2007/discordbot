@@ -28,22 +28,22 @@ module.exports = {
             const targetUserId = interaction.options.getUser("user")?.id || null;
 
             if(!targetUserId) {
-                var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
+                var query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [interactionUserId]);
 
                 var localEmbedResponse = embedReply(
                     embedColors.primary,
                     "Balance",
-                    `<@${interactionUserId}>'s balance is **${query[0]?.balance}**. :moneybag:`,
+                    `<@${interactionUserId}>'s balance is \`$${query[0]?.balance}\`. :moneybag:\nTheir bank balance is \`$${query[0]?.balanceInBank}\`. :bank:`,
                     interaction
                 );
             }
             else {
-                var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
+                var query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [targetUserId]);
 
                 var localEmbedResponse = embedReply(
                     embedColors.primary,
                     "Balance",
-                    `<@${targetUserId}>'s balance is **${query[0]?.balance}**. :moneybag:`,
+                    `<@${targetUserId}>'s balance is **${query[0]?.balance}**. :moneybag:\nTheir bank balance is **${query[0]?.balanceInBank}**. :bank:`,
                     interaction
                 );
             }
