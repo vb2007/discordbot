@@ -20,7 +20,7 @@ module.exports = {
         const balanceInBank = Number(query[0]?.balanceInBank) || 0;
 
         if (balanceInBank < amount) {
-            var replyContent = `You can't withdraw that much money from your bank account.\nYour current bank balance is only \`$${balanceInBank}\`.`;
+            var replyContent = `You can't withdraw that much money from your bank account.\nYour current bank balance is only \`$${balanceInBank}\`. :bank:`;
         }
         else {
             await db.query("UPDATE economy SET balance = balance + ?, balanceInBank = balanceInBank - ? WHERE userId = ?",
@@ -31,7 +31,7 @@ module.exports = {
                 ]
             );
 
-            var replyContent = `You've successfully withdrawn \`$${amount}\` from your bank account.\nYour current balance in the bank is \`$${balanceInBank - amount}\`.\nYour current balance is \`$${balance + amount}\`.`;
+            var replyContent = `You've successfully withdrawn \`$${amount}\` from your bank account.\nYour current balance in the bank is \`$${balanceInBank - amount}\`. :bank:\nYour current balance is \`$${balance + amount}\`. :moneybag:`;
         }
 
         var embedReply = new EmbedBuilder({
