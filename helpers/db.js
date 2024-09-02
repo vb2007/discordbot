@@ -38,7 +38,7 @@ function getConnection() {
     });
 }
 
-function handleError(error){
+function handleError(error) {
     console.error("Error while trying to connect to the database: ", error);
     process.exit(1);
 }
