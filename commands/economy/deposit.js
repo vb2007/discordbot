@@ -35,7 +35,7 @@ module.exports = {
         }
         
         if (balance < amount) {
-            var replyContent = `You can't deposit that much money into your bank account.\nYour current balance is only \`$${balance}\`.`;
+            var replyContent = `You can't deposit that much money into your bank account.\nYour current balance is only \`$${balance}\`. :moneybag:`;
         }
         else if (dailyDeposits >= dailyDepositLimit) {
             const fee = amount * feePercentage;
@@ -66,7 +66,7 @@ module.exports = {
                             .setCustomId("cancel")
                             .setLabel("Cancel")
                             .setStyle(ButtonStyle.Danger)
-                    );
+                );
                 
                 const message = await interaction.reply({embeds: [embedReply], components: [row], fetchReply: true});
                 isCommandReplied = true;
@@ -108,7 +108,7 @@ module.exports = {
                 ]
             );
 
-            var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\`.\nYour current balance in the bank is \`$${balanceInBank + amount}\`.`;
+            var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\`. :moneybag:\nYour current balance in the bank is \`$${balanceInBank + amount}\`. :bank:`;
         }
 
         if (!isCommandReplied) {
