@@ -45,16 +45,11 @@ module.exports = {
                 var replyContent = `You can't deposit that much money into your bank account.\nYour balance is \`$${balance}\`,\nbut you currently can't pay the deposit fee: \`$${fee}\`.`;
             }
             else {
-                var embedReply = new EmbedBuilder({
-                    color: 0xFF0000,
-                    title: "Deposit Fee",
-                    description: `You've reached your daily free deposit limit, but you can still deposit money for a fee of \`$${fee}\`.\nDo you want to deposit the money?`,
-                    timestamp: new Date().toISOString(),
-                    footer: {
-                        text: `Requested by: ${interaction.user.username}`,
-                        icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-                    }
-                });
+                const embedReply = embedReplyWarningColor(
+                    "Deposit Fee",
+                    `You've reached your daily free deposit limit, but you can still deposit money for a fee of \`$${fee}\`.\nDo you want to deposit the money?`,
+                    interaction
+                );
                 
                 const row = new ActionRowBuilder()
                     .addComponents(
