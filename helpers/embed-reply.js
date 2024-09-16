@@ -31,7 +31,7 @@ function embedReply(color, title, description, interaction) {
  */
 function embedReplyPrimaryColor(title, description, interaction) {
     const embedReply = new EmbedBuilder({
-        color: embedColors.primary,
+        color: parseInt(embedColors.primary),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -52,7 +52,7 @@ function embedReplyPrimaryColor(title, description, interaction) {
  */
 function embedReplySuccessColor(title, description, interaction) {
     const embedReply = new EmbedBuilder({
-        color: embedColors.success,
+        color: parseInt(embedColors.success),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -73,7 +73,7 @@ function embedReplySuccessColor(title, description, interaction) {
  */
 function embedReplySuccessSecondaryColor(title, description, interaction) {
     const embedReply = new EmbedBuilder({
-        color: embedColors.successSecondary,
+        color: parseInt(embedColors.successSecondary),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -94,7 +94,7 @@ function embedReplySuccessSecondaryColor(title, description, interaction) {
  */
 function embedReplyFailureColor(title, description, interaction) {
     const embedReply = new EmbedBuilder({
-        color: embedColors.failure,
+        color: parseInt(embedColors.failure),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -115,7 +115,7 @@ function embedReplyFailureColor(title, description, interaction) {
  */
 function embedReplyWarningColor(title, description, interaction) {
     const embedReply = new EmbedBuilder({
-        color: embedColors.warning,
+        color: parseInt(embedColors.warning),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -130,7 +130,7 @@ function embedReplyWarningColor(title, description, interaction) {
 
 function moderationDmEmbedReplyFailureColor(title, description, interaction) {
     const embedDmReply = new EmbedBuilder({
-        color: embedColors.failure,
+        color: parseInt(embedColors.failure),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -153,7 +153,7 @@ function moderationDmEmbedReplyFailureColor(title, description, interaction) {
  */
 function embedReplyImg(color, title, description, image, interaction) {
     const embedReply = new EmbedBuilder({
-        color: color,
+        color: parseInt(color),
         title: title,
         description: description,
         image: {
@@ -178,7 +178,7 @@ function embedReplyImg(color, title, description, image, interaction) {
  */
 function embedReplyPrimaryColorImg(title, description, image, interaction) {
     const embedReply = new EmbedBuilder({
-        color: embedColors.primary,
+        color: parseInt(embedColors.primary),
         title: title,
         description: description,
         image: {
