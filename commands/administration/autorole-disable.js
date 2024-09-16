@@ -48,7 +48,7 @@ module.exports = {
                     var localEmbedResponse = embedReply(
                         embedColors.warning,
                         "AutoRole Disable: Warning",
-                        "Autorole has not been configured for this server.\nTherefore, you can't disable it.\nYou can enable this feature with `/autorole-configure`",
+                        "Autorole has not been configured for this server.\nTherefore, you can't disable it.\nYou can enable this feature with `/autorole-configure`.",
                         interaction
                     );
                 }

@@ -128,9 +128,9 @@ function embedReplyWarningColor(title, description, interaction) {
     return embedReply;
 }
 
-function moderationDmEmbedReply(color, title, description, interaction) {
+function moderationDmEmbedReplyFailureColor(title, description, interaction) {
     const embedDmReply = new EmbedBuilder({
-        color: parseInt(color),
+        color: embedColors.failure,
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -201,7 +201,7 @@ module.exports = {
     embedReplySuccessSecondaryColor,
     embedReplyFailureColor,
     embedReplyWarningColor,
-    moderationDmEmbedReply,
+    moderationDmEmbedReplyFailureColor,
     embedReplyImg,
     embedReplyPrimaryColorImg,
 }

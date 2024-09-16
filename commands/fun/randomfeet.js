@@ -57,7 +57,7 @@ module.exports = {
 
         const links = await loadLinks();
 
-        //random képet választ a listából
+        //picks a random image from the array
         const randomFeet = links[Math.floor(Math.random() * links.length)];
         
         if (randomFeet == "https://vb2007.hu/cdn/feetpics/145.jpg") {

@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
+const { embedReplySuccessColor, embedReplyFailureColor } = require('../../helpers/embed-reply');
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -16,19 +17,35 @@ module.exports = {
         const messageAmount = interaction.options.get("amount").value;
         
         if (!interaction.inGuild()) {
-            var replyContent = "You can only purge messages in a server.";
+            var embedReply = embedReplyFailureColor(
+                "Purge - Error",
+                "You can only purge messages in a server.",
+                interaction
+            );
         }
         else if (messageAmount > 100){
-            var replyContent = "Cannot delete more than 100 messages at once due to Discord's limitations.";
+            var embedReply = embedReplyFailureColor(
+                "Purge - Error",
+                "Cannot delete more than 100 messages at once due to Discord's limitations.\nPlease try again with a lower amount.\nRun the command multiple times if needed.",
+                interaction
+            );
         }
         else{
             try{
                 await interaction.channel.bulkDelete(messageAmount);
-                var replyContent = `Deleted ${messageAmount} messages successfully.`;
+                var embedReply = embedReplySuccessColor(
+                    "Purge - Success",
+                    `Deleted ${messageAmount} messages successfully.`,
+                    interaction
+                );
             }
             catch (error){
                 console.error(error);
-                var replyContent = "There was an error trying to purge the messages.";
+                var embedReply = embedReplyFailureColor(
+                    "Purge - Error",
+                    "There was an error trying to purge the messages.",
+                    interaction
+                );
             }
         }
 
@@ -39,17 +56,6 @@ module.exports = {
 
         const row = new ActionRowBuilder()
             .addComponents(deleteButton);
-
-        const embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Purging messages.",
-            description: `${replyContent}`,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            },
-        });
 
         await interaction.reply({
             embeds: [embedReply],
