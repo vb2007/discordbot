@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
+const { embedReplyPrimaryColorImg, embedReplyImg } = require("../../helpers/embed-reply");
 const fs = require("fs");
 const path = require("path");
 const linksFile = "./data/links.json"; 
@@ -38,7 +39,7 @@ async function loadLinks() {
         links = JSON.parse(fs.readFileSync(linksFile));
     }
     catch {
-        links = await scrapeLinks("https://vb2007.hu/cdn/feetpics/");
+        links = await scrapeLinks("https://cdn.vb2007.hu/autoindex/feetpics/");
 
         await fs.writeFileSync(linksFile, JSON.stringify(links));
     }
@@ -58,35 +59,24 @@ module.exports = {
 
         //random képet választ a listából
         const randomFeet = links[Math.floor(Math.random() * links.length)];
-
-        var embedReplyColor;
-        var embedReplyTitle;
-        var embedReplyDescription;
         
         if (randomFeet == "https://vb2007.hu/cdn/feetpics/145.jpg") {
-            embedReplyColor = 0xEBB22F;
-            embedReplyTitle = "CONGRATULATIONS!";
-            embedReplyDescription = "You found the hidden feetpic! :tada:";
+            var embedReply = embedReplyImg(
+                0xEBB22F,
+                "CONGRATULATIONS!",
+                "You found the hidden feetpic! :tada:",
+                randomFeet,
+                interaction
+            );
         }
         else{
-            embedReplyColor = 0x5F0FD6;
-            embedReplyTitle = "Randomfeet.";
-            embedReplyDescription = "Here is a random feetpic:";
+            var embedReply = embedReplyPrimaryColorImg(
+                "Randomfeet.",
+                "Here is a random feetpic:",
+                randomFeet,
+                interaction
+            );
         }
-
-        const embedReply = new EmbedBuilder({
-            color: embedReplyColor,
-            title: embedReplyTitle,
-            description: embedReplyDescription,
-            image: {
-                url: `${randomFeet}`
-            },
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            },
-        });
 
         await interaction.editReply({ embeds: [embedReply] });
 
