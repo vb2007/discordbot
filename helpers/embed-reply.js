@@ -152,7 +152,7 @@ function moderationDmEmbedReply(color, title, description, interaction) {
  */
 function embedReplyPrimaryColorImg(title, description, image, interaction) {
     const embedReply = new EmbedBuilder({
-        color: parseInt(color),
+        color: embedColors.primary,
         title: title,
         description: description,
         image: {
