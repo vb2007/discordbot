@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
+const { embedReplyPrimaryColor, embedReplyFailureColor, embedReplySuccessColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -19,7 +20,11 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         if (!interaction.inGuild) {
-            var replyContent = "You can only pay out a member in a server.";
+            var embedReply = embedReplyFailureColor(
+                "Payment - Error",
+                "You can only pay out a member in a server.",
+                interaction
+            );
         }
         else {
             const amount = interaction.options.getInteger("amount");
@@ -33,10 +38,18 @@ module.exports = {
             const targetUserBalance = targetUserBalanceQuery[0]?.balance || null;
 
             if (amount > userBalance) {
-                var replyContent = `:x: You can't pay that much money to <@${targetUserId}>!\nYour balance is only \`$${userBalance}\`.`;
+                var embedReply = embedReplyFailureColor(
+                    "Payment - Error",
+                    `:x: You can't pay that much money to <@${targetUserId}>!\nYour balance is only \`$${userBalance}\`.`,
+                    interaction
+                );
             }
             else if (amount <= 0) {
-                var replyContent = `:x: You can't pay a negative or zero amount of money to <@${targetUserId}>!\nTry again with a positive amount.`;
+                var embedReply = embedReplyFailureColor(
+                    "Payment - Error",
+                    `:x: You can't pay a negative or zero amount of money to <@${targetUserId}>!\nTry again with a positive amount.`,
+                    interaction
+                );
             }
             else {
                 await db.query("UPDATE economy SET balance = balance - ? WHERE userId = ?",
@@ -63,20 +76,13 @@ module.exports = {
                     );
                 }
 
-                var replyContent = `:white_check_mark: <@${interactionUserId}> has successfully paid \`$${amount}\` to <@${targetUserId}>.`;
+                var embedReply = embedReplySuccessColor(
+                    "Payment successful",
+                    `:white_check_mark: <@${interactionUserId}> has successfully paid \`$${amount}\` to <@${targetUserId}>.`,
+                    interaction
+                );
             }
         }
-
-        const embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Paying to a member.",
-            description: replyContent,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}`,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            },
-        });
 
         await interaction.reply({ embeds: [embedReply] });
 
