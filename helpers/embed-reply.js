@@ -143,6 +143,31 @@ function moderationDmEmbedReply(color, title, description, interaction) {
     return embedDmReply;
 }
 
+/**
+ * @param {title} title - Embed's title
+ * @param {description} description - Embed's description
+ * @param {image} image - An image (url) that will show up in the embed
+ * @param {interaction} interaction - Interaction object from the command
+ * @returns {embedReply} An embed reply object
+ */
+function embedReplyPrimaryColorImg(title, description, image, interaction) {
+    const embedReply = new EmbedBuilder({
+        color: parseInt(color),
+        title: title,
+        description: description,
+        image: {
+            url: `${image}`
+        },
+        timestamp: new Date().toISOString(),
+        footer: {
+            text: `Requested by: ${interaction.user.username}`,
+            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+        }
+    });
+
+    return embedReply;
+}
+
 module.exports = {
     embedReply,
     embedReplyPrimaryColor,
@@ -151,4 +176,5 @@ module.exports = {
     embedReplyFailureColor,
     embedReplyWarningColor,
     moderationDmEmbedReply,
+    embedReplyPrimaryColorImg
 }
