@@ -1,5 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-const { embedReplyPrimaryColorWithFieldsAndAuthor } = require("../../helpers/embed-reply");
+const { SlashCommandBuilder } = require('discord.js');
+const { embedReplyPrimaryColorWithFieldsAndAuthor, embedReplyFailureColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -9,14 +9,16 @@ module.exports = {
 		.setDMPermission(false),
 	async execute(interaction) {
 		if(!interaction.inGuild()) {
-			var authorField = {};
-			var embedFields = [];
-			var embedDescription = "This function is only avalible on servers.";
+			const embedReply = embedReplyFailureColor(
+				"Server information - Error",
+				"This function is only avalible on servers.",
+				interaction
+			);
 		}
 		else {
 			// const { guild } = interaction;
 
-			var embedReply = embedReplyPrimaryColorWithFieldsAndAuthor(
+			const embedReply = embedReplyPrimaryColorWithFieldsAndAuthor(
 				"Server information.",
 				"",
 				[
