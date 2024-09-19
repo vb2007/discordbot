@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const { embedReplyPrimaryColorWithFields } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
@@ -13,7 +13,7 @@ module.exports = {
             "",
             [
                 { name: "Pong! :ping_pong:", value: ""},
-                { name: "Response time: ", value: `${Date.now() - interaction.createdTimestamp}ms`, inline: true },
+                { name: "Response time: ", value: `${Date.now() - interaction.createdTimestamp}ms`, inline: true }
             ],
             interaction
         );
