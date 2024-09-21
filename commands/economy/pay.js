@@ -40,14 +40,14 @@ module.exports = {
             if (amount > userBalance) {
                 var embedReply = embedReplyFailureColor(
                     "Payment - Error",
-                    `:x: You can't pay that much money to <@${targetUserId}>!\nYour balance is only \`$${userBalance}\`.`,
+                    `You can't pay that much money to <@${targetUserId}>! :x:\nYour balance is only \`$${userBalance}\`.`,
                     interaction
                 );
             }
             else if (amount <= 0) {
                 var embedReply = embedReplyFailureColor(
                     "Payment - Error",
-                    `:x: You can't pay a negative or zero amount of money to <@${targetUserId}>!\nTry again with a positive amount.`,
+                    `You can't pay a negative or zero amount of money to <@${targetUserId}>! :x:\nTry again with a positive amount.`,
                     interaction
                 );
             }
@@ -78,7 +78,7 @@ module.exports = {
 
                 var embedReply = embedReplySuccessColor(
                     "Payment successful",
-                    `:white_check_mark: <@${interactionUserId}> has successfully paid \`$${amount}\` to <@${targetUserId}>.`,
+                    `<@${interactionUserId}> has successfully paid \`$${amount}\` to <@${targetUserId}>. :white_check_mark:`,
                     interaction
                 );
             }
