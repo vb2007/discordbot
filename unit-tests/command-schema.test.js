@@ -12,7 +12,7 @@ jest.mock('../helpers/db', () => ({
     
 }));
 
-describe("Command structure test", () => {
+describe("Command structure base test", () => {
     test("All commands should have \"data\" and \"execute\" properties", () => {
         const foldersPath = path.join(__dirname, "..", "commands");
         const commandFolders = fs.readdirSync(foldersPath);
@@ -26,6 +26,7 @@ describe("Command structure test", () => {
                 const command = require(filePath);
 
                 expect(command).toHaveProperty("data");
+                expect(command).toHaveProperty("execute");
             })
         })
     });

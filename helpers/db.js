@@ -1,5 +1,10 @@
+require('dotenv').config()
+const databaseHostAddress = process.env.DATABASE_HOST_ADDRESS;
+const databaseName = process.env.DATABASE_NAME;
+const databaseUser = process.env.DATABASE_USER;
+const databasePassword = process.env.DATABASE_PASSWORD;
+
 const mariadb = require("mariadb");
-const { databaseHostAddress, databaseName, databaseUser, databasePassword } = require("../config.json");
 
 let pool;
 
@@ -33,7 +38,7 @@ function getConnection() {
     });
 }
 
-function handleError(error){
+function handleError(error) {
     console.error("Error while trying to connect to the database: ", error);
     process.exit(1);
 }

@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
+const { embedReplyFailureColor, embedReplySuccessColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -14,7 +15,11 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         if (!interaction.inGuild()) {
-            var replyContent = "You can only rob from a member in a server.";
+            var embedReply = embedReplyFailureColor(
+                "Robbing - Error",
+                "You can only rob from a member in a server.",
+                interaction
+            );
         }
         else {
             const query = await db.query("SELECT userId, lastRobTime FROM economy WHERE userId = ?", [interaction.user.id]);
@@ -25,7 +30,11 @@ module.exports = {
             const targetUserId = interaction.options.getUser("target").id;
 
             if (targetUserId == interaction.user.id) {
-                var replyContent = "Why are you trying to rob from yourself? :clown:\n**TIP:** If you're having trouble finding a target, try using the \`/leaderboard\` command."
+                var embedReply = embedReplyFailureColor(
+                    "Robbing - Error",
+                    "Why are you trying to rob from yourself? :clown:\n**TIP:** If you're having trouble finding a target, try using the \`/leaderboard\` command.",
+                    interaction
+                );
             }
             else {
                 if (!lastRobTime || lastRobTime <= nextApprovedRobTimeUTC) {
@@ -67,31 +76,33 @@ module.exports = {
                             );
                         }
 
-                        var replyContent = `<@${interaction.user.id}> has successfully robbed \`$${robAmount}\` from <@${targetUserId}>.`;
+                        var embedReply = embedReplySuccessColor(
+                            "Robbing successful",
+                            `<@${interaction.user.id}> has successfully robbed \`$${robAmount}\` from <@${targetUserId}>.`,
+                            interaction
+                        );
                     }
                     else {
-                        var replyContent = `Your target (<@${targetUserId}>) must have a minimum of \`$50\`.\nPlease choose another target.\n**TIP:** You can check how much money the top memebers have with the \`/leaderboard\` command.`;
+                        var embedReply = embedReplyFailureColor(
+                            "Robbing - Error",
+                            `Your target (<@${targetUserId}>) must have a minimum of \`$50\`.\nPlease choose another target.\n**TIP:** You can check how much money the top memebers have with the \`/leaderboard\` command.`,
+                            interaction
+                        );
                     }
                 }
                 else {
                     const remainingTimeInSeconds = Math.ceil((lastRobTime.getTime() - nextApprovedRobTimeUTC.getTime()) / 1000);
                     const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
                     const remainingSeconds = remainingTimeInSeconds % 60;
-                    var replyContent = `You've already robbed in the last 30 minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to **rob** again.`;
+
+                    var embedReply = embedReplyFailureColor(
+                        "Robbing - Error",
+                        `You've already robbed in the last 30 minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to **rob** again.`,
+                        interaction
+                    );
                 }
             }
         }
-
-        var embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Robbing a member.",
-            description: replyContent,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            },
-        });
 
         await interaction.reply({ embeds: [embedReply] });
 

@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { embedReplySuccessColor, embedReplyFailureColor, moderationDmEmbedReplyFailureColor } = require('../../helpers/embed-reply');
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -22,29 +23,39 @@ module.exports = {
         const reason = interaction.options.getString("reason") || "No reason provided";
 
         if (!interaction.inGuild()) {
-            var replyContent = "You can only kick members in a server.";
+            var embedReply = embedReplyFailureColor(
+                "Kick - Error",
+                "You can only kick members in a server.",
+                interaction
+            );
         }
         else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.KickMembers)) {
-            var replyContent = "Bot lacks the kick permission, cannot kick member.";
+            var embedReply = embedReplyFailureColor(
+                "Kick - Error",
+                "Bot lacks the kick permission, cannot kick target member.",
+                interaction
+            );
         }
         else if (!targetUser.kickable) {
-            var replyContent = `The bot cannot kick user **${targetUser.tag}**.\nMaybe your, or the bot's rank is lower than theirs?`;
+            var embedReply = embedReplyFailureColor(
+                "Kick - Error",
+                `The bot cannot kick user **${targetUser.tag}**.\nMaybe your, or the bot's rank is lower than theirs?`,
+                interaction
+            );
         }
         else{
             try {
                 await interaction.guild.members.kick(targetUser, { reason: reason });
+
                 var replyContent = `Successfully kicked user **${targetUser.tag}** for: **${reason}**`;
+
                 try {
-                    const embedDmReply = new EmbedBuilder({
-                        color: 0x5F0FD6,
-                        title: "You have been kicked.",
-                        description: `You have kicked out from **${interaction.guild.name}** for: **${reason}** \nIf you believe this was a mistake, please contact a moderator.`,
-                        timestamp: new Date().toISOString(),
-                        footer: {
-                            text: `Moderator: ${interaction.user.username}` ,
-                            icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-                        },
-                    });
+                    var embedDmReply = moderationDmEmbedReplyFailureColor(
+                        "You have been kicked.",
+                        `You have kicked out from **${interaction.guild.name}** for: **${reason}** \nIf you believe this was a mistake, please contact a moderator.`,
+                        interaction
+                    );
+
                     await targetUser.send({ embeds: [embedDmReply] });
                     replyContent += "\nThe user was notified about the action & reason in their DMs.";
                 }
@@ -52,23 +63,22 @@ module.exports = {
                     console.error(error);
                     replyContent += "\nThere was an error while trying to DM the user.";
                 }
+
+                var embedReply = embedReplySuccessColor(
+                    "Kick - Success",
+                    replyContent,
+                    interaction
+                );
             }
             catch(error) {
                 console.error(error);
-                var replyContent = "There was an error while trying to kick the user.";
+                var embedReply = embedReplyFailureColor(
+                    "Kick - Error",
+                    "There was an error while trying to kick the user.",
+                    interaction
+                );
             }
         }
-
-        const embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Kicking a user out.",
-            description: replyContent,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            },
-        });
 
         await interaction.reply({ embeds: [embedReply] });
 

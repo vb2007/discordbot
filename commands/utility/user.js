@@ -1,4 +1,5 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
+const { embedReplyPrimaryColorWithFields } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -17,11 +18,10 @@ module.exports = {
 		const targetUser = interaction.options.getUser("user") || interaction.user;
 		const targetMember = await interaction.guild.members.fetch(targetUser.id);
 
-		const embedReply = new EmbedBuilder({
-			color: 0x5F0FD6,
-			title: "User information.",
-			// thumbnail: targetUser.displayAvatarURL({ dynamic: true }),
-			fields: [
+		const embedReply = embedReplyPrimaryColorWithFields(
+			"User information.",
+			"",
+			[
 				{ name: "Username", value: targetUser.username || "None", inline : true },
 				{ name: "Display name", value: targetUser.globalName || "None", inline : true },
 				{ name: "Nickname", value: targetMember.nickname || "None", inline : true },
@@ -47,12 +47,8 @@ module.exports = {
 				// { name: "Is custom status?", value: targetUser.presence.activities[0]?.type === "CUSTOM_STATUS", inline : true },
 				// { name: "Is competing?", value: targetUser.presence.activities[0]?.type === "COMPETING", inline : true },
 			],
-			timestamp: new Date().toISOString(),
-			footer: {
-				text: `Requested by: ${interaction.user.username}` ,
-				icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-			},
-		});
+			interaction
+		);
 
 		await interaction.reply({ embeds: [embedReply]});
 

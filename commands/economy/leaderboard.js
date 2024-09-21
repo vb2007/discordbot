@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
+const { embedReplyPrimaryColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
 const db = require("../../helpers/db");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
@@ -17,10 +18,18 @@ module.exports = {
         var amount = interaction.options.getInteger("amount") || 10;
 
         if(!interaction.inGuild()) {
-            var replyContent = "You can only check a member's balance in a server.";
+            var embedReply = embedReplyFailureColor(
+                "Leaderboard - Error",
+                "You can only check a member's balance in a server.",
+                interaction
+            );
         }
         else if (amount > 100){
-            var replyContent = "Cannot display more than 100 users.\nPlease try again with a smaller amount.";
+            var embedReply =  embedReplyFailureColor(
+                "Leaderboard - Error",
+                "Cannot display more than 100 users.\nPlease try again with a smaller amount.",
+                interaction
+            );
         }
         else {
             var query = await db.query("SELECT userId, balance FROM economy ORDER BY balance DESC LIMIT ?", [amount]);
@@ -37,24 +46,20 @@ module.exports = {
             var replyContent = replyContent + `\n\nEnd of the leaderboard. :eyes:\nThis server has **${totalUserAmount}** user${totalUserAmount !== 1 ? 's' : ''} with a balance.`;
 
             if (actualUserAmount == 0) {
-                var replyTitle = "Empty leaderboard.";
-                var replyContent = "There are no users with a balance on this server.\nUse the `/work` command to be the first one on this list! :grin:"
+                var embedReply = embedReplyFailureColor(
+                    "Empty leaderboard.",
+                    "There are no users with a balance on this server.\nUse the `/work` command to be the first one on this list! :grin:",
+                    interaction
+                );
             }
             else {
-                var replyTitle = `Server leaderboard: TOP ${actualUserAmount} user${actualUserAmount !== 1 ? 's' : ''}.`;
+                var embedReply = embedReplyPrimaryColor(
+                    `Server leaderboard: TOP ${actualUserAmount} user${actualUserAmount !== 1 ? 's' : ''}.`,
+                    replyContent,
+                    interaction
+                );
             }
         }
-
-        var embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: replyTitle,
-            description: replyContent,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}`,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-            }
-        });
 
         await interaction.reply({ embeds: [embedReply] });
 

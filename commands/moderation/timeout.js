@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits, time } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { embedReplySuccessColor, embedReplyFailureColor, moderationDmEmbedReplyFailureColor } = require('../../helpers/embed-reply');
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -57,29 +58,39 @@ module.exports = {
         const [ time, timeString ] = timeInMs(timeInput);
 
         if (!interaction.inGuild()) {
-            var replyContent = "You can only timeout members in a server.";
+            var embedReply = embedReplyFailureColor(
+                "Timeout - Error",
+                "You can only timeout members in a server.",
+                interaction
+            );
         }
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.MuteMembers)) {
-            var replyContent = "Bot **lacks the timeout(aka. mute) permission**, cannot time out the member.";
+            var embedReply = embedReplyFailureColor(
+                "Timeout - Error",
+                "Bot **lacks the timeout(aka. mute) permission**, cannot time out the member.",
+                interaction
+            );
         }
         else if(isNaN(time)) {
-            var replyContent = time;
+            var embedReply = embedReplyFailureColor(
+                "Timeout - Error",
+                time,
+                interaction
+            );
         }
         else{
             try{
                 await targetUser.timeout(time, reason);
+
                 var replyContent = `Successfully timed out user ${targetUser} for **${timeString}**, with reason: **${reason}**`;
+
                 try{
-                    const embedDmReply = new EmbedBuilder({
-                        color: 0x5F0FD6,
-                        title: "You have been timed out.",
-                        description: `You have been timed out in **${interaction.guild.name}** for **${timeString}**, because of: **${reason}** \nIf you believe this was a mistake, please contact a moderator.`,
-                        timestamp: new Date().toISOString(),
-                        footer: {
-                            text: `Moderator: ${interaction.user.username}` ,
-                            icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-                        },
-                    });
+                    var embedDmReply = moderationDmEmbedReplyFailureColor(
+                        "You have been timed out.",
+                        `You have been timed out in **${interaction.guild.name}** for **${timeString}**, because of: **${reason}** \nIf you believe this was a mistake, please contact a moderator.`,
+                        interaction
+                    );
+
                     await targetUser.send({ embeds: [embedDmReply] });
                     replyContent += "\nThe user was notified about the action & reason in their DMs.";
                 }
@@ -87,23 +98,22 @@ module.exports = {
                     console.error(error);
                     replyContent += "\nThere was an error while trying to DM the user.";
                 }
+
+                var embedReply = embedReplySuccessColor(
+                    "Timeout - Success",
+                    replyContent,
+                    interaction
+                );
             }
             catch (error){
                 console.error(error);
-                var replyContent = "There was an error while trying to time out the user.";
+                var embedReply = embedReplyFailureColor(
+                    "Timeout - Error",
+                    "There was an error while trying to time out the user.",
+                    interaction
+                );
             }
         }
-
-        const embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Timeout.",
-            description: `${replyContent}`,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            },
-        });
 
         await interaction.reply({ embeds: [embedReply] });
 

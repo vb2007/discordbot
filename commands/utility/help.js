@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
+const { embedReplyPrimaryColorWithFields } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -6,11 +7,10 @@ module.exports = {
         .setName("help")
         .setDescription("Displays the bot's commands."),
     async execute(interaction) {
-        const embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Help.",
-            description: "Here is a list of the bot's currently avaliable commands:",
-            fields: [
+        const embedReply = embedReplyPrimaryColorWithFields(
+            "Help.",
+            "Here is a list of the bot's currently avaliable commands:",
+            [
                 { name: "Utility", value:
                 "`/help` - Displays this message.\n" +
                 "`/ping` - Displays the discord API's current latency.\n" +
@@ -29,7 +29,8 @@ module.exports = {
                 "`/balance` - Displays the user's balance.\n" +
                 // "`/deposit` - Deposits money into the user's bank account.\n" +
                 // "`/withdraw` - Withdraws money from the user's bank account.\n" +
-                // "`/transfer` - Transfers money from one user to another.\n" +
+                // "`/pay` - Transfers money from one user to another.\n" +
+                "`/roulette` - Lets you pick a color, then gives you a great price if you guess the color right.\n" +
                 "`/leaderboard` - Displays users with the most money on the server."
                 },
                 { name: "Moderation", value:
@@ -46,12 +47,8 @@ module.exports = {
                 "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n"
                 },
             ],
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            }
-        })
+            interaction
+        );
 
         await interaction.reply({ embeds: [embedReply] });
 

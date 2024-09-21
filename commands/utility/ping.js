@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
+const { embedReplyPrimaryColorWithFields } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -7,19 +8,15 @@ module.exports = {
         .setDescription("Displays the discord API's current latency."),
     async execute(interaction) {
 
-        const embedReply = new EmbedBuilder({
-            color : 0x5F0FD6,
-            title : "Ping.",
-            fields: [
+        const embedReply = embedReplyPrimaryColorWithFields(
+            "Ping.",
+            "",
+            [
                 { name: "Pong! :ping_pong:", value: ""},
-                { name: "Response time: ", value: `${Date.now() - interaction.createdTimestamp}ms`, inline: true },
+                { name: "Response time: ", value: `${Date.now() - interaction.createdTimestamp}ms`, inline: true }
             ],
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            }
-        });
+            interaction
+        );
         
         await interaction.reply({ embeds: [embedReply] });
 
