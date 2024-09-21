@@ -9,14 +9,13 @@ module.exports = {
         .setDescription("Displays the the bot's MariaDB database's current latency."),
     async execute(interaction) {
         try {
-
             const startTime = Date.now();
             await db.query("SELECT 1");
             const endTime = Date.now();
 
             const latency = endTime - startTime;
 
-            const embedReply = embedReplyPrimaryColorWithFields(
+            var embedReply = embedReplyPrimaryColorWithFields(
                 "Ping the database",
                 "",
                 [
@@ -29,7 +28,7 @@ module.exports = {
         catch (error) {
             console.error(error);
 
-            const embedReply = embedReplyFailureColor(
+            var embedReply = embedReplyFailureColor(
                 "Ping the database - Error",
                 "**Error:** Database connection failed.\nIf this issue persists, please [report it on GitHub](https://github.com/vb2007/discordbot/issues/new).",
                 interaction
