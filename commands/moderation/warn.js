@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { embedReplySuccessColor, embedReplyFailureColor, moderationDmEmbedReplyFailureColor } = require('../../helpers/embed-reply');
+const { embedReplySuccessColor, embedReplyFailureColor, moderationDmEmbedReplyWarningColor } = require('../../helpers/embed-reply');
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -38,7 +38,7 @@ module.exports = {
         }
         else{
             try{
-                const embedDmReply = moderationDmEmbedReplyFailureColor(
+                const embedDmReply = moderationDmEmbedReplyWarningColor(
                     "You have been warned.",
                     `You have been warned in **${interaction.guild.name}** for: **${reason}** \nIf you believe this was a mistake, please contact a moderator.`,
                     interaction
