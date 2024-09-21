@@ -31,7 +31,7 @@ function embedReply(color, title, description, interaction) {
  */
 function embedReplyPrimaryColor(title, description, interaction) {
     const embedReply = new EmbedBuilder({
-        color: embedColors.primary,
+        color: parseInt(embedColors.primary),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -52,7 +52,7 @@ function embedReplyPrimaryColor(title, description, interaction) {
  */
 function embedReplySuccessColor(title, description, interaction) {
     const embedReply = new EmbedBuilder({
-        color: embedColors.success,
+        color: parseInt(embedColors.success),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -73,7 +73,7 @@ function embedReplySuccessColor(title, description, interaction) {
  */
 function embedReplySuccessSecondaryColor(title, description, interaction) {
     const embedReply = new EmbedBuilder({
-        color: embedColors.successSecondary,
+        color: parseInt(embedColors.successSecondary),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -94,7 +94,7 @@ function embedReplySuccessSecondaryColor(title, description, interaction) {
  */
 function embedReplyFailureColor(title, description, interaction) {
     const embedReply = new EmbedBuilder({
-        color: embedColors.failure,
+        color: parseInt(embedColors.failure),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -115,7 +115,7 @@ function embedReplyFailureColor(title, description, interaction) {
  */
 function embedReplyWarningColor(title, description, interaction) {
     const embedReply = new EmbedBuilder({
-        color: embedColors.warning,
+        color: parseInt(embedColors.warning),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -128,9 +128,15 @@ function embedReplyWarningColor(title, description, interaction) {
     return embedReply;
 }
 
-function moderationDmEmbedReply(color, title, description, interaction) {
+/**
+ * @param {title} title - Embed's title
+ * @param {description} description - Embed's description
+ * @param {interaction} interaction - Interaction object from the command
+ * @returns {embedReply} An embed reply object
+ */
+function moderationDmEmbedReplyFailureColor(title, description, interaction) {
     const embedDmReply = new EmbedBuilder({
-        color: parseInt(color),
+        color: parseInt(embedColors.failure),
         title: title,
         description: description,
         timestamp: new Date().toISOString(),
@@ -143,6 +149,126 @@ function moderationDmEmbedReply(color, title, description, interaction) {
     return embedDmReply;
 }
 
+/**
+ * @param {title} title - Embed's title
+ * @param {description} description - Embed's description
+ * @param {interaction} interaction - Interaction object from the command
+ * @returns {embedReply} An embed reply object
+ */
+function moderationDmEmbedReplyWarningColor(title, description, interaction) {
+    const embedDmReply = new EmbedBuilder({
+        color: parseInt(embedColors.warning),
+        title: title,
+        description: description,
+        timestamp: new Date().toISOString(),
+        footer: {
+            text: `Moderator: ${interaction.user.username}` ,
+            icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+        },
+    });
+
+    return embedDmReply;
+}
+
+/**
+ * @param {color} color - Embed's sidebar HEX Color
+ * @param {title} title - Embed's title
+ * @param {description} description - Embed's description
+ * @param {image} image - An image (url) that will show up in the embed
+ * @param {interaction} interaction - Interaction object from the command
+ * @returns {embedReply} An embed reply object
+ */
+function embedReplyImg(color, title, description, image, interaction) {
+    const embedReply = new EmbedBuilder({
+        color: parseInt(color),
+        title: title,
+        description: description,
+        image: {
+            url: `${image}`
+        },
+        timestamp: new Date().toISOString(),
+        footer: {
+            text: `Requested by: ${interaction.user.username}`,
+            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+        }
+    });
+
+    return embedReply;
+}
+
+/**
+ * @param {title} title - Embed's title
+ * @param {description} description - Embed's description
+ * @param {image} image - An image (url) that will show up in the embed
+ * @param {interaction} interaction - Interaction object from the command
+ * @returns {embedReply} An embed reply object
+ */
+function embedReplyPrimaryColorImg(title, description, image, interaction) {
+    const embedReply = new EmbedBuilder({
+        color: parseInt(embedColors.primary),
+        title: title,
+        description: description,
+        image: {
+            url: `${image}`
+        },
+        timestamp: new Date().toISOString(),
+        footer: {
+            text: `Requested by: ${interaction.user.username}`,
+            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+        }
+    });
+
+    return embedReply;
+}
+
+/**
+ * @param {title} title - Embed's title
+ * @param {description} description - Embed's description
+ * @param {fields} fields - A list of arrays
+ * @param {interaction} interaction - Interaction object from the command
+ * @returns {embedReply} An embed reply object
+ */
+function embedReplyPrimaryColorWithFields(title, description, fields, interaction) {
+    const embedReply = new EmbedBuilder({
+        color: parseInt(embedColors.primary),
+        title: title,
+        description: description,
+        fields: fields,
+        timestamp: new Date().toISOString(),
+        footer: {
+            text: `Requested by: ${interaction.user.username}`,
+            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+        }
+    });
+
+    return embedReply;
+}
+
+/**
+ * @param {title} title - Embed's title
+ * @param {description} description - Embed's description
+ * @param {fields} fields - A list of arrays
+ * @param {author} author - An object with the author's name and icon
+ * @param {interaction} interaction - Interaction object from the command
+ * @returns {embedReply} An embed reply object
+ */
+function embedReplyPrimaryColorWithFieldsAndAuthor(title, description, fields, author, interaction) {
+    const embedReply = new EmbedBuilder({
+        color: parseInt(embedColors.primary),
+        title: title,
+        description: description,
+        fields: fields,
+        author: author,
+        timestamp: new Date().toISOString(),
+        footer: {
+            text: `Requested by: ${interaction.user.username}`,
+            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+        }
+    });
+
+    return embedReply;
+}
+
 module.exports = {
     embedReply,
     embedReplyPrimaryColor,
@@ -150,5 +276,10 @@ module.exports = {
     embedReplySuccessSecondaryColor,
     embedReplyFailureColor,
     embedReplyWarningColor,
-    moderationDmEmbedReply,
+    moderationDmEmbedReplyFailureColor,
+    moderationDmEmbedReplyWarningColor,
+    embedReplyImg,
+    embedReplyPrimaryColorImg,
+    embedReplyPrimaryColorWithFields,
+    embedReplyPrimaryColorWithFieldsAndAuthor
 }

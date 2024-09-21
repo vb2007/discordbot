@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
+const { embedReplyPrimaryColorWithFields } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -6,11 +7,10 @@ module.exports = {
         .setName("help")
         .setDescription("Displays the bot's commands."),
     async execute(interaction) {
-        const embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Help.",
-            description: "Here is a list of the bot's currently avaliable commands:",
-            fields: [
+        const embedReply = embedReplyPrimaryColorWithFields(
+            "Help.",
+            "Here is a list of the bot's currently avaliable commands:",
+            [
                 { name: "Utility", value:
                 "`/help` - Displays this message.\n" +
                 "`/ping` - Displays the discord API's current latency.\n" +
@@ -47,12 +47,8 @@ module.exports = {
                 "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n"
                 },
             ],
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            }
-        })
+            interaction
+        );
 
         await interaction.reply({ embeds: [embedReply] });
 

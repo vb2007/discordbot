@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
+const { embedReplySuccessColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -24,13 +25,22 @@ module.exports = {
                     ]
                 );
                 
-                var replyContent = `You've worked and succesfully earned \`$${amount}\` dollars.`;
+                var embedReply = embedReplySuccessColor(
+                    "Working.",
+                    `You've worked and succesfully earned \`$${amount}\` dollars.`,
+                    interaction
+                );
             }
             else {
                 const remainingTimeInSeconds = Math.ceil((lastWorkTime.getTime() - nextApprovedWorkTimeUTC.getTime()) / 1000);
                 const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
                 const remainingSeconds = remainingTimeInSeconds % 60;
-                var replyContent = `You've already worked in the last 5 minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to **work** again.`;
+
+                var embedReply = embedReplyFailureColor(
+                    "Work - Error",
+                    `You've already worked in the last 5 minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to **work** again.`,
+                    interaction
+                );
             }
         }
         else {
@@ -44,19 +54,13 @@ module.exports = {
                     new Date().toISOString().slice(0, 19).replace('T', ' ')
                 ]
             );
-            var replyContent = `You've worked and succesfully earned \`$${amount}\` dollars.`;
+
+            var embedReply = embedSuccessColor(
+                "Working.",
+                `You've worked and succesfully earned \`$${amount}\` dollars.`,
+                interaction
+            );
         }
-        
-        var embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Working.",
-            description: replyContent,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            }
-        });
 
         await interaction.reply({ embeds: [embedReply] });
 

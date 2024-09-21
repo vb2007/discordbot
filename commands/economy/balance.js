@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { embedReply } = require("../../helpers/embed-reply");
-const { embedColors } = require("../../config.json");
+const { embedReplyPrimaryColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
 const db = require("../../helpers/db");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
@@ -16,8 +15,7 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         if(!interaction.inGuild()) {
-            var localEmbedResponse = embedReply(
-                embedColors.failure,
+            var localEmbedResponse = embedReplyFailureColor(
                 "Balance: Error",
                 "You can only check a member's balance in a server.",
                 interaction
@@ -30,8 +28,7 @@ module.exports = {
             if(!targetUserId) {
                 var query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [interactionUserId]);
 
-                var localEmbedResponse = embedReply(
-                    embedColors.primary,
+                var localEmbedResponse = embedReplyPrimaryColor(
                     "Balance",
                     `<@${interactionUserId}>'s balance is \`$${query[0]?.balance}\`. :moneybag:\nTheir bank balance is \`$${query[0]?.balanceInBank}\`. :bank:`,
                     interaction
@@ -40,8 +37,7 @@ module.exports = {
             else {
                 var query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [targetUserId]);
 
-                var localEmbedResponse = embedReply(
-                    embedColors.primary,
+                var localEmbedResponse = embedReplyPrimaryColor(
                     "Balance",
                     `<@${targetUserId}>'s balance is **${query[0]?.balance}**. :moneybag:\nTheir bank balance is **${query[0]?.balanceInBank}**. :bank:`,
                     interaction

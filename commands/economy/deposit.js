@@ -1,4 +1,5 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require("discord.js");
+const { embedReplyFailureColor, embedReplySuccessColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -35,14 +36,22 @@ module.exports = {
         }
         
         if (balance < amount) {
-            var replyContent = `You can't deposit that much money into your bank account.\nYour current balance is only \`$${balance}\`. :moneybag:`;
+            var embedReply = embedReplyFailureColor(
+                "Failed to deposit.",
+                `You can't deposit that much money into your bank account.\nYour current balance is only \`$${balance}\`. :moneybag:`,
+                interaction
+            );
         }
         else if (dailyDeposits >= dailyDepositLimit) {
             const fee = amount * feePercentage;
             const totalAmount = amount + fee;
 
             if (balance < totalAmount) {
-                var replyContent = `You can't deposit that much money into your bank account.\nYour balance is \`$${balance}\`,\nbut you currently can't pay the deposit fee: \`$${fee}\`.`;
+                var embedReply = embedReplyFailureColor(
+                    "Deposit fee.",
+                    `You can't deposit that much money into your bank account.\nYou've reached your daily free deposit limit, and your balance is \`$${balance}\`,\so you currently can't pay the deposit fee: \`$${fee}\`.\n`,
+                    interaction
+                );
             }
             else {
                 const embedReply = embedReplyWarningColor(
@@ -79,16 +88,35 @@ module.exports = {
                                 interactionUserId
                             ]
                         );
-                        await i.update({ content: 'Deposit successful!', embeds: [], components: [] });
+
+                        var embedReply = embedReplySuccessColor(
+                            "Deposit successful.",
+                            `You've successfully deposited \`$${amount}\` for a fee of \`$${fee}\`.\Your balance decreased by total of \`$${totalAmount}\`.`,
+                            interaction
+                        );
+
+                        await i.update({ embeds: [embedReply], components: [] });
                     }
                     else if (i.customId === "cancel") {
-                        await i.update({ content: 'Deposit canceled.', embeds: [], components: [] });
+                        var embedReply = embedReplyFailureColor(
+                            "Deposit cancelled.",
+                            `You've cancelled the deposit of \`$${amount}\`.`,
+                            interaction
+                        );
+
+                        await i.update({ embeds: [embedReply], components: [] });
                     }
                 });
 
                 collector.on("end", collected => {
                     if (collected.size === 0) {
-                        interaction.editReply({ content: "No response received. Deposit canceled.", embeds: [], components: [] });
+                        var embedReply = embedReplyFailureColor(
+                            "Deposit cancelled",
+                            "No response received. Deposit canceled.",
+                            interaction
+                        );
+
+                        interaction.editReply({ embeds: [embedReply], components: [] });
                     }
                 })
             }
@@ -103,21 +131,14 @@ module.exports = {
                 ]
             );
 
-            var replyContent = `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\`. :moneybag:\nYour current balance in the bank is \`$${balanceInBank + amount}\`. :bank:`;
+            var embedReply = embedReplySuccessColor(
+                "Deposit successful.",
+                `You've successfully deposited \`$${amount}\` into your bank account.\nYour current balance is \`$${balance - amount}\`. :moneybag:\nYour current balance in the bank is \`$${balanceInBank + amount}\`. :bank:`,
+                interaction
+            );
         }
 
         if (!isCommandReplied) {
-            var embedReply = new EmbedBuilder({
-                color: 0x5F0FD6,
-                title: "Depositing.",
-                description: replyContent,
-                timestamp: new Date().toISOString(),
-                footer: {
-                    text: `Requested by: ${interaction.user.username}`,
-                    icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-                }
-            });
-
             await interaction.reply({ embeds: [embedReply] });
         }
 

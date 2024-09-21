@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
+const { embedReplyPrimaryColorImg } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -7,22 +8,15 @@ module.exports = {
         .setDescription("Send a random picture using the picsum.photos API."),
     async execute(interaction) {
         // There are currently 1084 photos on picsum.images
-        // And we need an ID to keep a requested image
+        // And we need an ID to remember the specific image
         const randomImageId = (Math.floor(Math.random() * 1085));
 
-        const embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Random pic.",
-            description: "Here is a random 512x512 image from picsum.photos (might take some time to load):",
-            image: {
-                url: `https://picsum.photos/id/${randomImageId}/512/512`
-            },
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            },
-        });
+        const embedReply = embedReplyPrimaryColorImg(
+            "Random pic.",
+            "Here is a random 512x512 image from picsum.photos (might take some time to load):",
+            `https://picsum.photos/id/${randomImageId}/512/512`,
+            interaction
+        );
 
         await interaction.reply({ embeds: [embedReply] });
 

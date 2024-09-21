@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
+const { embedReplyPrimaryColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -15,16 +16,11 @@ module.exports = {
             var result = "tails";
         }
 
-        const embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Coinflip.",
-            description: `You've flipped **${result}**.`,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            },
-        });
+        var embedReply = embedReplyPrimaryColor(
+            "Coinflip.",
+            `You've flipped **${result}**.`,
+            interaction
+        );
 
         await interaction.reply({ embeds: [embedReply]});
 

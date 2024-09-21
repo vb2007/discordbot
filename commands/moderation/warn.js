@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
+const { embedReplySuccessColor, embedReplyFailureColor, moderationDmEmbedReplyWarningColor } = require('../../helpers/embed-reply');
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -22,42 +23,43 @@ module.exports = {
         const reason = interaction.options.getString("reason") || "No reason provided";
 
         if (!interaction.inGuild()) {
-            var replyContent = "You can only warn members in a server.";
+            var embedReply = embedReplyFailureColor(
+                "Warn - Error",
+                "You can only warn members in a server.",
+                interaction
+            );
         }
         else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers)) {
-            var replyContent = "Bot lacks the timeout (moderation) permission, cannot warn member.";
+            var embedReply = embedReplyFailureColor(
+                "Warn - Error",
+                "Bot **lacks the timeout (moderation) permission**, cannot warn member.",
+                interaction
+            );
         }
         else{
             try{
-                const embedDmReply = new EmbedBuilder({
-                    color: 0x5F0FD6,
-                    title: "You have been warned.",
-                    description: `You have been warned in **${interaction.guild.name}** for: **${reason}** \nIf you believe this was a mistake, please contact a moderator.`,
-                    timestamp: new Date().toISOString(),
-                    footer: {
-                        text: `Moderator: ${interaction.user.username}` ,
-                        icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-                    },
-                });
+                const embedDmReply = moderationDmEmbedReplyWarningColor(
+                    "You have been warned.",
+                    `You have been warned in **${interaction.guild.name}** for: **${reason}** \nIf you believe this was a mistake, please contact a moderator.`,
+                    interaction
+                );
+
                 await targetUser.send({ embeds: [embedDmReply] });
-                var replyContent = `Successfully warned user **${targetUser.tag}** for: **${reason}**.\nThey've been notified about the warn in their DMs.`;
+                var embedReply = embedReplySuccessColor(
+                    "Warn - Success",
+                    `Successfully warned user **${targetUser.tag}** for: **${reason}**.\nThey've been notified about the warn in their DMs.`,
+                    interaction
+                );
             }
             catch (error){
                 console.error(error);
-                var replyContent = "There was an error while trying to DM the user.";
+                var embedReply = embedReplyFailureColor(
+                    "Warn - Error",
+                    "There was an error while trying to warn the user.",
+                    interaction
+                );
             }
         }
-
-        const embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Warning a user.",
-            description: `${replyContent}`,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            },
-        });
 
         await interaction.reply({ embeds: [embedReply] });
 
