@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { embedSuccessColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
+const { embedReplySuccessColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -25,7 +25,7 @@ module.exports = {
                     ]
                 );
                 
-                var embedReply = embedSuccessColor(
+                var embedReply = embedReplySuccessColor(
                     "Working.",
                     `You've worked and succesfully earned \`$${amount}\` dollars.`,
                     interaction

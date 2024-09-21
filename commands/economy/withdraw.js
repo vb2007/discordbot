@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { embedSuccessColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
+const { embedReplySuccessColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -36,7 +36,7 @@ module.exports = {
                 ]
             );
 
-            var embedReply = embedSuccessColor(
+            var embedReply = embedReplySuccessColor(
                 "Withdraw successful.",
                 `You've successfully withdrawn \`$${amount}\` from your bank account.\nYour current balance in the bank is \`$${balanceInBank - amount}\`. :bank:\nYour current balance is \`$${balance + amount}\`. :moneybag:`,
                 interaction
