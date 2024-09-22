@@ -45,7 +45,7 @@ module.exports = {
                 }
                 //10% chance for loosing money
                 else {
-                    await db.query("UPDATE economy SET balance = balance + ?, lastBegTime = ? WHERE userId = ?",
+                    await db.query("UPDATE economy SET balance = balance - ?, lastBegTime = ? WHERE userId = ?",
                         [
                             amount,
                             new Date().toISOString().slice(0, 19).replace('T', ' '),
