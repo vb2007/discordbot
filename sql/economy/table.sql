@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `economy` (
     `balanceInBank` bigint(20) DEFAULT 0 NOT NULL,
     `firstTransactionDate` datetime NOT NULL DEFAULT current_timestamp(),
     `lastWorkTime` datetime DEFAULT NULL,
+    `lastBegTime` datetime DEFAULT NULL,
     `lastRobTime` datetime DEFAULT NULL,
     `lastRouletteTime` datetime DEFAULT NULL,
     `lastDepositTime` datetime DEFAULT NULL,
