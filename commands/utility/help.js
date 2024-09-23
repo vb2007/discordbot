@@ -26,10 +26,10 @@ module.exports = {
                 { name: "Economy", value:
                 "`/work` - Adds a random amount of money to your balance.\n" +
                 "`/rob` - Steals a random amount of money from the target user, and adds it to your balance.\n" +
-                "`/balance` - Displays the user's balance.\n" +
-                // "`/deposit` - Deposits money into the user's bank account.\n" +
-                // "`/withdraw` - Withdraws money from the user's bank account.\n" +
-                // "`/pay` - Transfers money from one user to another.\n" +
+                "`/balance` - Displays the user's current bank and handheld balance.\n" +
+                "`/deposit` - Deposits money into the user's bank account. It has a daily limit for free deposits, but the users can choose to pay a small deposit fee if they exceed the limit.\n" +
+                "`/withdraw` - Withdraws money from the user's bank account.\n" +
+                "`/pay` - Transfers money from one user to another.\n" +
                 "`/roulette` - Lets you pick a color, then gives you a great price if you guess the color right.\n" +
                 "`/leaderboard` - Displays users with the most money on the server."
                 },
