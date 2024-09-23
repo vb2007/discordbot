@@ -9,7 +9,7 @@ module.exports = {
         .addStringOption(option =>
             option
                 .setName("category")
-                .setCategory("Displays commands from a specified command category.")
+                .setDescription("Displays commands from a specified command category.")
                 .addChoices(
                     { name: "Utility", value: "utility" },
                     { name: "Fun", value: "fun" },
@@ -67,32 +67,32 @@ module.exports = {
             "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n"
         };
 
-        let commands;
+        let commands = [];
         if (!commandCategory) {
-            commands = [utilityCommands, funCommands, economyCommands, moderationCommands, administrationCommands];
+            commands = [ utilityCommands, funCommands, economyCommands, moderationCommands, administrationCommands ];
         }
         else {
             switch (commandCategory) {
                 case "utility":
-                    commands = utilityCommands;
+                    commands.push(utilityCommands);
                     break;
                 case "fun":
-                    commands = funCommands;
+                    commands.push(funCommands);
                     break;
                 case "economy":
-                    commands = economyCommands;
+                    commands.push(economyCommands);
                     break;
                 case "moderation":
-                    commands = moderationCommands;
+                    commands.push(moderationCommands);
                     break;
                 case "administration":
-                    commands = administrationCommands;
+                    commands.push(administrationCommands);
                     break;
                 default:
-                    commands =
+                    commands.push(
                     { name: "Error", value:
                         "Invalid command category provided as parameter.\nPlease choose a valid category: `utility`, `fun`, `economy`, `moderation`, `administration`."
-                    };
+                    });
             }
         }
 
