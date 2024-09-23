@@ -5,7 +5,13 @@ const { logToFileAndDatabase } = require("../../helpers/logger");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("help")
-        .setDescription("Displays the bot's commands."),
+        .setDescription("Displays the bot's commands.")
+        .addStringOption(option =>
+            option
+                .setName("category")
+                .setCategory("Displays commands in a specified command category.")
+                .setRequired(false))
+        .setDMPermission(true),
     async execute(interaction) {
         const embedReply = embedReplyPrimaryColorWithFields(
             "Help.",
