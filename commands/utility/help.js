@@ -10,6 +10,13 @@ module.exports = {
             option
                 .setName("category")
                 .setCategory("Displays commands from a specified command category.")
+                .addChoices(
+                    { name: "Utility", value: "utility" },
+                    { name: "Fun", value: "fun" },
+                    { name: "Economy", value: "economy" },
+                    { name: "Moderation", value: "moderation" },
+                    { name: "Administration", value: "administration" },
+                )
                 .setRequired(false))
         .setDMPermission(true),
     async execute(interaction) {
