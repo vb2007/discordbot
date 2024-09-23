@@ -60,18 +60,39 @@ module.exports = {
             "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n"
         };
 
-        let commandList = [];
-        switch (commandCategory) {
-            case "utility":
-                commandList.push(utilityCommands);
-                break;
-            default:
+        let commands;
+        if (!commandCategory) {
+            commands = [utilityCommands, funCommands, economyCommands, moderationCommands, administrationCommands];
+        }
+        else {
+            switch (commandCategory) {
+                case "utility":
+                    commands = utilityCommands;
+                    break;
+                case "fun":
+                    commands = funCommands;
+                    break;
+                case "economy":
+                    commands = economyCommands;
+                    break;
+                case "moderation":
+                    commands = moderationCommands;
+                    break;
+                case "administration":
+                    commands = administrationCommands;
+                    break;
+                default:
+                    commands =
+                    { name: "Error", value:
+                        "Invalid command category provided as parameter.\nPlease choose a valid category: `utility`, `fun`, `economy`, `moderation`, `administration`."
+                    };
+            }
         }
 
         const embedReply = embedReplyPrimaryColorWithFields(
             "Help.",
             "Here is a list of the bot's currently avaliable commands:",
-            [ ],
+            commands,
             interaction
         );
 
