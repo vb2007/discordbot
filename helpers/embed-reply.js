@@ -248,6 +248,29 @@ function embedReplyPrimaryColorWithFields(title, description, fields, interactio
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
  * @param {fields} fields - A list of arrays
+ * @param {interaction} interaction - Interaction object from the command
+ * @returns {embedReply} An embed reply object
+ */
+function embedReplyErrorColorWithFields(title, description, fields, interaction) {
+    const embedReply = new EmbedBuilder({
+        color: parseInt(embedColors.error),
+        title: title,
+        description: description,
+        fields: fields,
+        timestamp: new Date().toISOString(),
+        footer: {
+            text: `Requested by: ${interaction.user.username}`,
+            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+        }
+    });
+
+    return embedReply;
+}
+
+/**
+ * @param {title} title - Embed's title
+ * @param {description} description - Embed's description
+ * @param {fields} fields - A list of arrays
  * @param {author} author - An object with the author's name and icon
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
@@ -281,5 +304,6 @@ module.exports = {
     embedReplyImg,
     embedReplyPrimaryColorImg,
     embedReplyPrimaryColorWithFields,
+    embedReplyErrorColorWithFields,
     embedReplyPrimaryColorWithFieldsAndAuthor
 }
