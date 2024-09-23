@@ -13,6 +13,8 @@ module.exports = {
                 .setRequired(false))
         .setDMPermission(true),
     async execute(interaction) {
+        const commandCategory = interaction.options.getString("category");
+
         const utilityCommands = 
         { name: "Utility", value:
             "`/help` - Displays this message.\n" +
@@ -58,12 +60,18 @@ module.exports = {
             "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n"
         };
 
+        let commandList = [];
+        switch (commandCategory) {
+            case "utility":
+                commandList.push(utilityCommands);
+                break;
+            default:
+        }
+
         const embedReply = embedReplyPrimaryColorWithFields(
             "Help.",
             "Here is a list of the bot's currently avaliable commands:",
-            [
-                
-            ],
+            [ ],
             interaction
         );
 
