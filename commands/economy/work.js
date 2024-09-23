@@ -12,7 +12,7 @@ module.exports = {
         const query = await db.query("SELECT userId, lastWorkTime FROM economy WHERE userId = ?", [interaction.user.id]);
         const userId = query[0]?.userId || null;
         const lastWorkTime = query[0]?.lastWorkTime || null;
-        const nextApprovedWorkTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 5 * 60000);
+        const nextApprovedWorkTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 5 * 60000); //5 minutes
 
         const amount = Math.floor(Math.random() * 100);
         if (userId) {
