@@ -9,9 +9,10 @@ module.exports = {
         .setDescription("Lets you beg for a random (or no) amount of money.")
         .setDMPermission(false),
     async execute(interaction) {
-        const query = await db.query("SELECT userId, lastBegTime FROM economy WHERE userId = ?", [interaction.user.id]);
+        const query = await db.query("SELECT userId, lastBegTime, balance FROM economy WHERE userId = ?", [interaction.user.id]);
         const userId = query[0]?.userId || null;
         const lastBegTime = query[0]?.lastBegTime || null;
+        const balance = query[0]?.balance || null;
         const nextApprovedBegTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 10 * 60000); //10 minutes
 
         const outcomeChance = Math.floor(Math.random() * 100);
@@ -20,7 +21,7 @@ module.exports = {
         if (userId) {
             if (!lastBegTime || lastBegTime <= nextApprovedBegTimeUTC) {
                 //60% chance for getting some money
-                if (outcomeChance < 60) {        
+                if (outcomeChance < 60 || balance <= 100) {        
                     await db.query("UPDATE economy SET balance = balance + ?, lastBegTime = ? WHERE userId = ?",
                         [
                             amount,
@@ -36,7 +37,7 @@ module.exports = {
                     );
                 }
                 //30% chance for getting nothing
-                else if (outcomeChance < 90) {
+                else if (outcomeChance < 90 || balance <= 100) {
                     var embedReply = embedReplyWarningColor(
                         "Begging.",
                         `While you were begging on the street, a random guy just kicked you in the balls and left you alone with nothing.`,
