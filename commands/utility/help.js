@@ -67,41 +67,68 @@ module.exports = {
             "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n"
         };
 
-        let commands = [];
+        let embedReply;
         if (!commandCategory) {
-            commands = [ utilityCommands, funCommands, economyCommands, moderationCommands, administrationCommands ];
+            embedReply = embedReplyPrimaryColorWithFields(
+                "Help - All Commands.",
+                "Here is a list of the bot's currently avaliable commands:",
+                [ utilityCommands, funCommands, economyCommands, moderationCommands, administrationCommands ],
+                interaction
+            );
         }
         else {
             switch (commandCategory) {
                 case "utility":
-                    commands.push(utilityCommands);
+                    embedReply = embedReplyPrimaryColorWithFields(
+                        "Help - Utility Commands.",
+                        "Here is a list of the bot's currently avaliable **utility** commands:",
+                        [ utilityCommands ],
+                        interaction
+                    );
                     break;
                 case "fun":
-                    commands.push(funCommands);
+                    embedReply = embedReplyPrimaryColorWithFields(
+                        "Help - Fun Commands.",
+                        "Here is a list of the bot's currently avaliable **fun** commands:",
+                        [ funCommands ],
+                        interaction
+                    );
                     break;
                 case "economy":
-                    commands.push(economyCommands);
+                    embedReply = embedReplyPrimaryColorWithFields(
+                        "Help - Economy Commands.",
+                        "Here is a list of the bot's currently avaliable **economy** commands:",
+                        [ economyCommands ],
+                        interaction
+                    );
                     break;
                 case "moderation":
-                    commands.push(moderationCommands);
+                    embedReply = embedReplyPrimaryColorWithFields(
+                        "Help - Moderation Commands.",
+                        "Here is a list of the bot's currently avaliable **moderation** commands:",
+                        [ moderationCommands ],
+                        interaction
+                    );
                     break;
                 case "administration":
-                    commands.push(administrationCommands);
+                    embedReply = embedReplyPrimaryColorWithFields(
+                        "Help - Administration Commands.",
+                        "Here is a list of the bot's currently avaliable **administration** commands:",
+                        [ administrationCommands ],
+                        interaction
+                    );
                     break;
                 default:
-                    commands.push(
-                    { name: "Error", value:
-                        "Invalid command category provided as parameter.\nPlease choose a valid category: `utility`, `fun`, `economy`, `moderation`, `administration`."
-                    });
+                    embedReply = embedReplyErrorColorWithFields(
+                        "Help - Utility Commands.",
+                        "Here is a list of the bot's currently avaliable **utility** commands:",
+                        { name: "Error", value:
+                            "Invalid command category provided as parameter.\nPlease choose a valid category: `utility`, `fun`, `economy`, `moderation`, `administration`."
+                        },
+                        interaction
+                    );
             }
         }
-
-        const embedReply = embedReplyPrimaryColorWithFields(
-            "Help.",
-            "Here is a list of the bot's currently avaliable commands:",
-            commands,
-            interaction
-        );
 
         await interaction.reply({ embeds: [embedReply] });
 
