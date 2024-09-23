@@ -67,12 +67,23 @@ module.exports = {
             "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n"
         };
 
+        const tipField = 
+        { name: "Tip.", value:
+            "**Friendly reminder**: You can use `/help <category>` to get a list of commands from a specific category. :grin:"
+        }
+
+        const errorField =
+        { name: "Error", value:
+            "Invalid command category provided as parameter.\n" +
+            "Please choose a valid category: `utility`, `fun`, `economy`, `moderation`, `administration`."
+        }
+
         let embedReply;
         if (!commandCategory) {
             embedReply = embedReplyPrimaryColorWithFields(
                 "Help - All Commands.",
                 "Here is a list of the bot's currently avaliable commands:",
-                [ utilityCommands, funCommands, economyCommands, moderationCommands, administrationCommands ],
+                [ utilityCommands, funCommands, economyCommands, moderationCommands, administrationCommands, tipField ],
                 interaction
             );
         }
@@ -122,9 +133,7 @@ module.exports = {
                     embedReply = embedReplyErrorColorWithFields(
                         "Help - Utility Commands.",
                         "Here is a list of the bot's currently avaliable **utility** commands:",
-                        { name: "Error", value:
-                            "Invalid command category provided as parameter.\nPlease choose a valid category: `utility`, `fun`, `economy`, `moderation`, `administration`."
-                        },
+                        [ errorField ],
                         interaction
                     );
             }
