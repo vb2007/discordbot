@@ -91,14 +91,14 @@ module.exports = {
 
                     if (actualUserAmount == 0) {
                         var embedReply = embedReplyFailureColor(
-                            "Empty leaderboard.",
-                            "There are no users with a balance on this server.\nUse the `/work` command to be the first one on this list! :grin:",
+                            "Empty bank leaderboard.",
+                            "There are no users with a balance in their bank on this server.\nIf you have some money, use the `/deposit` command to be the first one on this list! :grin:\nIf you don't, try using the `/work` command to earn some money! :thumbsup:",
                             interaction
                         );
                     }
                     else {
                         var embedReply = embedReplyPrimaryColor(
-                            `Server leaderboard: TOP ${actualUserAmount} user${actualUserAmount !== 1 ? 's' : ''}.`,
+                            `Server bank leaderboard: TOP ${actualUserAmount} user${actualUserAmount !== 1 ? 's' : ''}.`,
                             replyContent,
                             interaction
                         );
