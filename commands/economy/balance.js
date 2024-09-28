@@ -15,7 +15,7 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         if(!interaction.inGuild()) {
-            var localEmbedResponse = embedReplyFailureColor(
+            var embedReply = embedReplyFailureColor(
                 "Balance: Error",
                 "You can only check a member's balance in a server.",
                 interaction
@@ -23,32 +23,44 @@ module.exports = {
         }
         else {
             const interactionUserId = interaction.user.id;
-            const targetUserId = interaction.options.getUser("user")?.id || null;
+            const targetUserId = interaction.options.getUser("user")?.id || interactionUserId;
+            const query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [targetUserId]);
+            const balance = query[0]?.balance || 0;
+            const balanceInBank = query[0]?.balanceInBank || 0;
 
-            if(!targetUserId) {
-                var query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [interactionUserId]);
-
-                var localEmbedResponse = embedReplyPrimaryColor(
-                    "Balance",
-                    `<@${interactionUserId}>'s balance is \`$${query[0]?.balance}\`. :moneybag:\nTheir bank balance is \`$${query[0]?.balanceInBank}\`. :bank:`,
-                    interaction
-                );
+            let description;
+            if (balance === 0 && balanceInBank === 0) {
+                description = targetUserId === interactionUserId
+                    ? `You (<@${interactionUserId}>) have no money in your wallet. :moneybag:\nAnd you have no money in your bank. :bank:`
+                    : `<@${targetUserId}> has no money in their wallet. :moneybag:\nAnd they have no money in their bank. :bank:`;
+            }
+            else if (balance === 0) {
+                description = targetUserId === interactionUserId
+                    ? `You (<@${interactionUserId}>) have no money in your wallet. :moneybag:\nAnd your bank balance is \`$${balanceInBank}\`. :bank:`
+                    : `<@${targetUserId}> has no money in their wallet. :moneybag:\nAnd their bank balance is \`$${balanceInBank}\`. :bank:`;
+            }
+            else if (balanceInBank === 0) {
+                description = targetUserId === interactionUserId
+                    ? `Your (<@${interactionUserId}>) balance is \`$${balance}\`. :moneybag:\nAnd you have no money in your bank. :bank:`
+                    : `<@${targetUserId}>'s balance is \`$${balance}\`. :moneybag:\nAnd they have no money in their bank. :bank:`;
             }
             else {
-                var query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [targetUserId]);
-
-                var localEmbedResponse = embedReplyPrimaryColor(
-                    "Balance",
-                    `<@${targetUserId}>'s balance is **${query[0]?.balance}**. :moneybag:\nTheir bank balance is **${query[0]?.balanceInBank}**. :bank:`,
-                    interaction
-                );
+                description = targetUserId === interactionUserId
+                    ? `Your (<@${interactionUserId}>) balance is \`$${balance}\`. :moneybag:\nAnd your bank balance is \`$${balanceInBank}\`. :bank:`
+                    : `<@${targetUserId}>'s balance is \`$${balance}\`. :moneybag:\nTheir bank balance is \`$${balanceInBank}\`. :bank:`;
             }
+
+            var embedReply = embedReplyPrimaryColor(
+                "Balance",
+                description,
+                interaction
+            );
         }
 
-        await interaction.reply({ embeds: [localEmbedResponse] });
+        await interaction.reply({ embeds: [embedReply] });
 
         //logging
-        const response = JSON.stringify(localEmbedResponse.toJSON());
+        const response = JSON.stringify(embedReply.toJSON());
         await logToFileAndDatabase(interaction, response);
     }
 }

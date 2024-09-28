@@ -16,3 +16,5 @@ CREATE TABLE IF NOT EXISTS `economy` (
     `robSuccessChance` float DEFAULT 1,
     PRIMARY KEY (`id`)
 );
+
+CREATE INDEX idx_userId ON economy(userId);
