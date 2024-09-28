@@ -41,9 +41,12 @@ module.exports = {
         }
         else {
             const type = interaction.options.getString("type") || "cash";
+            const members = await interaction.guild.members.fetch();
+            const memberIds = members.map(member => member.id);
+
             switch (type) {
                 case "cash":
-                    var query = await db.query("SELECT userId, balance FROM economy WHERE balance > 0 ORDER BY balance DESC LIMIT ?", [amount]);
+                    var query = await db.query("SELECT userId, balance FROM economy WHERE userId IN (?) AND balance > 0 ORDER BY balance DESC LIMIT ?", [memberIds, amount]);
 
                     var actualUserAmount = query.length;
 
@@ -51,7 +54,7 @@ module.exports = {
                         `**${index + 1}**. <@${user.userId}> : \`$${user.balance}\` :moneybag:`
                     ).join('\n');
 
-                    var query = await db.query("SELECT COUNT(*) FROM economy WHERE balance > 0");
+                    var query = await db.query("SELECT COUNT(*) FROM economy WHERE userId IN (?) AND balance > 0", [memberIds]);
                     var totalUserAmount = Number(query[0]["COUNT(*)"]);
 
                     var replyContent = replyContent + `\n\nEnd of the leaderboard. :eyes:\nThis server has **${totalUserAmount}** user${totalUserAmount !== 1 ? 's' : ''} with a balance.`;
@@ -70,17 +73,18 @@ module.exports = {
                             interaction
                         );
                     }
+
                     break;
                 case "bank":
-                    var query = await db.query("SELECT userId, balanceInBank FROM economy WHERE balanceInBank > 0 ORDER BY balanceInBank DESC LIMIT ?", [amount]);
+                    var query = await db.query("SELECT userId, balanceInBank FROM economy WHERE userId IN (?) AND balanceInBank > 0 ORDER BY balanceInBank DESC LIMIT ?", [memberIds, amount]);
 
                     var actualUserAmount = query.length;
 
                     var replyContent = query.map((user, index) =>
-                        `**${index + 1}**. <@${user.userId}> : \`$${user.balanceInBank}\` :moneybag:`
+                        `**${index + 1}**. <@${user.userId}> : \`$${user.balanceInBank}\` :bank:`
                     ).join('\n');
 
-                    var query = await db.query("SELECT COUNT(*) FROM economy WHERE balanceInBank > 0");
+                    var query = await db.query("SELECT COUNT(*) FROM economy WHERE userId IN (?) AND balanceInBank > 0", [memberIds]);
                     var totalUserAmount = Number(query[0]["COUNT(*)"]);
 
                     var replyContent = replyContent + `\n\nEnd of the leaderboard. :eyes:\nThis server has **${totalUserAmount}** user${totalUserAmount !== 1 ? 's' : ''} with a balance in the bank.`;
@@ -99,6 +103,7 @@ module.exports = {
                             interaction
                         );
                     }
+
                     break;
                 default:
                     var embedReply = embedReplyFailureColor(
