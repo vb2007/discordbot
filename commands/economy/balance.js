@@ -27,21 +27,73 @@ module.exports = {
 
             if(!targetUserId) {
                 var query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [interactionUserId]);
+                const balance = query[0]?.balance;
+                const balanceInBank = query[0]?.balanceInBank;
 
                 var localEmbedResponse = embedReplyPrimaryColor(
                     "Balance",
-                    `<@${interactionUserId}>'s balance is \`$${query[0]?.balance}\`. :moneybag:\nTheir bank balance is \`$${query[0]?.balanceInBank}\`. :bank:`,
+                    `Your (<@${interactionUserId}>) balance is \`$${balance}\`. :moneybag:\nAnd your bank balance is \`$${balanceInBank}\`. :bank:`,
                     interaction
                 );
+
+                if (!balance || balance == 0) {
+                    var localEmbedResponse = embedReplyPrimaryColor(
+                        "Balance",
+                        `You (<@${interactionUserId}>) have no money in your wallet. :moneybag:\nAnd your bank balance is \`$${balanceInBank}\`. :bank:`,
+                        interaction
+                    );
+                }
+
+                if (!balanceInBank || balanceInBank == 0) {
+                    var localEmbedResponse = embedReplyPrimaryColor(
+                        "Balance",
+                        `Your (<@${interactionUserId}>) balance is \`$${balance}\`. :moneybag:\nAnd you have no money in your bank. :bank:`,
+                        interaction
+                    );
+                }
+
+                if ((!balance || balance == 0) && (!balanceInBank || balanceInBank == 0)) {
+                    var localEmbedResponse = embedReplyPrimaryColor(
+                        "Balance",
+                        `You (<@${interactionUserId}>) have no money in your wallet. :moneybag:\nAnd you have no money in your bank. :bank:`,
+                        interaction
+                    );
+                }
             }
             else {
                 var query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [targetUserId]);
+                const balance = query[0]?.balance;
+                const balanceInBank = query[0]?.balanceInBank;
 
                 var localEmbedResponse = embedReplyPrimaryColor(
                     "Balance",
-                    `<@${targetUserId}>'s balance is **${query[0]?.balance}**. :moneybag:\nTheir bank balance is **${query[0]?.balanceInBank}**. :bank:`,
+                    `<@${targetUserId}>'s balance is **${balance}**. :moneybag:\nTheir bank balance is **${balanceInBank}**. :bank:`,
                     interaction
                 );
+
+                if (!balance || balance == 0) {
+                    var localEmbedResponse = embedReplyPrimaryColor(
+                        "Balance",
+                        `<@${targetUserId}> has no money in their wallet. :moneybag:\nAnd their bank balance is \`$${balanceInBank}\`. :bank:`,
+                        interaction
+                    );
+                }
+
+                if (!balanceInBank || balanceInBank == 0) {
+                    var localEmbedResponse = embedReplyPrimaryColor(
+                        "Balance",
+                        `<@${targetUserId}>'s balance is \`$${balance}\`. :moneybag:\nAnd they have no money in their bank. :bank:`,
+                        interaction
+                    );
+                }
+
+                if ((!balance || balance == 0) && (!balanceInBank || balanceInBank == 0)) {
+                    var localEmbedResponse = embedReplyPrimaryColor(
+                        "Balance",
+                        `<@${targetUserId}> has no money in their wallet. :moneybag:\nAnd they have no money in their bank. :bank:`,
+                        interaction
+                    );
+                }
             }
         }
 
