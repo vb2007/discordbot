@@ -12,7 +12,7 @@ module.exports = {
                 .setName("type")
                 .setDescription("The type of leaderboard (cash / bank) you want to see.")
                 .addChoices(
-                    { name: "Cash", value: "cash" },
+                    { name: "Cash (default option)", value: "cash" },
                     { name: "Bank", value: "bank" }
                 )
                 .setRequired(false))
@@ -43,7 +43,7 @@ module.exports = {
             const type = interaction.options.getString("type") || "cash";
             switch (type) {
                 case "cash":
-                    var query = await db.query("SELECT userId, balance FROM economy ORDER BY balance DESC LIMIT ?", [amount]);
+                    var query = await db.query("SELECT userId, balance FROM economy WHERE balance > 0 ORDER BY balance DESC LIMIT ?", [amount]);
 
                     var actualUserAmount = query.length;
 
@@ -51,8 +51,8 @@ module.exports = {
                         `**${index + 1}**. <@${user.userId}> : \`$${user.balance}\` :moneybag:`
                     ).join('\n');
 
-                    var query = await db.query("SELECT COUNT(*) FROM economy");
-                    var totalUserAmount = query[0]["COUNT(*)"];
+                    var query = await db.query("SELECT COUNT(*) FROM economy WHERE balance > 0");
+                    var totalUserAmount = Number(query[0]["COUNT(*)"]);
 
                     var replyContent = replyContent + `\n\nEnd of the leaderboard. :eyes:\nThis server has **${totalUserAmount}** user${totalUserAmount !== 1 ? 's' : ''} with a balance.`;
 
@@ -72,7 +72,7 @@ module.exports = {
                     }
                     break;
                 case "bank":
-                    var query = await db.query("SELECT userId, balanceInBank FROM economy ORDER BY balanceInBank DESC LIMIT ?", [amount]);
+                    var query = await db.query("SELECT userId, balanceInBank FROM economy WHERE balanceInBank > 0 ORDER BY balanceInBank DESC LIMIT ?", [amount]);
 
                     var actualUserAmount = query.length;
 
@@ -80,8 +80,8 @@ module.exports = {
                         `**${index + 1}**. <@${user.userId}> : \`$${user.balanceInBank}\` :moneybag:`
                     ).join('\n');
 
-                    var query = await db.query("SELECT COUNT(*) FROM economy");
-                    var totalUserAmount = query[0]["COUNT(*)"];
+                    var query = await db.query("SELECT COUNT(*) FROM economy WHERE balanceInBank > 0");
+                    var totalUserAmount = Number(query[0]["COUNT(*)"]);
 
                     var replyContent = replyContent + `\n\nEnd of the leaderboard. :eyes:\nThis server has **${totalUserAmount}** user${totalUserAmount !== 1 ? 's' : ''} with a balance in the bank.`;
 
