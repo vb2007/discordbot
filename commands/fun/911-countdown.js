@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { embedReplyPrimaryColor } = require("../../helpers/embed-reply");
+const { embedReplyPrimaryColorWithFields } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -82,11 +82,36 @@ module.exports = {
             const minutes = Math.floor((timeDiffernce % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeDiffernce % (1000 * 60)) / 1000);
 
-            var embedReply = embedReplyPrimaryColor(
-                "911 Countdown",
-                `Time left until 9/11: **${days} days ${hours} hours ${minutes} minutes ${seconds} seconds**.`,
-                interaction
-            );
+            if (utcOffset === 0) {
+                var embedReply = embedReplyPrimaryColorWithFields(
+                    "911 Countdown",
+                    "",
+                    [
+                        {
+                            name: "Time left until 9/11",
+                            value: `**${days}** days **${hours}** hours **${minutes}** minutes **${seconds}** seconds`
+                        }
+                    ],
+                    interaction
+                );
+            }
+            else {
+                var embedReply = embedReplyPrimaryColorWithFields(
+                    "911 Countdown",
+                    "",
+                    [
+                        {
+                            name: "Time left until 9/11",
+                            value: `**${days}** days **${hours}** hours **${minutes}** minutes **${seconds}** seconds`
+                        },
+                        {
+                            name: "UTC Offset",
+                            value: `UTC${utcOffset >= 0 ? "+" : ""}${utcOffset}`
+                        }
+                    ],
+                    interaction
+                );
+            }
         }
 
         await interaction.reply({ embeds: [embedReply] });4
