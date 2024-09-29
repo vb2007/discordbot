@@ -12,46 +12,47 @@ module.exports = {
                 .setDescription("The offset that the bot will calculate the time difference with.")
                 .addChoices(
                     //according to wikipedia: https://en.wikipedia.org/wiki/List_of_UTC_offsets
+                    //i had to remove some of the options because discord only allows 25 choices
                     { name: "UTC-12", value: "-12" },
                     { name: "UTC-11", value: "-11" },
                     { name: "UTC-10", value: "-10" },
                     { name: "UTC-9", value: "-9" },
-                    { name: "UTC-9:30", value: "-9.5" },
+                    // { name: "UTC-9:30", value: "-9.5" },
                     { name: "UTC-8", value: "-8" },
                     { name: "UTC-7", value: "-7" },
                     { name: "UTC-6", value: "-6" },
                     { name: "UTC-5", value: "-5" },
                     { name: "UTC-4", value: "-4" },
                     { name: "UTC-3", value: "-3" },
-                    { name: "UTC-3:30", value: "-3.5" },
+                    // { name: "UTC-3:30", value: "-3.5" },
                     { name: "UTC-2", value: "-2" },
                     { name: "UTC-1", value: "-1" },
                     { name: "UTC+0", value: "0" },
                     { name: "UTC+1", value: "1" },
                     { name: "UTC+2", value: "2" },
                     { name: "UTC+3", value: "3" },
-                    { name: "UTC+3:30", value: "3.5" },
+                    // { name: "UTC+3:30", value: "3.5" },
                     { name: "UTC+4", value: "4" },
-                    { name: "UTC+4:30", value: "4.5" },
+                    // { name: "UTC+4:30", value: "4.5" },
                     { name: "UTC+5", value: "5" },
-                    { name: "UTC+5:30", value: "5.5" },
-                    { name: "UTC+5:45", value: "5.75" },
+                    // { name: "UTC+5:30", value: "5.5" },
+                    // { name: "UTC+5:45", value: "5.75" },
                     { name: "UTC+6", value: "6" },
-                    { name: "UTC+6:30", value: "6.5" },
+                    // { name: "UTC+6:30", value: "6.5" },
                     { name: "UTC+7", value: "7" },
                     { name: "UTC+8", value: "8" },
-                    { name: "UTC+8:45", value: "8.75" },
+                    // { name: "UTC+8:45", value: "8.75" },
                     { name: "UTC+9", value: "9" },
-                    { name: "UTC+9:30", value: "9.5" },
+                    // { name: "UTC+9:30", value: "9.5" },
                     { name: "UTC+10", value: "10" },
-                    { name: "UTC+10:30", value: "10.5" },
+                    // { name: "UTC+10:30", value: "10.5" },
                     { name: "UTC+11", value: "11" },
                     { name: "UTC+12", value: "12" },
-                    { name: "UTC+12:45", value: "12.75" },
-                    { name: "UTC+13", value: "13" },
-                    { name: "UTC+14", value: "14" }
+                    // { name: "UTC+12:45", value: "12.75" },
+                    // { name: "UTC+13", value: "13" },
+                    // { name: "UTC+14", value: "14" }
                 )
-        )
+                .setRequired(false))
         .setDMPermission(true),
     async execute(interaction) {
         const now = new Date();
