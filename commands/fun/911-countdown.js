@@ -61,9 +61,9 @@ module.exports = {
         const adjustedNow = new Date(now.getTime() + offsetMilliseconds);
 
         const currentYear = adjustedNow.getUTCFullYear();
-        const targetDate = new Date(Date.UTC(currentYear, 8, 11)) //8, because months are 0-indexed
+        const targetDate = new Date(Date.UTC(currentYear, 8, 11)); //8, because months are 0-indexed
 
-        if (now.getUTCMonth() === 8 && now.getUTCDate() === 11) {
+        if (adjustedNow.getUTCMonth() === 8 && adjustedNow.getUTCDate() === 11) {
             var embedReply = embedReplyPrimaryColor(
                 "9/11 Countdown",
                 "Today is the day! :tada:\nHappy 9/11 everyone! :partying_face:",
@@ -71,11 +71,11 @@ module.exports = {
         }
         else {
             //if 9/11 has already passed this year
-            if (now > targetDate) {
+            if (adjustedNow > targetDate) {
                 targetDate.setUTCFullYear(currentYear + 1);
             }
 
-            const timeDiffernce = targetDate - now;
+            const timeDiffernce = targetDate - adjustedNow;
 
             const days = Math.floor(timeDiffernce / (1000 * 60 * 60 * 24));
             const hours = Math.floor((timeDiffernce % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
