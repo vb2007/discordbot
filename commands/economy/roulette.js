@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
+const { embedReplySuccessColor, embedReplyFailureColor, embedReplyWarningColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const format = require("../../helpers/format");
 const generate = require("../../helpers/generate");
@@ -26,7 +27,11 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         if (!interaction.inGuild()) {
-            var replyContent = "You can only play roulette in a server.";
+            var embedReply = embedReplyFailureColor(
+                "Roulette - Error",
+                "You can only play roulette in a server.",
+                interaction
+            );
         }
         else {
             const interactionUserId = interaction.user.id;
@@ -43,23 +48,43 @@ module.exports = {
                 const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
                 const remainingSeconds = remainingTimeInSeconds % 60;
 
-                var replyContent = `You've already played roulette in the last 15 minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to **play roulette** again.`;
+                var embedReply = embedReplyFailureColor(
+                    "Roulette - Error",
+                    `You've already played roulette in the last 15 minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to **play roulette** again.`,
+                    interaction
+                );
             }
             else if (userBalance < amount) {
-                var replyContent = `You can't play with that much money!\nYour current balance is only \`$${userBalance}\`.`;
+                var embedReply = embedReplyFailureColor(
+                    "Roulette - Error",
+                    `You can't play with that much money!\nYour current balance is only \`$${userBalance}\`.`,
+                    interaction
+                );
             }
             else if (amount <= 0) {
-                var replyContent = `You can't play without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.`;
+                var embedReply = embedReplyFailureColor(
+                    "Roulette - Error",
+                    `You can't play without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.`,
+                    interaction
+                );
             }
             else {
+                const validColors = ["red", "black", "green"];
                 const guessedColor = interaction.options.getString("color");
 
                 const randomOutcome = generate.generateRandomOutcome();
                 const randomColor = randomOutcome.color;
                 const randomNumber = randomOutcome.number;
 
-                switch (guessedColor) {
-                    case randomColor && guessedColor === "green":
+                if(!validColors.includes(guessedColor)) {
+                    var embedReply = embedReplyFailureColor(
+                        "Roulette - Error",
+                        "The color you've chosen is invalid.\nPlease choose from `red`, `black` or `green`.",
+                        interaction
+                    );
+                }
+                else if (guessedColor === randomColor) {
+                    if (guessedColor === "green") {
                         await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
                             [
                                 amount * 35,
@@ -68,9 +93,13 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(randomColor)}**.\nYou hit the jackpot! :money_mouth:`;
-                        break;
-                    case randomColor:
+                        var embedReply = embedReplySuccessColor(
+                            "Roulette - Jackpot",
+                            `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}**.\nYou hit the jackpot, and won \`$${amount * 35}\`! :money_mouth:`,
+                            interaction
+                        );
+                    }
+                    else {
                         await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
                             [
                                 amount * 2,
@@ -79,35 +108,30 @@ module.exports = {
                             ]
                         );
 
-                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(randomColor)}** as well! :money_mouth:`;
-                        break;
-                    case "red" || "black" || "green":
-                        await db.query("UPDATE economy SET balance = balance - ?, lastRouletteTime = ? WHERE userId = ?",
-                            [
-                                amount,
-                                new Date().toISOString().slice(0, 19).replace('T', ' '),
-                                interactionUserId
-                            ]
+                        var embedReply = embedReplySuccessColor(
+                            "Roulette - Won",
+                            `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}** as well!\nYou won \`$${amount * 2}\`. :money_mouth:`,
+                            interaction
                         );
+                    }
+                }
+                else {
+                    await db.query("UPDATE economy SET balance = balance - ?, lastRouletteTime = ? WHERE userId = ?",
+                        [
+                            amount,
+                            new Date().toISOString().slice(0, 19).replace('T', ' '),
+                            interactionUserId
+                        ]
+                    );
 
-                        var replyContent = `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(randomColor)}**.\nMaybe try your luck again. :upside_down:`;
-                        break;
-                    default:
-                        var replyContent = "The color you've chosen is invalid.\nPlease choose from *red*, *black* or *green*.";
+                    var embedReply = embedReplyWarningColor(
+                        "Roulette - Lost",
+                        `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}**.\nMaybe try your luck again. :upside_down:`,
+                        interaction
+                    );
                 }
             }
         }
-
-        var embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Playing roulette.",
-            description: replyContent,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}`,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-            }
-        });
 
         await interaction.reply({ embeds: [embedReply] })
 

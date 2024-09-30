@@ -1,4 +1,6 @@
-const { EmbedBuilder, SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { embedReply } = require("../../helpers/embed-reply");
+const { embedColors } = require("../../config.json");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -10,10 +12,20 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         if (!interaction.inGuild()) {
-            var replyContent = "You can only disable autorole in a server."
+            var localEmbedResponse = embedReply(
+                embedColors.failure,
+                "AutoRole Disable: Error",
+                "You can only disable autorole in a server.",
+                interaction
+            );
         }
         else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administartor)) {
-            var replyContent = "This feature requires **administrator** *(8)* privileges witch the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges."
+            var localEmbedResponse = embedReply(
+                embedColors.failure,
+                "AutoRole Disable: Error",
+                "This feature requires **administrator** *(8)* privileges witch the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges.",
+                interaction
+            );
         }
         else {
             try {
@@ -25,10 +37,20 @@ module.exports = {
                 if (autoroleGuildId) {
                     await db.query("DELETE FROM autorole WHERE guildId = ?", [autoroleGuildId]);
 
-                    var replyContent = "The autorole feature has been disabled succesfully.\nYou can re-enable it with `/autorole-configure`.";
+                    var localEmbedResponse = embedReply(
+                        embedColors.success,
+                        "AutoRole Disable: Success",
+                        "The autorole feature has been disabled succesfully.\nYou can re-enable it with `/autorole-configure`.",
+                        interaction
+                    );
                 }
                 else {
-                    var replyContent = "Autorole has not been configured for this server.\nTherefore, you can't disable it.\nYou can enable this feature with `/autorole-configure`";
+                    var localEmbedResponse = embedReply(
+                        embedColors.warning,
+                        "AutoRole Disable: Warning",
+                        "Autorole has not been configured for this server.\nTherefore, you can't disable it.\nYou can enable this feature with `/autorole-configure`.",
+                        interaction
+                    );
                 }
             }
             catch (error) {
@@ -36,21 +58,10 @@ module.exports = {
             }
         }
 
-        var embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Disabling autorole.",
-            description: replyContent,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}` ,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-            },
-        });
-
-        await interaction.reply({ embeds: [embedReply] });
+        await interaction.reply({ embeds: [localEmbedResponse] });
 
         //logging
-        const response = JSON.stringify(embedReply.toJSON());
+        const response = JSON.stringify(localEmbedResponse.toJSON());
 		await logToFileAndDatabase(interaction, response);
     },
 };

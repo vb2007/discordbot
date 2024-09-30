@@ -1,4 +1,5 @@
-const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
+const { embedReplyPrimaryColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
 const db = require("../../helpers/db");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
@@ -14,34 +15,47 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         if(!interaction.inGuild()) {
-            var replyContent = "You can only check a member's balance in a server.";
+            var embedReply = embedReplyFailureColor(
+                "Balance: Error",
+                "You can only check a member's balance in a server.",
+                interaction
+            );
         }
         else {
             const interactionUserId = interaction.user.id;
-            const targetUserId = interaction.options.getUser("user")?.id || null;
+            const targetUserId = interaction.options.getUser("user")?.id || interactionUserId;
+            const query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [targetUserId]);
+            const balance = query[0]?.balance || 0;
+            const balanceInBank = query[0]?.balanceInBank || 0;
 
-            if(!targetUserId) {
-                var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
-
-                var replyContent = `<@${interactionUserId}>'s balance is **${query[0]?.balance}**. :moneybag:`;
+            let description;
+            if (balance === 0 && balanceInBank === 0) {
+                description = targetUserId === interactionUserId
+                    ? `You (<@${interactionUserId}>) have no money in your wallet. :moneybag:\nAnd you have no money in your bank. :bank:`
+                    : `<@${targetUserId}> has no money in their wallet. :moneybag:\nAnd they have no money in their bank. :bank:`;
+            }
+            else if (balance === 0) {
+                description = targetUserId === interactionUserId
+                    ? `You (<@${interactionUserId}>) have no money in your wallet. :moneybag:\nAnd your bank balance is \`$${balanceInBank}\`. :bank:`
+                    : `<@${targetUserId}> has no money in their wallet. :moneybag:\nAnd their bank balance is \`$${balanceInBank}\`. :bank:`;
+            }
+            else if (balanceInBank === 0) {
+                description = targetUserId === interactionUserId
+                    ? `Your (<@${interactionUserId}>) balance is \`$${balance}\`. :moneybag:\nAnd you have no money in your bank. :bank:`
+                    : `<@${targetUserId}>'s balance is \`$${balance}\`. :moneybag:\nAnd they have no money in their bank. :bank:`;
             }
             else {
-                var query = await db.query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
-
-                var replyContent = `<@${targetUserId}>'s balance is **${query[0]?.balance}**. :moneybag:`;
+                description = targetUserId === interactionUserId
+                    ? `Your (<@${interactionUserId}>) balance is \`$${balance}\`. :moneybag:\nAnd your bank balance is \`$${balanceInBank}\`. :bank:`
+                    : `<@${targetUserId}>'s balance is \`$${balance}\`. :moneybag:\nTheir bank balance is \`$${balanceInBank}\`. :bank:`;
             }
+
+            var embedReply = embedReplyPrimaryColor(
+                "Balance",
+                description,
+                interaction
+            );
         }
-
-        var embedReply = new EmbedBuilder({
-            color: 0x5F0FD6,
-            title: "Checking user balance.",
-            description: replyContent,
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `Requested by: ${interaction.user.username}`,
-                icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-            }
-        });
 
         await interaction.reply({ embeds: [embedReply] });
 
