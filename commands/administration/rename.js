@@ -15,10 +15,16 @@ module.exports = {
             option
                 .setName("nickname")
                 .setDescription("The new name your target user will have.")
-                .setRequired(true))
+                .setRequired(true)
+                .setMinLength(2)
+                .setMaxLength(32))
         .setDefaultMemberPermissions(PermissionFlagsBits.ChangeNickname)
         .setDMPermission(false),
     async execute(interaction) {
+        const targetUser = interaction.options.getMember("target");
+        const targetUserId = interaction.options.getMember("target").id;
+        const targetUserUsername = interaction.options.getMember("target").username;
+        const targetNickname = interaction.options.getString("nickname");
 
         if (!interaction.inGuild()) {
             var embedReply = embedReplyFailureColor(
@@ -34,26 +40,29 @@ module.exports = {
                 interaction
             );
         }
+        else if (targetNickname.length > 32 || targetNickname.length < 2) {
+            var embedReply = embedReplyFailureColor(
+                "Rename: Error",
+                "The username length you've provided is invalid!\nMinimum length: **2 characters**.\nMaximum length: **32 characters**.",
+            );
+        }
         else {
-            const targetUser = interaction.options.getMember("target");
-            const targetUserId = interaction.options.getMember("target").id;
-            const targetNickname = interaction.options.getString("nickname");
-
             try {
-                await targetUser.setNickname(null);
+                await targetUser.setNickname(targetNickname);
+
                 var embedReply = embedReplySuccessColor(
                     "Rename: Success",
-                    `Successfully renamed ${targetUser}.`,
+                    `Successfully renamed **${targetUserUsername}** (<@${targetUserId}>) to **${targetNickname}**.`,
                     interaction
                 );
             }
             catch (error) {
-                logToFileAndDatabase(error);
                 var embedReply = embedReplyFailureColor(
                     "Rename: Error",
-                    `Failed to rename ${targetUser}.`,
+                    `Failed to rename <@${targetUserId}> to **${targetNickname}**.`,
                     interaction
                 );
+                // console.error(error);
             }
         }
 
