@@ -16,7 +16,14 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '18'
-        cache: 'npm'
+    
+    # - name: Cache Node.js modules
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: ~/.npm
+    #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-node-
 
     - name: Install Node.js dependencies
       run: npm ci
