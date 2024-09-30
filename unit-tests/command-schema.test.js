@@ -1,5 +1,16 @@
+jest.mock('../config.json', () => ({
+    databaseHostAddress: 'mock-host',
+    databaseName: 'mock-db',
+    databaseUser: 'mock-user',
+    databasePassword: 'mock-password'
+}), { virtual: true });
+
 const fs = require("fs");
 const path = require("path");
+
+jest.mock('../helpers/db', () => ({
+
+}));
 
 describe("Command structure base test.", () => {
     test("All commands should have \"data\" and \"execute\" properties.", () => {
