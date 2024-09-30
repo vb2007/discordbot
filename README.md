@@ -41,3 +41,7 @@ If everything above checks out, you can prepare for the first run:
 
 1. Deploy the slash (/) commands with `npm run deploy`. You might want to do this again if you modify / add commands.
 2. Finally, run the bot with `npm run app`.
+
+#### Running it in the background
+
+If you want to run the application on a Linux system in the background as a systemd service, you can follow [THIS](documentation/systemd-setup.md) guide.
