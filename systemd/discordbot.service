@@ -6,10 +6,17 @@ Wants=network-online.target
 After=local-fs.target network-online.target nss-lookup.target
 
 [Service]
-Type=simple
-PrivateTmp=true
-ExecStart=#idk what to write here right now
-TimeoutStopSec=1800
+ExecStart=/usr/bin/npm run app
+WorkingDirectory=/home/vb2007/discordbot
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=discordbot
+User=vb2007
+Group=vb2007
+Environment=NODE_ENV=production
+# Type=simple
+# PrivateTmp=true
+# TimeoutStopSec=1800
 
 [Install]
 WantedBy=multi-user.target
