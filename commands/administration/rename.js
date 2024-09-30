@@ -53,13 +53,13 @@ module.exports = {
                 try {
                     var embedDmReply = embedReplyWarningColor(
                         "Rename: Action regarding your account",
-                        `You have been renamed in **${interaction.guild.name}** to **${targetNickname}**.`,
+                        `You have been renamed in **${interaction.guild.name}** to \`${targetNickname}\`.`,
                         interaction
                     );
 
                     var embedReply = embedReplySuccessColor(
                         "Rename: Success",
-                        `Successfully renamed **${targetUserUsername}** (<@${targetUserId}>) to **${targetNickname}**.\nThey were notified about the action in their DMs.`,
+                        `Successfully renamed **${targetUserUsername}** (<@${targetUserId}>) to \`${targetNickname}\`.\nThey were notified about the action in their DMs.`,
                         interaction
                     );
 
@@ -68,17 +68,26 @@ module.exports = {
                 catch (error) {
                     var embedReply = embedReplyWarningColor(
                         "Rename: Warning",
-                        `Successfully renamed **${targetUserUsername}** (<@${targetUserId}>) to **${targetNickname}**.\nHowever, there was an error while trying to DM the user.`,
+                        `Successfully renamed **${targetUserUsername}** (<@${targetUserId}>) to \`${targetNickname}\`.\nHowever, there was an error while trying to DM the user.`,
                         interaction
                     );
                 }
             }
             catch (error) {
-                var embedReply = embedReplyFailureColor(
-                    "Rename: Error",
-                    `Failed to rename <@${targetUserId}> to **${targetNickname}**.`,
-                    interaction
-                );
+                if (error.code === 50013) { //currently "50013" corresponds to the "Missing Permissions" error
+                    var embedReply = embedReplyFailureColor(
+                        "Rename: Error",
+                        `Bot **lacks the manage nicknames / rename permission**, or **the bot's role is lower in the role hierarchy, than the target user's highest role**.\nFailed to rename <@${targetUserId}> to \`${targetNickname}\`.`,
+                        interaction
+                    );
+                }
+                else {
+                    var embedReply = embedReplyFailureColor(
+                        "Rename: Error",
+                        `Failed to rename <@${targetUserId}> to \`${targetNickname}\`.`,
+                        interaction
+                    );
+                }
                 // console.error(error);
             }
         }
