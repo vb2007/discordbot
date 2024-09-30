@@ -67,7 +67,8 @@ module.exports = {
         { name: "Administration", value:
             "**__NOTE__**: The following commands require relevant **administration permissions** for both the bot and the command's executor to work.\n" +
             "`/autorole-configure` - Sets / modifies the autorole feature. When a new member joins the server, a specified role will get assigned to them automatically.\n" +
-            "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n"
+            "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n" +
+            "`/rename` - Renames a specified user to a specified nickname in the current server."
         };
 
         const tipField = 
