@@ -6,7 +6,7 @@ const db = require("../../helpers/db");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("work")
-        .setDescription("Gives you a random amount of money.")
+        .setDescription("Lets you work for a random amount of money.")
         .setDMPermission(false),
     async execute(interaction) {
         const query = await db.query("SELECT userId, lastWorkTime FROM economy WHERE userId = ?", [interaction.user.id]);
