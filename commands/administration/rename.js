@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { embedReplyFailureColor, embedReplySuccessColor } = require("../../helpers/embed-reply");
+const { embedReplyFailureColor, embedReplySuccessColor, embedReplyWarningColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -23,7 +23,7 @@ module.exports = {
     async execute(interaction) {
         const targetUser = interaction.options.getMember("target");
         const targetUserId = interaction.options.getMember("target").id;
-        const targetUserUsername = interaction.options.getMember("target").username;
+        const targetUserUsername = interaction.options.getMember("target").user.globalName;
         const targetNickname = interaction.options.getString("nickname");
 
         if (!interaction.inGuild()) {
@@ -50,11 +50,28 @@ module.exports = {
             try {
                 await targetUser.setNickname(targetNickname);
 
-                var embedReply = embedReplySuccessColor(
-                    "Rename: Success",
-                    `Successfully renamed **${targetUserUsername}** (<@${targetUserId}>) to **${targetNickname}**.`,
-                    interaction
-                );
+                try {
+                    var embedDmReply = embedReplyWarningColor(
+                        "Rename: Action regarding your account",
+                        `You have been renamed in **${interaction.guild.name}** to **${targetNickname}**.`,
+                        interaction
+                    );
+
+                    var embedReply = embedReplySuccessColor(
+                        "Rename: Success",
+                        `Successfully renamed **${targetUserUsername}** (<@${targetUserId}>) to **${targetNickname}**.\nThey were notified about the action in their DMs.`,
+                        interaction
+                    );
+
+                    await targetUser.send({ embeds: [embedDmReply] });
+                }
+                catch (error) {
+                    var embedReply = embedReplyWarningColor(
+                        "Rename: Warning",
+                        `Successfully renamed **${targetUserUsername}** (<@${targetUserId}>) to **${targetNickname}**.\nHowever, there was an error while trying to DM the user.`,
+                        interaction
+                    );
+                }
             }
             catch (error) {
                 var embedReply = embedReplyFailureColor(
