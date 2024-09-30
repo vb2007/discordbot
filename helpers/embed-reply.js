@@ -292,6 +292,27 @@ function embedReplyPrimaryColorWithFieldsAndAuthor(title, description, fields, a
     return embedReply;
 }
 
+/**
+ * @param {title} title - Embed's title
+ * @param {description} description - Embed's description
+ * @param {interaction} interaction - Interaction object from the command
+ * @returns {embedReply} An embed reply object
+ */
+function embedReplySaidByPrimaryColor(title, description, interaction) {
+    const embedReply = new EmbedBuilder({
+        color: parseInt(embedColors.primary),
+        title: title,
+        description: description,
+        timestamp: new Date().toISOString(),
+        footer: {
+            text: `${interaction.user.username} made the bot say this.`,
+            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
+        }
+    });
+
+    return embedReply;
+}
+
 module.exports = {
     embedReply,
     embedReplyPrimaryColor,
@@ -304,6 +325,6 @@ module.exports = {
     embedReplyImg,
     embedReplyPrimaryColorImg,
     embedReplyPrimaryColorWithFields,
-    embedReplyErrorColorWithFields,
-    embedReplyPrimaryColorWithFieldsAndAuthor
+    embedReplyPrimaryColorWithFieldsAndAuthor,
+    embedReplySaidByPrimaryColor
 }
