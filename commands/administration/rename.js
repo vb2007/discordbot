@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { embedReplyFailureColor, embedReplySuccessColor, embedReplyWarningColor } = require("../../helpers/embed-reply");
+const { embedReplyFailureColor, embedReplySuccessColor, embedReplyWarningColor, moderationDmEmbedReplyWarningColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -51,7 +51,7 @@ module.exports = {
                 await targetUser.setNickname(targetNickname);
 
                 try {
-                    var embedDmReply = embedReplyWarningColor(
+                    var embedDmReply = moderationDmEmbedReplyWarningColor(
                         "Rename: Action regarding your account",
                         `You have been renamed in **${interaction.guild.name}** to \`${targetNickname}\`.`,
                         interaction
