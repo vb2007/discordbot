@@ -17,16 +17,20 @@ jobs:
       with:
         node-version: '18'
     
-    # - name: Cache Node.js modules
-    #   uses: actions/cache@v2
-    #   with:
-    #     path: ~/.npm
-    #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-node-
+    - name: Cache Node.js modules
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
 
     - name: Install Node.js dependencies
-      run: npm ci
+      run: npm install
 
     - name: Run the unit tests with jest
       run: npm test
