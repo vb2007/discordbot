@@ -44,6 +44,7 @@ module.exports = {
             var embedReply = embedReplyFailureColor(
                 "Rename: Error",
                 "The username length you've provided is invalid!\nMinimum length: **2 characters**.\nMaximum length: **32 characters**.",
+                interaction
             );
         }
         else {
