@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { embedReplyPrimaryColor } = require("../../helpers/embed-reply");
+const { embedReplySaidByPrimaryColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
-const db = require("../../helpers/db");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,7 +13,13 @@ module.exports = {
                 .setRequired(true))
         .setDMPermission(true),
     async execute(interaction) {
+        const message = interaction.options.getString("message");
 
+        var embedReply = embedReplySaidByPrimaryColor(
+            "The bot said:",
+            `*${message}*`,
+            interaction
+        );
 
         await interaction.reply({ embeds: [embedReply] });
         
