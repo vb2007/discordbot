@@ -1,6 +1,12 @@
 # Discord bot
 
+<div align="center">
+
 A simple discord bot of mine developed with **Node.js**'s [discord.js](https://www.npmjs.com/package/discord.js?activeTab=readme) package.
+
+[![Unit tests](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml/badge.svg?branch=dev)](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml)
+
+</div>
 
 ## Invite the bot
 
