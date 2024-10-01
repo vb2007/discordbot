@@ -50,7 +50,8 @@ async function loadLinks() {
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("randomfeet")
-        .setDescription("Sends a random feetpic."),
+        .setDescription("Sends a random feetpic.")
+        .setNSFW(true),
     async execute(interaction) {
         //waits (and edits it's reply later) if the host is too slow
         await interaction.deferReply();

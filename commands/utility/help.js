@@ -28,19 +28,22 @@ module.exports = {
             "`/ping` - Displays the discord API's current latency.\n" +
             "`/ping-db` - Displays the current latency between the bot and it's database.\n" +
             "`/server` - Provides information about the current server.\n" +
-            "`/user` - Provides information about a specified user."
+            "`/user` - Provides information about a specified user.\n" +
+            "`/say` - Makes the bot say a specified message."
         };
 
         const funCommands = 
         { name: "Fun", value:
             "`/coinflip` - Flips a coin that has a 50/50 chance landing on heads or tails.\n" +
             "`/randompic` - Send a random picture using the [picsum.photos](https://picsum.photos/) API.\n" +
-            "`/randomfeet` - I have nothing to say about my greatest shame..."
+            "`/randomfeet` - I have nothing to say about my greatest shame...\n" +
+            "`/911-countdown` - Displays huw much time is left until Spetember 11th."
         };
 
         const economyCommands = 
         { name: "Economy", value:
-            "`/work` - Adds a random amount of money to your balance.\n" +
+            "`/work` - Lets you work for a random amount of money.\n" +
+            "`/beg` - Lets you beg for a random (or no) amount of money.\n" +
             "`/rob` - Steals a random amount of money from the target user, and adds it to your balance.\n" +
             "`/balance` - Displays the user's current bank and handheld balance.\n" +
             "`/deposit` - Deposits money into the user's bank account. It has a daily limit for free deposits, but the users can choose to pay a small deposit fee if they exceed the limit.\n" +
@@ -64,7 +67,8 @@ module.exports = {
         { name: "Administration", value:
             "**__NOTE__**: The following commands require relevant **administration permissions** for both the bot and the command's executor to work.\n" +
             "`/autorole-configure` - Sets / modifies the autorole feature. When a new member joins the server, a specified role will get assigned to them automatically.\n" +
-            "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n"
+            "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n" +
+            "`/rename` - Renames a specified user to a specified nickname in the current server."
         };
 
         const tipField = 

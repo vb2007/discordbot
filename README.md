@@ -1,6 +1,12 @@
 # Discord bot
 
+<div align="center">
+
 A simple discord bot of mine developed with **Node.js**'s [discord.js](https://www.npmjs.com/package/discord.js?activeTab=readme) package.
+
+[![Unit tests](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml/badge.svg?branch=dev)](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml)
+
+</div>
 
 ## Invite the bot
 
@@ -35,3 +41,7 @@ If everything above checks out, you can prepare for the first run:
 
 1. Deploy the slash (/) commands with `npm run deploy`. You might want to do this again if you modify / add commands.
 2. Finally, run the bot with `npm run app`.
+
+#### Running it in the background
+
+If you want to run the application on a Linux system in the background as a systemd service, you can follow [THIS](documentation/systemd-setup.md) guide.

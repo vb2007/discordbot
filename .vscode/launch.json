@@ -23,7 +23,7 @@
             "program": "${workspaceFolder}/deploy-commands.js"
         },
         {
-            "name": "Run unit test(s).",
+            "name": "Run unit tests.",
             "type": "node",
             "request": "launch",
             "runtimeArgs": [
@@ -35,7 +35,7 @@
             "internalConsoleOptions": "neverOpen"
         },
         {
-            "name": "(Re)create SQL tables.",
+            "name": "Create SQL tables.",
             "type": "node",
             "request": "launch",
             "skipFiles": [

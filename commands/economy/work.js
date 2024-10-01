@@ -6,13 +6,13 @@ const db = require("../../helpers/db");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("work")
-        .setDescription("Gives you a random amount of money.")
+        .setDescription("Lets you work for a random amount of money.")
         .setDMPermission(false),
     async execute(interaction) {
         const query = await db.query("SELECT userId, lastWorkTime FROM economy WHERE userId = ?", [interaction.user.id]);
         const userId = query[0]?.userId || null;
         const lastWorkTime = query[0]?.lastWorkTime || null;
-        const nextApprovedWorkTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 5 * 60000);
+        const nextApprovedWorkTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 5 * 60000); //5 minutes
 
         const amount = Math.floor(Math.random() * 100);
         if (userId) {

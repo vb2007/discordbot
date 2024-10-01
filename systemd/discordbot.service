@@ -1,0 +1,24 @@
+# location: /etc/systemd/system/discordbot.service
+[Unit]
+Description=Discordbot background service
+Documentation=https://github.com/vb2007/discordbot/
+Wants=network-online.target
+After=local-fs.target network-online.target nss-lookup.target
+
+[Service]
+ExecStart=/usr/bin/npm run app
+WorkingDirectory=/home/vb2007/discordbot
+# StandardOutput=syslog # For logging to syslog
+# StandardError=syslog # For logging to syslog
+# Restart=always # For automatically restarting the service on failure
+# RestartSec=10 # For automatically restarting the service on failure
+SyslogIdentifier=discordbot
+User=vb2007
+Group=vb2007
+Environment=NODE_ENV=production
+# Type=simple
+# PrivateTmp=true
+# TimeoutStopSec=1800
+
+[Install]
+WantedBy=multi-user.target
