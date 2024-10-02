@@ -27,6 +27,14 @@ module.exports = {
         )
         .setDMPermission(true),
     async execute(interaction) {
-        
+        const message = interaction.options.getString("message");
+        const sourceLanguage = interaction.options.getString("source-language") || "auto";
+        const targetLanguage = interaction.options.getString("target-language") || "en";
+
+        await interaction.reply({ embeds: [embedReply] });
+
+        //logging
+        const response = JSON.stringify(embedReply.toJSON());
+        await logToFileAndDatabase(interaction, response);
     }
 }
