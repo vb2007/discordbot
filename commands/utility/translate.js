@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const { embedReplyPrimaryColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
 const db = require("../../helpers/db");
 const { logToFileAndDatabase } = require("../../helpers/logger");
+const translate = require("google-translate-api");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -30,6 +31,24 @@ module.exports = {
         const message = interaction.options.getString("message");
         const sourceLanguage = interaction.options.getString("source-language") || "auto";
         const targetLanguage = interaction.options.getString("target-language") || "en";
+
+        try {
+            const res = await translate(message, { from: sourceLanguage, to: targetLanguage });
+
+            var embedReply = embedReplyPrimaryColor(
+                "Translation",
+                res.text,
+                interaction
+            );
+        }
+        catch (error) {
+            console.error(error);
+            var embedReply = embedReplyFailureColor(
+                "Translation",
+                `An error occurred while translating the message. Please try again later.`,
+                interaction
+            );
+        }
 
         await interaction.reply({ embeds: [embedReply] });
 
