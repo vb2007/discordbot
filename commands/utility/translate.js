@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const { embedReplyPrimaryColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
 const db = require("../../helpers/db");
 const { logToFileAndDatabase } = require("../../helpers/logger");
-const translate = require("google-translate-api");
+const translate = require('google-translate-api-x');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -31,7 +31,7 @@ module.exports = {
         const message = interaction.options.getString("message");
         const sourceLanguage = interaction.options.getString("source-language") || "auto";
         const targetLanguage = interaction.options.getString("target-language") || "en";
-
+        console.log(message, sourceLanguage, targetLanguage);
         try {
             const res = await translate(message, { from: sourceLanguage, to: targetLanguage });
 
