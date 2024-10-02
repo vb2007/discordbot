@@ -23,12 +23,16 @@ module.exports = {
             option
                 .setName("target-language")
                 .setDescription("[ISO] The language you would like to translate the message to (default: English).")
+                .setMinLength(2)
+                .setMaxLength(2)
                 .setRequired(false)
         )
         .addStringOption(option =>
             option
                 .setName("source-language")
                 .setDescription("[ISO] The language you would like to translate the message from (default: auto detect).")
+                .setMinLength(2)
+                .setMaxLength(2)
                 .setRequired(false)
         )
         .setDMPermission(true),
@@ -37,22 +41,39 @@ module.exports = {
         const sourceLanguage = interaction.options.getString("source-language") || "auto";
         const targetLanguage = interaction.options.getString("target-language") || "en";
         console.log(message, sourceLanguage, targetLanguage);
-        try {
-            const res = await translate(message, { from: sourceLanguage, to: targetLanguage });
 
-            var embedReply = embedReplyPrimaryColor(
-                "Translation",
-                res.text,
+        if (sourceLanguage !== "auto" && !supportedLanguages.includes(sourceLanguage)) {
+            var embedReply = embedReplyFailureColor(
+                "Translation: Error",
+                `The source language code *"${sourceLanguage}"* isn't supported.\nPlease use a valid ISO language code.`,
                 interaction
             );
         }
-        catch (error) {
-            console.error(error);
+        else if (!supportedLanguages.includes(targetLanguage)) {
             var embedReply = embedReplyFailureColor(
-                "Translation",
-                `An error occurred while translating the message. Please try again later.`,
+                "Translation: Error",
+                `The target language code *"${targetLanguage}"* isn't supported.\nPlease use a valid ISO language code.`,
                 interaction
             );
+        }
+        else {
+            try {
+                const res = await translate(message, { from: sourceLanguage, to: targetLanguage });
+
+                var embedReply = embedReplyPrimaryColor(
+                    "Translation",
+                    res.text,
+                    interaction
+                );
+            }
+            catch (error) {
+                console.error(error);
+                var embedReply = embedReplyFailureColor(
+                    "Translation: Error",
+                    `An error occurred while translating the message. Please try again later.`,
+                    interaction
+                );
+            }
         }
 
         await interaction.reply({ embeds: [embedReply] });
