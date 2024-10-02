@@ -1,8 +1,13 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { embedReplyPrimaryColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
-const db = require("../../helpers/db");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const translate = require('google-translate-api-x');
+const fs = require('fs');
+const path = require('path');
+
+const languageCodesPath = path.join(__dirname, '../../data/language-codes.json');
+const languageCodes = JSON.parse(fs.readFileSync(languageCodesPath, 'utf8'));
+const supportedLanguages = languageCodes.map(lang => lang.code);
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -17,13 +22,13 @@ module.exports = {
         .addStringOption(option =>
             option
                 .setName("target-language")
-                .setDescription("The language you would like to translate the message to (default: English).")
+                .setDescription("[ISO] The language you would like to translate the message to (default: English).")
                 .setRequired(false)
         )
         .addStringOption(option =>
             option
                 .setName("source-language")
-                .setDescription("The language you would like to translate the message from (default: auto detect).")
+                .setDescription("[ISO] The language you would like to translate the message from (default: auto detect).")
                 .setRequired(false)
         )
         .setDMPermission(true),
