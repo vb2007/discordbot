@@ -62,9 +62,9 @@ module.exports = {
 
                 var embedReply = embedReplyPrimaryColorWithFields(
                     "Translation",
-                    res.text,
+                    `"${res.text}"`,
                     [
-                        { name: "Original message:", value: message },
+                        { name: "Original message:", value: `*"${message}"*` },
                         { name: "From:", value: sourceLanguage, inline: true },
                         { name: "To:", value: targetLanguage, inline: true }
                     ],
