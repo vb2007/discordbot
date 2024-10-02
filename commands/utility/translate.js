@@ -75,7 +75,7 @@ module.exports = {
                     "Translation",
                     res.text,
                     [
-                        { name: "Original message:", value: `*"${message}"*` },
+                        { name: "Original message:", value: `*${message}*` },
                         { name: "From:", value: sourceLanguageName, inline: true },
                         { name: "To:", value: targetLanguageName, inline: true }
                     ],

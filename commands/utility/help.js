@@ -29,6 +29,7 @@ module.exports = {
             "`/ping-db` - Displays the current latency between the bot and it's database.\n" +
             "`/server` - Provides information about the current server.\n" +
             "`/user` - Provides information about a specified user.\n" +
+            "`/translate` - Translates a message from any language to any language.\n" +
             "`/say` - Makes the bot say a specified message."
         };
 
