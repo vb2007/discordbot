@@ -8,6 +8,11 @@ const path = require('path');
 const languageCodesPath = path.join(__dirname, '../../data/language-codes.json');
 const languageCodes = JSON.parse(fs.readFileSync(languageCodesPath, 'utf8'));
 const supportedLanguages = languageCodes.map(lang => lang.code);
+const languageMap = languageCodes.reduce((map, lang) => {
+    map[lang.code] = lang.name;
+    return map;
+}, {});
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -60,13 +65,19 @@ module.exports = {
             try {
                 const res = await translate(message, { from: sourceLanguage, to: targetLanguage });
 
+                const detectedSourceLanguage = res.from.language.iso;
+                const sourceLanguageName = sourceLanguage === "auto"
+                    ? `${languageMap[detectedSourceLanguage]} (${detectedSourceLanguage})\n*(Auto-detected)*`
+                    : `${languageMap[sourceLanguage]} (${sourceLanguage})`;
+                const targetLanguageName = `${languageMap[targetLanguage]} (${targetLanguage})`;
+
                 var embedReply = embedReplyPrimaryColorWithFields(
                     "Translation",
-                    `"${res.text}"`,
+                    res.text,
                     [
                         { name: "Original message:", value: `*"${message}"*` },
-                        { name: "From:", value: sourceLanguage, inline: true },
-                        { name: "To:", value: targetLanguage, inline: true }
+                        { name: "From:", value: sourceLanguageName, inline: true },
+                        { name: "To:", value: targetLanguageName, inline: true }
                     ],
                     interaction
                 );
