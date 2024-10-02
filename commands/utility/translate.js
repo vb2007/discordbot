@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { embedReplyPrimaryColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
+const { embedReplyPrimaryColorWithFields, embedReplyFailureColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const translate = require('google-translate-api-x');
 const fs = require('fs');
@@ -60,9 +60,14 @@ module.exports = {
             try {
                 const res = await translate(message, { from: sourceLanguage, to: targetLanguage });
 
-                var embedReply = embedReplyPrimaryColor(
+                var embedReply = embedReplyPrimaryColorWithFields(
                     "Translation",
                     res.text,
+                    [
+                        { name: "Original message:", value: message },
+                        { name: "From:", value: sourceLanguage, inline: true },
+                        { name: "To:", value: targetLanguage, inline: true }
+                    ],
                     interaction
                 );
             }
