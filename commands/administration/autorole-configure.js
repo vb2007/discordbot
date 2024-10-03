@@ -20,7 +20,7 @@ module.exports = {
             var localEmbedResponse = embedReply(
                 embedColors.failure,
                 "AutoRole Configure: Error",
-                "You can only set autorole in a server.",
+                "You can only set up autorole in a server.",
                 interaction
             );
         }
