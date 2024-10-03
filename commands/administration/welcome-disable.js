@@ -29,7 +29,12 @@ module.exports = {
                 
             }
             catch (error) {
-                
+                var embedReply = embedReplyFailureColor(
+                    "Welcome Disable: Error",
+                    "There was an error while trying to disable the welcome messages.",
+                    interaction
+                );
+                // console.error(error);
             }
         }
 
