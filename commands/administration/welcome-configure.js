@@ -16,7 +16,8 @@ module.exports = {
         .addStringOption(option =>
             option
                 .setName("message")
-                .setDescription("A message that the new members will see. You can use the following placeholders: {user} - the new member's username, {server} - the server's name, {memberCount} - the server's member count.")
+                //the description length is limited to 100 characters ¯\_(ツ)_/¯
+                .setDescription("A message that the new members will see.") //You can use the following placeholders: {user} - the new member's username, {server} - the server's name, {memberCount} - the server's member count.
                 .setRequired(true)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
@@ -38,7 +39,7 @@ module.exports = {
         }
         else {
             try {
-                const channelId = interaction.options.get("channel");
+                const channelId = interaction.options.getChannel("channel").id;
                 const welcomeMessage = interaction.options.getString("message");
                 const guildId = interaction.guild.id;
                 const adderId = interaction.user.id;
@@ -80,7 +81,7 @@ module.exports = {
                         );
                     }
 
-                    await db.query("INSERT INTO welcome (guildId, channelId, message, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE channelId = ?, message = ?, adderId = ?, adderUsername = ?",
+                    await db.query("INSERT INTO welcome (guildId, channelId, message, adderId, adderUsername) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE channelId = ?, message = ?, adderId = ?, adderUsername = ?",
                         [guildId, channelId, welcomeMessage, adderId, adderUsername, channelId, welcomeMessage, adderId, adderUsername]
                     );
                 }
