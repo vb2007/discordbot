@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { embedReplyPrimaryColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
+const { embedReplyPrimaryColor, embedReplyFailureColor, embedReplyWarningColor, embedReplySuccessColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -26,7 +26,26 @@ module.exports = {
         }
         else {
             try {
-                
+                const currentGuildId = interaction.guild.id;
+                const query = await db.query("SELECT guildId FROM welcome WHERE guildId = ?", [currentGuildId]);
+                const welcomeGuildId = query[0]?.guildId || null;
+
+                if (welcomeGuildId) {
+                    await db.query("DELETE FROM welcome WHERE guildId = ?", [welcomeGuildId]);
+
+                    var embedReply = embedReplySuccessColor(
+                        "Welcome Disable: Success",
+                        "The welcome messages have been disabled successfully for this server.\nYou can re-enable them with the `/welcome-configure` command.",
+                        interaction
+                    );
+                }
+                else {
+                    var embedReply = embedReplyWarningColor(
+                        "Welcome Disable: Warning",
+                        "Welcome messages have not been configured for this server.\nTherefore, you can't disable them.\nYou can enable this feature with the `/welcome-configure` command.",
+                        interaction
+                    );
+                }
             }
             catch (error) {
                 var embedReply = embedReplyFailureColor(
