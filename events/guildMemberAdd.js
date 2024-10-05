@@ -4,6 +4,11 @@ module.exports = {
     name: "guildMemberAdd",
     async execute(member) {
         const guildId = member.guild.id;
+        const serverName = member.guild.name;
+        const memberCount = member.guild.memberCount;
+
+        const userTag = member.user.tag;
+        const userId = member.user.id;
 
         //autorole
         try {
@@ -26,13 +31,17 @@ module.exports = {
         try {
             const rows = await db.query("SELECT channelId, message FROM welcome WHERE guildId = ?", [guildId]);
             const channelId = rows[0].channelId;
-            const message = rows[0].message;
+            let message = rows[0].message;
 
             if (channelId && message) {
                 const channel = member.guild.channels.cache.get(channelId);
                 if (channel) {
-                    await channel.send(message.replace("{user}", member.user.tag));
-                    console.log(`Sent welcome message to ${member.user.tag} in ${member.guild.name}`);
+                    message = message
+                        .replace("{user}", `<@${userId}>`)
+                        .replace("{server}", serverName)
+                        .replace("{memberCount}", memberCount);
+                    await channel.send(message);
+                    console.log(`Sent welcome message to ${userTag} in ${serverName}.`);
                 }
             }
         }
