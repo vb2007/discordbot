@@ -20,6 +20,18 @@ module.exports = {
                 .setDescription("A message that the new members will see.") //You can use the following placeholders: {user} - the new member's username, {server} - the server's name, {memberCount} - the server's member count.
                 .setRequired(true)
         )
+        .addBooleanOption(option =>
+            option
+                .setName("embed")
+                .setDescription("Whether the message should be sent as an embed (doesn't supports pinging users).")
+                .setRequired(false)
+        )
+        .addStringOption(option =>
+            option
+                .setName("emed-color")
+                .setDescription("The color of the embed message. Leave empty for default color.")
+                .setRequired(false)
+        )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .setDMPermission(false),
     async execute(interaction) {
@@ -45,10 +57,9 @@ module.exports = {
                 const adderId = interaction.user.id;
                 const adderUsername = interaction.user.username;
 
-                const query = await db.query("SELECT guildId, channelId, message FROM welcome WHERE guildId = ?", [guildId]);
+                const query = await db.query("SELECT channelId, message FROM welcome WHERE guildId = ?", [guildId]);
                 const existingChannelId = query[0]?.channelId || null;
                 const existingWelcomeMessage = query[0]?.message || null;
-                const existingGuildId = query[0]?.guildId || null;
 
                 //if welcome messages has already been configured for this server...
                 if (welcomeMessage == existingWelcomeMessage && channelId == existingChannelId) {
