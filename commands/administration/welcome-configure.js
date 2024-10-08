@@ -26,10 +26,10 @@ module.exports = {
                 .setDescription("Whether the message should be sent as an embed (doesn't supports pinging users).")
                 .setRequired(false)
         )
-        .addStringOption(option =>
+        .addIntegerOption(option =>
             option
                 .setName("embed-color")
-                .setDescription("The color of the embed message. Leave empty for default color.")
+                .setDescription("The HEX color of the embed message. Leave empty for default color.")
                 .setRequired(false)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
@@ -54,7 +54,7 @@ module.exports = {
                 const channelId = interaction.options.getChannel("channel").id;
                 const welcomeMessage = interaction.options.getString("message");
                 const isEmbed = interaction.options.getBoolean("embed") || 0;
-                const embedColor = interaction.options.getString("embed-color") || null;
+                const embedColor = interaction.options.getInteger("embed-color") || null;
 
                 const guildId = interaction.guild.id;
                 const adderId = interaction.user.id;
@@ -66,41 +66,52 @@ module.exports = {
                 const existingIsEmbed = query[0]?.isEmbed || 0;
                 const existingEmbedColor = query[0]?.embedColor || null;
 
-                //if welcome messages has already been configured for this server...
-                if (welcomeMessage == existingWelcomeMessage && channelId == existingChannelId && isEmbed == existingIsEmbed && embedColor == existingEmbedColor) {
-                    var embedReply = embedReplyWarningColor(
-                        "Welcome Configure: Warning",
-                        "The same welcome message has already been configured in this server for that channel. :x:\nRun the command with another channel and/or new welcome message to overwrite the current setup.\nRun `/welcome-disable` if you want to disable this feature.",
+                //if welcome messages haven't been configured for the current server
+                if (!existingChannelId) {
+                    var embedReply = embedReplySuccessColor(
+                        "Welcome Configure: Configuration Set",
+                        "The **welcome message** has been successfully **set**. :white_check_mark:\nRun this command again later if you want to modify the current configuration.\nRun `/welcome-disable` if you want to disable this feature.",
                         interaction
                     );
                 }
                 else {
-                    if (channelId == existingChannelId) {
-                        var embedReply = embedReplySuccessSecondaryColor(
-                            "Welcome Configure: Configuration Modified",
-                            "The **welcome message** has been successfully **modified**. :white_check_mark:\nRun this command again later if you want to modify the message / channel.\nRun `/welcome-disable` if you want to disable this feature.",
-                            interaction
-                        );
+                    //checks if anything has been modified in the the command
+                    let modifications = [];
+                    if (channelId != existingChannelId) {
+                        modifications.push(`**welcome channel** to <#${channelId}>`);
                     }
-                    else if (welcomeMessage == existingWelcomeMessage) {
-                        var embedReply = embedReplySuccessSecondaryColor(
-                            "Welcome Configure: Configuration Modified",
-                            `The **welcome channel** has been successfully **modified** to <#${channelId}>. :white_check_mark:\nRun this command again later if you want to modify the message / channel.\nRun \`/welcome-disable\` if you want to disable this feature.`,
-                            interaction
-                        );
+                    if (welcomeMessage != existingWelcomeMessage) {
+                        modifications.push("**welcome message**");
                     }
-                    else {
-                        var embedReply = embedReplySuccessColor(
-                            "Welcome Configure: Configuration Set",
-                            "The **welcome message** has been successfully **set**. :white_check_mark:\nRun this command again later if you want to modify the message / channel.\nRun `/welcome-disable` if you want to disable this feature.",
-                            interaction
-                        );
+                    if (isEmbed != existingIsEmbed) {
+                        modifications.push("**embed option**");
+                    }
+                    if (embedColor != existingEmbedColor) {
+                        modifications.push("**embed color**");
                     }
 
-                    await db.query("INSERT INTO welcome (guildId, channelId, message, adderId, adderUsername) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE channelId = ?, message = ?, adderId = ?, adderUsername = ?",
-                        [guildId, channelId, welcomeMessage, adderId, adderUsername, channelId, welcomeMessage, adderId, adderUsername]
-                    );
+
+                    //if the exact same welcome configuration is set for the current server (aka. nothing got modified)
+                    if (modifications.length === 0) {
+                        var embedReply = embedReplyWarningColor(
+                            "Welcome Configure: Warning",
+                            "The exact same welcome configuration has been set for this server already. :x:\nRun the command again with different options to overwrite the current configuration.\nRun `/welcome-disable`, if you want to disable this feature.",
+                            interaction
+                        );
+                    }
+                    //if the welcome configuration has been modified
+                    else {
+                        var embedReply = embedReplySuccessSecondaryColor(
+                            "Welcome Configure: Configuration Modified",
+                            `The ${modifications.join(", ")} has been successfully modified. :white_check_mark:\nRun the command again with different options to overwrite the current configuration.\nRun \`/welcome-disable\`, if you want to disable this feature.`,
+                            interaction
+                        );
+                    }
                 }
+
+                await db.query("INSERT INTO welcome (guildId, channelId, message, isEmbed, embedColor, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE channelId = ?, message = ?, adderId = ?, adderUsername = ?, isEmbed = ?, embedColor = ?",
+                    [guildId, channelId, welcomeMessage, isEmbed, embedColor, adderId, adderUsername, channelId, welcomeMessage, adderId, adderUsername, isEmbed, embedColor]
+                );
             }
             catch (error) {
                 var embedReply = embedReplyFailureColor(
