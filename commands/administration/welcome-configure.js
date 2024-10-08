@@ -28,7 +28,7 @@ module.exports = {
         )
         .addStringOption(option =>
             option
-                .setName("emed-color")
+                .setName("embed-color")
                 .setDescription("The color of the embed message. Leave empty for default color.")
                 .setRequired(false)
         )
@@ -53,16 +53,21 @@ module.exports = {
             try {
                 const channelId = interaction.options.getChannel("channel").id;
                 const welcomeMessage = interaction.options.getString("message");
+                const isEmbed = interaction.options.getBoolean("embed") || 0;
+                const embedColor = interaction.options.getString("embed-color") || null;
+
                 const guildId = interaction.guild.id;
                 const adderId = interaction.user.id;
                 const adderUsername = interaction.user.username;
 
-                const query = await db.query("SELECT channelId, message FROM welcome WHERE guildId = ?", [guildId]);
+                const query = await db.query("SELECT channelId, message, isEmbed, embedColor FROM welcome WHERE guildId = ?", [guildId]);
                 const existingChannelId = query[0]?.channelId || null;
                 const existingWelcomeMessage = query[0]?.message || null;
+                const existingIsEmbed = query[0]?.isEmbed || 0;
+                const existingEmbedColor = query[0]?.embedColor || null;
 
                 //if welcome messages has already been configured for this server...
-                if (welcomeMessage == existingWelcomeMessage && channelId == existingChannelId) {
+                if (welcomeMessage == existingWelcomeMessage && channelId == existingChannelId && isEmbed == existingIsEmbed && embedColor == existingEmbedColor) {
                     var embedReply = embedReplyWarningColor(
                         "Welcome Configure: Warning",
                         "The same welcome message has already been configured in this server for that channel. :x:\nRun the command with another channel and/or new welcome message to overwrite the current setup.\nRun `/welcome-disable` if you want to disable this feature.",
