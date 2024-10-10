@@ -11,6 +11,7 @@ module.exports = {
             option
                 .setName("channel")
                 .setDescription("A channel where the welcome message will be displayed.")
+                .addChannelTypes(0) //= GUILD_TEXT aka. text channels
                 .setRequired(true)
         )
         .addStringOption(option =>
