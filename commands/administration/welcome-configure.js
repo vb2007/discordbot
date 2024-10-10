@@ -77,9 +77,6 @@ module.exports = {
                 else {
                     //checks if anything has been modified in the the command
                     let modifications = [];
-                    if (channelId != existingChannelId) {
-                        modifications.push(`**welcome channel** to <#${channelId}>`);
-                    }
                     if (welcomeMessage != existingWelcomeMessage) {
                         modifications.push("**welcome message**");
                     }
@@ -89,7 +86,9 @@ module.exports = {
                     if (embedColor != existingEmbedColor) {
                         modifications.push("**embed color**");
                     }
-
+                    if (channelId != existingChannelId) {
+                        modifications.push(`**welcome channel** to <#${channelId}>`);
+                    }
 
                     //if the exact same welcome configuration is set for the current server (aka. nothing got modified)
                     if (modifications.length === 0) {
@@ -101,9 +100,16 @@ module.exports = {
                     }
                     //if the welcome configuration has been modified
                     else {
+                        let modificationsMessage;
+                        if (modifications.length === 1) {
+                            modificationsMessage = modifications[0];
+                        } else {
+                            modificationsMessage = modifications.slice(0, -1).join(", ") + " and " + modifications[modifications.length - 1];
+                        }
+
                         var embedReply = embedReplySuccessSecondaryColor(
                             "Welcome Configure: Configuration Modified",
-                            `The ${modifications.join(", ")} has been successfully modified. :white_check_mark:\nRun the command again with different options to overwrite the current configuration.\nRun \`/welcome-disable\`, if you want to disable this feature.`,
+                            `Successfully modified ${modificationsMessage}. :white_check_mark:\nRun the command again with different options to overwrite the current configuration.\nRun \`/welcome-disable\`, if you want to disable this feature.`,
                             interaction
                         );
                     }
