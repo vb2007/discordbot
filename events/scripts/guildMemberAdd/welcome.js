@@ -1,4 +1,6 @@
 const db = require("../../../helpers/db");
+const { embedColors } = require("../../../config.json");
+const { embedMessage } = require("../../../helpers/embed-reply");
 
 module.exports = {
     async sendWelcomeMessage(member) {
@@ -9,9 +11,11 @@ module.exports = {
         const userId = member.user.id;
 
         try {
-            const rows = await db.query("SELECT channelId, message FROM welcome WHERE guildId = ?", [guildId]);
+            const rows = await db.query("SELECT channelId, message, isEmbed, embedColor FROM welcome WHERE guildId = ?", [guildId]);
             const channelId = rows[0]?.channelId;
             let message = rows[0]?.message;
+            const isEmbed = rows[0]?.isEmbed;
+            const embedColor = rows[0]?.embedColor || embedColors.primary;
 
             if (channelId && message) {
                 const channel = member.guild.channels.cache.get(channelId);
@@ -20,7 +24,20 @@ module.exports = {
                         .replace("{user}", `<@${userId}>`)
                         .replace("{server}", serverName)
                         .replace("{memberCount}", memberCount);
-                    await channel.send(message);
+                    
+                    if (isEmbed) {
+                        const embedContent = embedMessage(
+                            embedColor,
+                            "Welcome!",
+                            message,
+                        );
+
+                        await channel.send({ embeds: [embedContent] });
+                    }
+                    else {
+                        await channel.send(message);
+                    }
+                    
                     console.log(`Sent welcome message to ${userTag} in ${serverName}.`);
                 }
             }
