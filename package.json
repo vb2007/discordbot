@@ -16,7 +16,18 @@
     "sql",
     "mariadb"
   ],
-  "author": "vb2007 <admin@vb2007.hu> (https://vb2007.hu)",
+  "author": {
+    "name": "vb2007",
+    "email": "admin@vb2007.hu",
+    "url": "https://vb2007.hu"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vb2007/discordbot.git"
+  },
+  "bugs": {
+    "url" : "https://github.com/vb2007/discordbot/issues"
+  },
   "license": "AGPL-3.0-only",
   "dependencies": {
     "ajv": "^8.17.1",
