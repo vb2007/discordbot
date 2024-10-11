@@ -17,4 +17,4 @@ CREATE TABLE IF NOT EXISTS `economy` (
     PRIMARY KEY (`id`)
 );
 
-CREATE INDEX idx_userId ON economy(userId);
+CREATE INDEX IF NOT EXISTS idx_userId ON economy(userId);

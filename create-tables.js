@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const db = require("./helpers/db");
+db.getConnection();
 
 // reads the SQL queries from a folder's subfolder
 function readSQLFiles(dir) {
@@ -9,8 +10,8 @@ function readSQLFiles(dir) {
 
     for (const file of sqlFiles) {
         const filePath = path.join(dir, file);
-        const query = fs.readFileSync(filePath, "utf8");
-        sqlQueries.push(query);
+        const queries = fs.readFileSync(filePath, "utf8").split(';').filter(query => query.trim() !== '');
+        sqlQueries.push(...queries);
     }
 
     return sqlQueries;
@@ -37,21 +38,21 @@ async function createTables() {
             }
         }
 
-        //executes the table creation queries
+        //executes the table creation (and other) queries
         for (const query of sqlQueries) {
             try {
                 await db.query(query);
-                console.log("Table created successfully.");
+                console.log("Query executed successfully.");
             }
             catch (error) {
-                console.error("Error creating table: ", error);
+                console.error("Error executing query: ", error);
             }
         }
 
-        console.log("All tables are processed.") ;
+        console.log("All queries are executed & all tables are processed.");
     }
     catch (error) {
-        console.error("Error creating tables: ", error);
+        console.error("Error executing queries & creating tables: ", error);
     }
 }
 

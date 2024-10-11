@@ -2,7 +2,8 @@
 
 CREATE TABLE IF NOT EXISTS `log` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `commandName` tinytext DEFAULT NULL, --tinytext = max. 255 characters
+    `commandName` tinytext DEFAULT NULL,
+    /* tinytext = max. 255 characters */
     `executorUserName` text DEFAULT NULL,
     `executorUserId` bigint(20) DEFAULT NULL,
     `isInServer` tinyint(1) DEFAULT NULL,

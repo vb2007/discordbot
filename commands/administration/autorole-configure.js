@@ -20,7 +20,7 @@ module.exports = {
             var localEmbedResponse = embedReply(
                 embedColors.failure,
                 "AutoRole Configure: Error",
-                "You can only set autorole in a server.",
+                "You can only set up autorole in a server.",
                 interaction
             );
         }
@@ -43,12 +43,12 @@ module.exports = {
                 const autoRoleGuildId = query[0]?.guildId || null;
                 const autoRoleRoleId = query[0]?.roleId || null;
 
-                //if autorole has already been configured at this server...
+                //if autorole has already been configured for this server...
                 if (autoRoleRoleId == targetRole) {
                     var localEmbedResponse = embedReply(
                         embedColors.failure,
                         "AutoRole Configure: Error",
-                        "Autorole has been already configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.\nRun `/autorole-disable` to disable this feature.",
+                        "Autorole has already been configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.\nRun `/autorole-disable` to disable this feature completely.",
                         interaction
                     );
                 }
