@@ -58,7 +58,7 @@ module.exports = {
                         var localEmbedResponse = embedReply(
                             embedColors.successSecondary,
                             "AutoRole Configure: Configuration Modified",
-                            `The role that will get assigned to new members has been **modified** to \`@<${targetRole}>\` :white_check_mark:\nRun this command again to modify the role.\nRun \`/autorole-disable\` to disable this feature.`,
+                            `The role that will get assigned to new members has been **modified** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.\nRun \`/autorole-disable\` to disable this feature.`,
                             interaction
                         );
                     }
@@ -66,7 +66,7 @@ module.exports = {
                         var localEmbedResponse = embedReply(
                             embedColors.success,
                             "AutoRole Configure: Configuration Set",
-                            `The role that will get assigned to new members has been **set** to \`@<${targetRole}>\` :white_check_mark:\nRun this command again to modify the role.\nRun \`/autorole-disable\` to disable this feature.`,
+                            `The role that will get assigned to new members has been **set** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.\nRun \`/autorole-disable\` to disable this feature.`,
                             interaction
                         );
                     }
