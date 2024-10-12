@@ -29,6 +29,7 @@ module.exports = {
             "`/ping-db` - Displays the current latency between the bot and it's database.\n" +
             "`/server` - Provides information about the current server.\n" +
             "`/user` - Provides information about a specified user.\n" +
+            "`/translate` - Translates a message from any language to any language.\n" +
             "`/say` - Makes the bot say a specified message."
         };
 
@@ -68,6 +69,8 @@ module.exports = {
             "**__NOTE__**: The following commands require relevant **administration permissions** for both the bot and the command's executor to work.\n" +
             "`/autorole-configure` - Sets / modifies the autorole feature. When a new member joins the server, a specified role will get assigned to them automatically.\n" +
             "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n" +
+            "`/welcome-configure` - Sets / modifies the welcome messages feature. When a new member joins the server, the bot send a specified welcome message.\n" +
+            "`/welcome-disable` - Disables the welcome messages feature. The bot won't send a welcome message on join anymore.\n" +
             "`/rename` - Renames a specified user to a specified nickname in the current server."
         };
 

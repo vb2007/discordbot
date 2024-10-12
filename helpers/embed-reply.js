@@ -313,6 +313,23 @@ function embedReplySaidByPrimaryColor(title, description, interaction) {
     return embedReply;
 }
 
+/**
+ * @param {color} color - Embed's sidebar HEX Color
+ * @param {title} title - Embed's title
+ * @param {description} description - Embed's description
+ * @returns {embedReply} An embed reply object
+ */
+function embedMessage(color, title, description) {
+    const embedReply = new EmbedBuilder({
+        color: parseInt(color),
+        title: title,
+        description: description,
+        timestamp: new Date().toISOString()
+    });
+
+    return embedReply;
+}
+
 module.exports = {
     embedReply,
     embedReplyPrimaryColor,
@@ -326,5 +343,6 @@ module.exports = {
     embedReplyPrimaryColorImg,
     embedReplyPrimaryColorWithFields,
     embedReplyPrimaryColorWithFieldsAndAuthor,
-    embedReplySaidByPrimaryColor
+    embedReplySaidByPrimaryColor,
+    embedMessage
 }
