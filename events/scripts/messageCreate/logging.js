@@ -11,11 +11,12 @@ module.exports = {
         const channelId = message.channel.id;
 
         try {
-            await db.query("INSERT INTO messageLog (message, senderUserName, senderUserId, serverName, serverId, channelName, channelId) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            await db.query("INSERT INTO messageLog (messageContent, senderUserName, senderUserId, serverName, serverId, channelName, channelId) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 [
                     messageContent, senderUserName, senderUserId, serverName, serverId, channelName, channelId
                 ]
             );
+            console.log(`Logged message "${message.content}" from ${senderUserName} in ${serverName}.`);
         }
         catch (error) {
             console.error(`Failed to log message: ${error}`);

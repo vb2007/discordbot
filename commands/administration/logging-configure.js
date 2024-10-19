@@ -11,7 +11,7 @@ module.exports = {
             option
                 .setName("target-channel")
                 .setDescription("A channel where the bot will send the logged data.")
-                .addChannelType(0) //= text channels
+                .addChannelTypes(0) //= text channels
                 .setRequired(true)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)

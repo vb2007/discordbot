@@ -14,7 +14,14 @@ require("./scripts/verify-config-syntax");
 
 const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require("discord.js");
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
+const client = new Client({ intents: 
+	[
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMembers,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+	]
+});
 
 //notifies owner on console if the app is ready
 client.once(Events.ClientReady, readyClient => {
@@ -52,7 +59,8 @@ const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith(".js"
 
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
-	const event = require(filePath)
+	const event = require(filePath);
+	console.log("Event: ", event);
 
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args));
