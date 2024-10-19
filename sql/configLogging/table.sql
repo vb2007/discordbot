@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS `configLogging` (
     `guildId` varchar(50) NOT NULL,
-    `logChannelId` text DEFAULT NULL,
+    `logChannelId` text NOT NULL,
     `logChannelName` text DEFAULT NULL,
     `lastModifiedAt` timestamp NOT NULL DEFAULT current_timestamp(),
     `lastModifierId` text DEFAULT NULL,
     `lastModifierName` text DEFAULT NULL,
     `addedAt` timestamp NOT NULL DEFAULT current_timestamp(),
-    `firstConfigurerId` text DEFAULT NULL,
-    `firstConfigurerName` text DEFAULT NULL,
+    `firstConfigurerId` text NOT NULL,
+    `firstConfigurerName` text NOT NULL,
     PRIMARY KEY (`guildId`)
 );
 

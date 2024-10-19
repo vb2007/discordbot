@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { embedReplySuccessColor, embedReplySuccessSecondaryColor, embedReplyWarningColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
+const { embedReplySuccessColor, embedReplySuccessSecondaryColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -17,6 +17,83 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .setDMPermission(false),
     async execute(interaction) {
-        
+        if (!interaction.inGuild()) {
+            var embedReply = embedReplyFailureColor(
+                "Logging Configure: Error",
+                "You can only set up logging in a server.",
+                interaction
+            );
+        }
+        else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administrator)) {
+            var embedReply = embedReplyFailureColor(
+                "Logging Configure: Error",
+                "Logging some actions requires **administrator** *(8)* privileges which the bot currently lacks.\nIf you want this feature to work properly, please re-invite the bot with accurate privileges.",
+                interaction
+            );
+        }
+        else {
+            try {
+                const targetChannel = interaction.options.getChannel("target-channel");
+                const interactionUserId = interaction.user.id;
+                const interactionUsername = interaction.user.username
+                const targetChannelId = targetChannel.id;
+                const targetChannelName = targetChannel.name;
+                const guildId = interaction.guild.id;
+
+                const query = await db.query("SELECT guildId, logChannelId FROM configLogging WHERE guildId = ?", [guildId]);
+                const existingGuildId = query[0]?.guildId || null;
+                const existingLogChannelId = query[0]?.logChannelId || null;
+
+                if (existingLogChannelId == targetChannelId) {
+                    var embedReply = embedReplyFailureColor(
+                        "Logging Configure: Error",
+                        `Logging has already been configured for this server for the channel <#${targetChannelId}>. :x:\nRun the command with another channel to overwrite the current channel.`,
+                        interaction
+                    );
+                }
+                else {
+                    if (existingGuildId == guildId) {
+                        var embedReply = embedReplySuccessSecondaryColor(
+                            "Logging Configure: Configuration Modified",
+                            `The logging channel has been updated to <#${targetChannelId}>. :white_check_mark:\nRun this command again to modify the channel.\nRun \`/logging-disable\` to disable this feature completely.`,
+                            interaction
+                        );
+
+                        await db.query("UPDATE configLogging SET logChannelId = ?, logChannelName = ?, lastModifierId = ?, lastModifierName = ? WHERE guildId = ?",
+                            [
+                                targetChannelId, targetChannelName, interactionUserId, interactionUsername, guildId
+                            ]
+                        );
+                    }
+                    else {
+                        var embedReply = embedReplySuccessColor(
+                            "Logging Configure: Configuration Set",
+                            `Logging has been set up for this server in <#${targetChannelId}>. :white_check_mark:\nRun this command again to modify the channel.\nRun \`/logging-disable\` to disable this feature completely.`,
+                            interaction
+                        );
+
+                        await db.query("INSERT INTO configLogging (guildId, logChannelId, logChannelName, firstConfigurerId, firstConfigurerName) VALUES (?, ?, ?, ?, ?)",
+                            [
+                                guildId, targetChannelId, targetChannelName, interactionUserId, interactionUsername
+                            ]
+                        );
+                    }
+                }
+            }
+            catch (error) {
+                // console.error(`Failed to configure logging: ${error}`);
+                var embedReply = embedReplyFailureColor(
+                    "Logging Configure: Error",
+                    "Failed to configure logging. Please try again.",
+                    interaction
+                );
+            }
+        }
+
+        await interaction.reply({ embeds: [embedReply] });
+
+        //logging
+        const response = JSON.stringify(localEmbedResponse.toJSON());
+		await logToFileAndDatabase(interaction, response);
     }
 }
