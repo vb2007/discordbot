@@ -1,8 +1,8 @@
-const logging = require("./scripts/messageCreate/logging");
+const messageLogging = require("./scripts/messageCreate/messageLogging");
 
 module.exports = {
     name: "messageCreate",
     async execute(message) {
-        await logging.logMessage(message);
+        await messageLogging.logMessage(message);
     },
 };
