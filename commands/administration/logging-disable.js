@@ -18,8 +18,7 @@ module.exports = {
             );
         }
         else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administartor)) {
-            var embedReply = embedReply(
-                embedColors.failure,
+            var embedReply = embedReplyFailureColor(
                 "AutoRole Disable: Error",
                 "This feature requires **administrator** *(8)* privileges witch the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges.",
                 interaction
