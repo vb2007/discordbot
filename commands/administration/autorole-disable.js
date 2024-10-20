@@ -40,7 +40,7 @@ module.exports = {
                     var localEmbedResponse = embedReply(
                         embedColors.success,
                         "AutoRole Disable: Success",
-                        "The autorole feature has been disabled succesfully.\nYou can re-enable it with `/autorole-configure`.",
+                        "The autorole feature has been disabled succesfully. :white_check_mark:\nYou can re-enable it with `/autorole-configure`.",
                         interaction
                     );
                 }
@@ -48,7 +48,7 @@ module.exports = {
                     var localEmbedResponse = embedReply(
                         embedColors.warning,
                         "AutoRole Disable: Warning",
-                        "Autorole has not been configured for this server.\nTherefore, you can't disable it.\nYou can enable this feature with `/autorole-configure`.",
+                        "Autorole has not been configured for this server. :x:\nTherefore, you can't disable it.\nYou can enable this feature with `/autorole-configure`.",
                         interaction
                     );
                 }
