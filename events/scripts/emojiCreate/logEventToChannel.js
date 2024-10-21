@@ -11,7 +11,7 @@ module.exports = {
 
             if (existingGuildId) {
                 const logChannelId = query[0]?.logChannelId;
-                const logChannel = channel.guild.channels.cache.get(logChannelId);
+                const logChannel = emoji.guild.channels.cache.get(logChannelId);
 
                 const logEmbed = embedMessageSuccessColor(
                     "Emoji created",
