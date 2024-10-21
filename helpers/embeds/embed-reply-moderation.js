@@ -1,3 +1,6 @@
+const { EmbedBuilder } = require("discord.js");
+const { embedColors } = require("../../config.json");
+
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description

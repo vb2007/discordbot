@@ -1,8 +1,11 @@
+const { EmbedBuilder } = require("discord.js");
+const { embedColors } = require("../../config.json");
+
 /**
  * @param {color} color - Embed's sidebar HEX Color
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
- * @returns {embedReply} An embed reply object
+ * @returns {embedReply} An embed message object
  */
 function embedMessage(color, title, description) {
     const embedReply = new EmbedBuilder({
@@ -18,7 +21,7 @@ function embedMessage(color, title, description) {
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
- * @returns {embedReply} An embed reply object
+ * @returns {embedReply} An embed message object
  */
 function embedMessagePrimaryColor(title, description) {
     const embedReply = new EmbedBuilder({
@@ -34,7 +37,7 @@ function embedMessagePrimaryColor(title, description) {
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
- * @returns {embedReply} An embed reply object
+ * @returns {embedReply} An embed message object
  */
 function embedMessageSuccessColor(title, description) {
     const embedReply = new EmbedBuilder({
@@ -50,7 +53,7 @@ function embedMessageSuccessColor(title, description) {
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
- * @returns {embedReply} An embed reply object
+ * @returns {embedReply} An embed message object
  */
 function embedMessageSuccessSecondaryColor(title, description) {
     const embedReply = new EmbedBuilder({
@@ -66,7 +69,7 @@ function embedMessageSuccessSecondaryColor(title, description) {
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
- * @returns {embedReply} An embed reply object
+ * @returns {embedReply} An embed message object
  */
 function embedMessageFailureColor(title, description) {
     const embedReply = new EmbedBuilder({
@@ -82,7 +85,7 @@ function embedMessageFailureColor(title, description) {
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
- * @returns {embedReply} An embed reply object
+ * @returns {embedReply} An embed message object
  */
 function embedMessageWarningColor(title, description) {
     const embedReply = new EmbedBuilder({
@@ -95,7 +98,7 @@ function embedMessageWarningColor(title, description) {
     return embedReply;
 }
 
-odule.exports = {
+module.exports = {
     embedMessage,
     embedMessagePrimaryColor,
     embedMessageSuccessColor,
