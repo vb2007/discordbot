@@ -1,5 +1,5 @@
 const db = require("../../../helpers/db");
-const { embedMessageSuccessColor } = require("../../../helpers/embed-reply");
+const { embedMessageSuccessColor } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendLogInfo(channel) {

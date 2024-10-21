@@ -1,6 +1,6 @@
 const db = require("../../../helpers/db");
 const { embedColors } = require("../../../config.json");
-const { embedMessage } = require("../../../helpers/embed-reply");
+const { embedMessage } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendWelcomeMessage(member) {

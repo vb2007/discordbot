@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { embedReplyFailureColor, moderationDmEmbedReplyFailureColor, embedReplySuccessColor } = require("../../helpers/embed-reply");
+const { embedReplyFailureColor, embedReplySuccessColor } = require("../../helpers/embeds/embed-reply");
+const { moderationDmEmbedReplyFailureColor } = require("../../helpers/embeds/embed-reply-moderation");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {

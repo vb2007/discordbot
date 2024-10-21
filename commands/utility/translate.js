@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { embedReplyPrimaryColorWithFields, embedReplyFailureColor } = require("../../helpers/embed-reply");
+const { embedReplyPrimaryColorWithFields, embedReplyFailureColor } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const translate = require('google-translate-api-x');
 const fs = require('fs');

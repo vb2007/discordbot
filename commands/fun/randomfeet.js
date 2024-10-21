@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { embedReplyPrimaryColorImg, embedReplyImg } = require("../../helpers/embed-reply");
+const { embedReplyPrimaryColorImg, embedReplyImg } = require("../../helpers/embeds/embed-reply");
 const fs = require("fs");
 const path = require("path");
 const linksFile = "./data/links.json"; 

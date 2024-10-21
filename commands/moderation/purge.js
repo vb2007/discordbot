@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require('discord.js');
-const { embedReplySuccessColor, embedReplyFailureColor } = require('../../helpers/embed-reply');
+const { embedReplySuccessColor, embedReplyFailureColor } = require('../../helpers/embeds/embed-reply');
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
