@@ -2,7 +2,7 @@ const db = require("../../../helpers/db");
 const { logMessagesToLocalDatabase } = require("../../../config.json");
 
 module.exports = {
-    async logMessage(message) {
+    async logMessagesToLocalDatabase(message) {
         if (logMessagesToLocalDatabase == "True") {
             const messageContent = message.content;
             const senderUserName = message.author.username;
