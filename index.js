@@ -17,12 +17,30 @@ const { Client, Collection, Events, GatewayIntentBits, Partials, ActivityType } 
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildEmojisAndStickers,
+		// GatewayIntentBits.GuildIntegrations,
+		GatewayIntentBits.GuildInvites,
 		GatewayIntentBits.GuildMembers,
+		GatewayIntentBits.GuildMessageReactions,
+		// GatewayIntentBits.GuildMessageTyping,
 		GatewayIntentBits.GuildMessages,
+		// GatewayIntentBits.GuildPresences,
+		// GatewayIntentBits.GuildScheduledEvents,
+		GatewayIntentBits.GuildVoiceStates,
+    	GatewayIntentBits.GuildWebhooks,
+		// GatewayIntentBits.DirectMessages,
+		// GatewayIntentBits.DirectMessageTyping,
+		// GatewayIntentBits.DirectMessageReactions,
 		GatewayIntentBits.MessageContent,
 	],
 	partials: [
 		Partials.Channel,
+		// Partials.GuildMember,
+		// Partials.GuildScheduledEvent,
+		// Partials.Message,
+		// Partials.Reaction,
+		// Partials.ThreadMember,
+		// Partials.User,
 	]
 });
 

@@ -50,7 +50,7 @@ Response: ${response}\n\n`;
 
             //insert data into the commandUsageLog table
             await db.query(
-                `INSERT INTO commandUsageLog (commandName, executorUserName, executorUserId, isInServer, serverName, serverId, channelName, channelId, time, response) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                `INSERT INTO commandUsageLog (commandName, executorUserName, executorUserId, isInServer, serverName, serverId, channelName, channelId, usageTime, response) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     interaction.commandName,
                     interaction.user.username,
