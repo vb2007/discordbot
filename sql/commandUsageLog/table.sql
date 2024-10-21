@@ -1,6 +1,6 @@
 -- discordbotTest.commandUsageLog definition
 
-CREATE TABLE `commandUsageLog` (
+CREATE TABLE IF NOT EXISTS `commandUsageLog` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `commandName` tinytext DEFAULT NULL,
   `executorUserName` text DEFAULT NULL,
