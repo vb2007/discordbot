@@ -12,14 +12,17 @@ db.getConnection();
 require("./scripts/verify-config-syntax");
 // validateConfig();
 
-const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require("discord.js");
+const { Client, Collection, Events, GatewayIntentBits, Partials, ActivityType } = require("discord.js");
 
-const client = new Client({ intents: 
-	[
+const client = new Client({
+	intents: [
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMembers,
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.MessageContent,
+	],
+	partials: [
+		Partials.Channel,
 	]
 });
 

@@ -11,14 +11,14 @@ module.exports = {
 
             if (existingGuildId) {
                 const logChannelId = query[0]?.logChannelId;
-                const channel = channel.guild.channels.cache.get(logChannelId);
+                const logChannel = channel.guild.channels.cache.get(logChannelId);
 
                 const logEmbed = embedMessageSuccessColor(
                     "Channel created",
                     `${channel.name} channel was created.`,
                 );
 
-                await logChannelId.send({ embeds: [logEmbed] });
+                await logChannel.send({ embeds: [logEmbed] });
             }
         }
         catch (error) {
