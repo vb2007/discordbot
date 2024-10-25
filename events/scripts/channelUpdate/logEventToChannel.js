@@ -6,18 +6,20 @@ module.exports = {
     async sendLogInfoNSFW(oldChannel, newChannel) {
         try {
             const { doesGuildExist, logChannelId } = await getGuildFromDB(oldChannel);
-            console.log(doesGuildExist, logChannelId);
 
             if (doesGuildExist) {
-                const logChannel = oldChannel.guild.channels.cache.get(logChannelId);
+                if (oldChannel.nsfw !== newChannel.nsfw) {
+                    const logChannel = oldChannel.guild.channels.cache.get(logChannelId);
                 
-                const nsfwStatus = oldChannel.nsfw ? "NSFW" : "Not NSFW";
-                const logEmbed = embedMessageSuccessColor(
-                    "Channel updated",
-                    `NSFW status was set to **${nsfwStatus}** in ${oldChannel.name}.`,
-                );
-
-                await logChannel.send({ embeds: [logEmbed] });
+                    const oldNSFWStatus = oldChannel.nsfw ? "NSFW" : "Not NSFW";
+                    const newNSFWStatus = newChannel.nsfw ? "NSFW" : "Not NSFW";
+                    const logEmbed = embedMessageSuccessColor(
+                        "Channel updated",
+                        `NSFW status was set to **${newNSFWStatus}** from **${oldNSFWStatus}** in ${oldChannel.name}.`,
+                    );
+    
+                    await logChannel.send({ embeds: [logEmbed] });
+                }
             }
         }
         catch (error) {

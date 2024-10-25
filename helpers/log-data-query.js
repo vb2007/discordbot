@@ -13,8 +13,7 @@ module.exports = {
         const logChannelId = query[0]?.logChannelId;
     
         const doesGuildExist = logChannelId ? true : false;
-    
-        console.log(doesGuildExist, logChannelId);
+
         return { doesGuildExist, logChannelId };
     }
 } 

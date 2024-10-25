@@ -18,7 +18,7 @@ module.exports = {
                         messageContent, senderUserName, senderUserId, serverName, serverId, channelName, channelId
                     ]
                 );
-                console.log(`Logged message "${message.content}" from ${senderUserName} in ${serverName}.`);
+                console.log(`Logged message "${message.content}" to database from ${senderUserName} in ${serverName}.`);
             }
             catch (error) {
                 console.error(`Failed to log message: ${error}`);
