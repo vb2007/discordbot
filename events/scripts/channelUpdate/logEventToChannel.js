@@ -1,22 +1,20 @@
 const db = require("../../../helpers/db");
+const { getGuildFromDB } = require("../../../helpers/log-data-query");
 const { embedMessageSuccessColor } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendLogInfoNSFW(oldChannel, newChannel) {
-        const doesGuildExist = await this.getGuildFromDB(newChannel);
-
         try {
-            const query = await db.query("SELECT guildId, logChannelId FROM configLogging WHERE guildId = ?", [guildId]);
-            const existingGuildId = query[0]?.guildId;
+            const { doesGuildExist, logChannelId } = await getGuildFromDB(oldChannel);
+            console.log(doesGuildExist, logChannelId);
 
-            if (existingGuildId) {
-                const logChannelId = query[0]?.logChannelId;
-                const logChannel = channel.guild.channels.cache.get(logChannelId);
-
-                const nsfwStatus = channel.nsfw ? "NSFW" : "Not NSFW";
+            if (doesGuildExist) {
+                const logChannel = oldChannel.guild.channels.cache.get(logChannelId);
+                
+                const nsfwStatus = oldChannel.nsfw ? "NSFW" : "Not NSFW";
                 const logEmbed = embedMessageSuccessColor(
                     "Channel updated",
-                    `NSFW status was set to **${nsfwStatus}** in ${channel.name}.`,
+                    `NSFW status was set to **${nsfwStatus}** in ${oldChannel.name}.`,
                 );
 
                 await logChannel.send({ embeds: [logEmbed] });
@@ -27,7 +25,7 @@ module.exports = {
         }
     },
 
-    async sendLogInfoName(oldChannel, newChannel) {
-        console.log("");
-    }
+    // async sendLogInfoName(oldChannel, newChannel) {
+    //     console.log("");
+    // }
 }
