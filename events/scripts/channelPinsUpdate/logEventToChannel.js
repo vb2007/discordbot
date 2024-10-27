@@ -1,5 +1,5 @@
 const { getGuildFromDB } = require("../../../helpers/log-data-query");
-const { embedMessagePrimaryColor } = require("../../../helpers/embeds/embed-message");
+const { embedMessageSuccessSecondaryColor } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendLogInfo(channel) {
@@ -9,7 +9,7 @@ module.exports = {
             if (doesGuildExist) {
                 const logChannel = channel.guild.channels.cache.get(logChannelId);
 
-                const logEmbed = embedMessagePrimaryColor(
+                const logEmbed = embedMessageSuccessSecondaryColor(
                     "Channel pins updated",
                     `${channel.name} channel pins were updated.`,
                 );
