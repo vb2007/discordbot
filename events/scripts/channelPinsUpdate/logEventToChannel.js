@@ -1,16 +1,12 @@
-const db = require("../../../helpers/db");
+const { getGuildFromDB } = require("../../../helpers/log-data-query");
 const { embedMessagePrimaryColor } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendLogInfo(channel) {
-        const guildId = channel.guild.id;
-        
         try {
-            const query = await db.query("SELECT guildId, logChannelId FROM configLogging WHERE guildId = ?", [guildId]);
-            const existingGuildId = query[0]?.guildId;
+            const { doesGuildExist, logChannelId } = await getGuildFromDB(channel);
 
-            if (existingGuildId) {
-                const logChannelId = query[0]?.logChannelId;
+            if (doesGuildExist) {
                 const logChannel = channel.guild.channels.cache.get(logChannelId);
 
                 const logEmbed = embedMessagePrimaryColor(

@@ -1,22 +1,20 @@
-const db = require("../../../helpers/db");
+const { getGuildFromDB } = require("../../../helpers/log-data-query");
 const { embedMessageSuccessColor } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendLogInfo(member) {
-        const guildId = member.guild.id;
-
         try {
-            const query = await db.query("SELECT guildId, logChannelId FROM configLogging WHERE guildId = ?", [guildId]);
-            const existingGuildId = query[0]?.guildId;
-            const logChannelId = query[0]?.logChannelId;
+            const { doesGuildExist, logChannelId } = await getGuildFromDB(member);
 
             if (existingGuildId) {
+                const logChannel = oldChannel.guild.channels.cache.get(logChannelId);
+
                 const logEmbed = embedMessageSuccessColor(
                     "Member joined",
                     `${member.user.tag} joined the server.`,
                 );
 
-                await logChannelId.send({ embeds: [logEmbed] });
+                await logChannel.send({ embeds: [logEmbed] });
             }
         }
         catch (error) {
