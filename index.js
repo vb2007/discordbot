@@ -41,7 +41,10 @@ const client = new Client({
 		Partials.Reaction,
 		Partials.ThreadMember,
 		Partials.User,
-	]
+	],
+	// allowedMentions: {
+	// 	parse: ["everyone", "roles", "users"],
+	// },
 });
 
 //notifies owner on console if the app is ready

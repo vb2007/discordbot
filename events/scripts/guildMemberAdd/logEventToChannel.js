@@ -6,8 +6,8 @@ module.exports = {
         try {
             const { doesGuildExist, logChannelId } = await getGuildFromDB(member);
 
-            if (existingGuildId) {
-                const logChannel = oldChannel.guild.channels.cache.get(logChannelId);
+            if (doesGuildExist) {
+                const logChannel = member.guild.channels.cache.get(logChannelId);
 
                 const logEmbed = embedMessageSuccessColor(
                     "Member joined",
