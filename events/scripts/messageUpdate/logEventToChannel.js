@@ -11,7 +11,7 @@ module.exports = {
                 
                 const logEmbed = embedMessageFailureColor(
                     "Message updated",
-                    `Message "**${oldMessage.content}**" from <@${oldMessage.author.id}> has been updated to "**${newMessage.content}**" in <#${message.channel.id}>.`,
+                    `Message "**${oldMessage.content}**" from <@${oldMessage.author.id}> has been updated to "**${newMessage.content}**" in <#${oldMessage.channel.id}>.`,
                 );
 
                 await logChannel.send({ embeds: [logEmbed] });

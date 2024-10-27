@@ -1,4 +1,4 @@
-const logEventToChannel = require("./scripts/mmessageDelete/logEventToChannel");
+const logEventToChannel = require("./scripts/messageDelete/logEventToChannel");
 
 module.exports = {
     name: "messageDelete",
