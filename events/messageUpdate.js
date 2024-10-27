@@ -1,8 +1,8 @@
-// const messageLogging = require("./scripts/messageUpdate/messageLogging");
+const logEventToChannel = require("./scripts/messageUpdate/logEventToChannel");
 
-// module.exports = {
-//     name: "messageUpdate",
-//     async execute(oldMessage, newMessage) {
-//         await messageLogging.logMessagesToLocalDatabase(oldMessage, newMessage);
-//     },
-// };
+module.exports = {
+    name: "messageUpdate",
+    async execute(oldMessage, newMessage) {
+        await logEventToChannel.sendLogInfo(oldMessage, newMessage);
+    },
+}
