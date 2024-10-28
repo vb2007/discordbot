@@ -1,33 +1,23 @@
 const { getGuildFromDB } = require("../../../helpers/log-data-query");
-const { embedMessageFailureColor } = require("../../../helpers/embeds/embed-message");
+const { embedMessageFailureColor, embedMessageFailureColorWithFields } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendLogInfo(oldState, newState) {
         try {
             const { doesGuildExist, logChannelId } = await getGuildFromDB(oldState);
 
-
-            const logEmbed = embedMessageFailureColor(
-                "Voice state updated",
-                `${oldState} \n ${newState}.`,
-            );
-
-            await logChannel.send({ embeds: [logEmbed] });
-
             if (doesGuildExist) {
                 const logChannel = oldState.guild.channels.cache.get(logChannelId);
-                
-                const logEmbed = embedMessageFailureColor(
-                    "Voice state updated",
-                    `${oldState} \n ${newState}.`,
-                );
-
-                await logChannel.send({ embeds: [logEmbed] });
 
                 if (oldState.voiceChannel !== newState.voiceChannel) {
-                    const logEmbed = embedMessageFailureColor(
+                    const logEmbed = embedMessageFailureColorWithFields(
                         "Voice state updated",
-                        `<@${oldState.member.id}> has moved from <#${oldState.voiceChannel}> to <#${newState.voiceChannel}>.`,
+                        `A member has switched channels.`,
+                        [
+                            { name: "Member", value: `<@${oldState.member.id}>` },
+                            { name: "From", value: `<#${oldState.channel.id}>`, inline: true },
+                            { name: "To", value: `<#${newState.channel.id}>`, inline: true },
+                        ]
                     );
 
                     await logChannel.send({ embeds: [logEmbed] });
