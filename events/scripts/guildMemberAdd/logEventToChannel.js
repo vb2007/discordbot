@@ -1,5 +1,5 @@
 const { getGuildFromDB } = require("../../../helpers/log-data-query");
-const { embedMessageSuccessColor } = require("../../../helpers/embeds/embed-message");
+const { embedMessageSuccessColorWithFields } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendLogInfo(member) {
@@ -9,9 +9,13 @@ module.exports = {
             if (doesGuildExist) {
                 const logChannel = member.guild.channels.cache.get(logChannelId);
 
-                const logEmbed = embedMessageSuccessColor(
+                const logEmbed = embedMessageSuccessColorWithFields(
                     "Member joined",
-                    `${member.user.tag} joined the server.`,
+                    `<@${member.user.id}> joined the server.`,
+                    [
+                        { name: "Username", value: `${member.user.username}` },
+                        { name: "User Id", value: `${member.user.id}` },
+                    ]
                 );
 
                 await logChannel.send({ embeds: [logEmbed] });

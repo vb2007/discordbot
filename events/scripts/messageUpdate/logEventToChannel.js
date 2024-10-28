@@ -1,5 +1,5 @@
 const { getGuildFromDB } = require("../../../helpers/log-data-query");
-const { embedMessageWarningColor } = require("../../../helpers/embeds/embed-message");
+const { embedMessageWarningColorWithFields } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendLogInfo(oldMessage, newMessage) {
@@ -9,9 +9,19 @@ module.exports = {
             if (doesGuildExist) {
                 const logChannel = oldMessage.guild.channels.cache.get(logChannelId);
                 
-                const logEmbed = embedMessageWarningColor(
+                const logEmbed = embedMessageWarningColorWithFields(
                     "Message updated",
-                    `Message "**${oldMessage.content}**" from <@${oldMessage.author.id}> has been updated to "**${newMessage.content}**" in <#${oldMessage.channel.id}>.`,
+                    `A message was updated.`,
+                    [
+                        { name: "From", value: `${oldMessage.content}` },
+                        { name: "To", value: `${newMessage.content}` },
+                        { name: "Channel", value: `<#${oldMessage.channel.id}>` },
+                        { name: "Author", value: `<@${oldMessage.author.id}>` },
+                        { name: "Message Id", value: `${oldMessage.id}`, inline: true },
+                        { name: "Channel Id", value: `${oldMessage.channel.id}`, inline: true },
+                        { name: "Author Id", value: `${oldMessage.author.id}`, inline: true },
+                        { name: "Author Username", value: `${oldMessage.author.username}`, inline: true },
+                    ]
                 );
 
                 await logChannel.send({ embeds: [logEmbed] });
