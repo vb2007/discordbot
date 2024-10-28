@@ -1,5 +1,6 @@
 const { getGuildFromDB } = require("../../../helpers/log-data-query");
-const { embedMessageFailureColor } = require("../../../helpers/embeds/embed-message");
+const { getChannelType } = require("../../../helpers/channel-types");
+const { embedMessageFailureColorWithFields } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendLogInfo(channel) {
@@ -9,9 +10,16 @@ module.exports = {
             if (doesGuildExist) {
                 const logChannel = channel.guild.channels.cache.get(logChannelId);
 
-                const logEmbed = embedMessageFailureColor(
+                const logEmbed = embedMessageFailureColorWithFields(
                     "Channel deleted",
-                    `${channel.name} channel was deleted.`,
+                    `Channel '<#${channel.id}>' was deleted.`,
+                    [
+                        { name: "Name", value: `${channel.name}`, inline: true },
+                        { name: "Id", value: `${channel.id}`, inline: true },
+                        { name: "Category", value: `${channel.parent.name}` },
+                        { name: "Type", value: `${getChannelType(channel)}`, inline: true },
+                        { name: "NSFW?", value: `${channel.nsfw ? "Yes" : "No"}`, inline: true },
+                    ]
                 );
 
                 await logChannel.send({ embeds: [logEmbed] });
