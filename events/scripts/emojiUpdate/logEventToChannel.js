@@ -1,5 +1,5 @@
 const { getGuildFromDB } = require("../../../helpers/log-data-query");
-const { embedMessageSuccessSecondaryColor } = require("../../../helpers/embeds/embed-message");
+const { embedMessageSuccessSecondaryColorWithFields } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendLogInfo(oldEmoji, newEmoji) {
@@ -9,9 +9,15 @@ module.exports = {
             if (doesGuildExist) {
                 const logChannel = oldEmoji.guild.channels.cache.get(logChannelId);
 
-                const logEmbed = embedMessageSuccessSecondaryColor(
+                const logEmbed = embedMessageSuccessSecondaryColorWithFields(
                     "Emoji updated",
-                    `${oldEmoji.name} emoji was updated.\n\nOld name: ${oldEmoji.name}\nNew name: ${newEmoji.name}`,
+                    `${oldEmoji.name} emoji was updated.`,
+                    [
+                        { name: "Emoji Id", value: `${oldEmoji.id}`, inline: true },
+                        { name: "Animated?", value: `${oldEmoji.animated ? "Yes" : "No"}`, inline: true },
+                        { name: "Old name", value: `${oldEmoji.name}` },
+                        { name: "New name", value: `${newEmoji.name}` },
+                    ]
                 );
 
                 await logChannel.send({ embeds: [logEmbed] });
