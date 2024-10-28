@@ -1,5 +1,5 @@
 const { getGuildFromDB } = require("../../../helpers/log-data-query");
-const { embedMessageSuccessSecondaryColor } = require("../../../helpers/embeds/embed-message");
+const { embedMessageSuccessSecondaryColorWithFields } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendLogInfo(oldChannel, newChannel) {
@@ -11,36 +11,60 @@ module.exports = {
                 const changedChannelId = newChannel.id;
 
                 if (oldChannel.nsfw !== newChannel.nsfw) {
-                    const logEmbed = embedMessageSuccessSecondaryColor(
+                    const logEmbed = embedMessageSuccessSecondaryColorWithFields(
                         "Channel Updated: NSFW status",
-                        `Channel NSFW status was changed to "**${newChannel.nsfw ? "NSFW" : "Not NSFW"}**" from "**${oldChannel.nsfw ? "NSFW" : "Not NSFW"}**" in <#${changedChannelId}>.`,
+                        `Channel NSFW status was changed in <#${changedChannelId}>.`,
+                        [
+                            { name: "Channel name", value: `${newChannel.name}`, inline: true },
+                            { name: "Channel Id", value: `${changedChannelId}`, inline: true },
+                            { name: "From", value: `**${oldChannel.nsfw ? "NSFW" : "Not NSFW"}**` },
+                            { name: "To", value: `**${newChannel.nsfw ? "NSFW" : "Not NSFW"}**` },
+                        ]
                     );
     
                     await logChannel.send({ embeds: [logEmbed] });
                 }
 
                 if (oldChannel.name !== newChannel.name) {
-                    const logEmbed = embedMessageSuccessSecondaryColor(
+                    const logEmbed = embedMessageSuccessSecondaryColorWithFields(
                         "Channel Updated: Name",
-                        `Channel name was changed to "**${newChannel.name}**" from "**${oldChannel.name}**" in <#${changedChannelId}>.`,
+                        `Channel name was changed in <#${changedChannelId}>.`,
+                        [
+                            { name: "Channel name", value: `${newChannel.name}`, inline: true },
+                            { name: "Channel Id", value: `${changedChannelId}`, inline: true },
+                            { name: "From", value: `**${oldChannel.name}**` },
+                            { name: "To", value: `**${newChannel.name}**` },
+                        ]
                     );
     
                     await logChannel.send({ embeds: [logEmbed] });
                 }
 
                 if (oldChannel.topic !== newChannel.topic) {
-                    const logEmbed = embedMessageSuccessSecondaryColor(
+                    const logEmbed = embedMessageSuccessSecondaryColorWithFields(
                         "Channel Updated: Topic",
-                        `Channel topic *(description)* was changed to "**${newChannel.topic == "" ? "*empty description*" : newChannel.topic}**" from "**${newChannel.topic == "" ? "*empty description*" : newChannel.topic}**" in <#${changedChannelId}>.`,
+                        `Channel topic *(description)* was changed in <#${changedChannelId}>.`,
+                        [
+                            { name: "Channel name", value: `${newChannel.name}`, inline: true },
+                            { name: "Channel Id", value: `${changedChannelId}`, inline: true },
+                            { name: "From", value: `**${oldChannel.topic == "" ? "*empty description*" : oldChannel.topic}**` },
+                            { name: "To", value: `**${newChannel.topic == "" ? "*empty description*" : newChannel.topic}**` },
+                        ]
                     );
     
                     await logChannel.send({ embeds: [logEmbed] });
                 }
 
                 if (oldChannel.rateLimitPerUser !== newChannel.rateLimitPerUser) {
-                    const logEmbed = embedMessageSuccessSecondaryColor(
+                    const logEmbed = embedMessageSuccessSecondaryColorWithFields(
                         "Channel Updated: Slowmode",
                         `Channel slowmode was changed to "**${newChannel.rateLimitPerUser}**" seconds from "**${oldChannel.rateLimitPerUser}**" seconds in <#${changedChannelId}>.`,
+                        [
+                            { name: "Channel name", value: `${newChannel.name}`, inline: true },
+                            { name: "Channel Id", value: `${changedChannelId}`, inline: true },
+                            { name: "From", value: `**${oldChannel.rateLimitPerUser} seconds**` },
+                            { name: "To", value: `**${newChannel.rateLimitPerUser} seconds**` },
+                        ]
                     );
     
                     await logChannel.send({ embeds: [logEmbed] });

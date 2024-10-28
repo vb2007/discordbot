@@ -11,7 +11,7 @@ module.exports = {
 
                 const logEmbed = embedMessageSuccessSecondaryColor(
                     "Channel pins updated",
-                    `${channel.name} channel pins were updated.`,
+                    `The channel pins were updated in <#${channel.id}>.`,
                 );
 
                 await logChannel.send({ embeds: [logEmbed] });
