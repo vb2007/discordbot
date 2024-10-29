@@ -8,7 +8,7 @@ module.exports = {
         const userTag = member.user.tag;
 
         try {
-            const rows = await db.query("SELECT roleId FROM autorole WHERE guildId = ?", [guildId]);
+            const rows = await db.query("SELECT roleId FROM configAutorole WHERE guildId = ?", [guildId]);
             const roleId = rows[0]?.roleId;
 
             if (roleId) {
