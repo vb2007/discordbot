@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { embedReply } = require("../../helpers/embed-reply");
+const { embedReply } = require("../../helpers/embeds/embed-reply");
 const { embedColors } = require("../../config.json");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
