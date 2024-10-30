@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `configBridge` (
     `destinationGuildName` varchar(50) NOT NULL,
     `destinationChannelId` varchar(50) NOT NULL,
     `destinationChannelName` varchar(50) NOT NULL,
-    `modifiedAt` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+    `modifiedAt` timestamp DEFAULT NULL ON UPDATE current_timestamp(),
     `modifierId` varchar(50) DEFAULT NULL,
     `modifierUsername` varchar(50) DEFAULT NULL,
     `addedAt` timestamp NOT NULL DEFAULT current_timestamp(),
