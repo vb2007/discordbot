@@ -42,7 +42,8 @@ module.exports = {
                 const interactionUserId = interaction.user.id;
                 const interactionUsername = interaction.user.username;
 
-                const query = await db.query("SELECT sourceChannelId, destinationChannelId FROM configBridging WHERE sourceChannelId = ? AND destinationChannelId = ?", [sourceChannelId, targetChannelId]);
+                const query = await db.query("SELECT destinationChannelId, sourceChannelId, destinationGuildId FROM configBridging WHERE sourceChannelId = ? AND destinationChannelId = ?", [sourceChannelId, targetChannelId]);
+                const destinationGuildId = query[0]?.destinationGuildId || null;
                 const existingSourceChannelId = query[0]?.sourceChannelId || null;
                 const existingDestinationChannelId = query[0]?.destinationChannelId || null;
 
