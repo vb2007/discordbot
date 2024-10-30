@@ -70,7 +70,7 @@ module.exports = {
                 interaction
             );
         }
-        else{
+        else {
             var embedReply = embedReplyPrimaryColorImg(
                 "Randomfeet.",
                 "Here is a random feetpic:",
