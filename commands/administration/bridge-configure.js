@@ -23,6 +23,40 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .setDMPermission(false),
     async execute(interaction) {
-        
+        if (!interaction.inGuild()) {
+            var embedReply = embedReplyFailureColor(
+                "Bridge Configure: Error",
+                "You can only set up bridging in a server.",
+                interaction
+            );
+        }
+        else {
+            try {
+                const sourceChannelId = interaction.options.getString("source-channel-id");
+                const targetChannel = interaction.options.getChannel("destination-channel");
+
+                const interactionUserId = interaction.user.id;
+                const interactionUsername = interaction.user.username;
+                const targetChannelId = targetChannel.id;
+                const targetChannelName = targetChannel.name;
+                const guildId = interaction.guild.id;
+
+                const query = await db.query("SELECT guildId, sourceChannelId, destinationChannelId FROM configBridging WHERE sourceChannelId = ?", [sourceChannelId]);
+            }
+            catch (error) {
+                console.error(`Failed to configure bridging: ${error}`);
+                var embedReply = embedReplyFailureColor(
+                    "Bridge Configure: Error",
+                    "Failed to configure bridging. Please try again.",
+                    interaction
+                );  
+            }
+        }
+
+        await interaction.reply({ embeds: [embedReply] });
+
+        //logging
+        const response = JSON.stringify(embedReply.toJSON());
+        await logToFileAndDatabase(interaction, response);
     }
 }
