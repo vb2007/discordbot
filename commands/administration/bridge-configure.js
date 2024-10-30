@@ -49,11 +49,16 @@ module.exports = {
                 if (existingSourceChannelId == sourceChannelId && existingDestinationChannelId == targetChannelId) {
                     var embedReply = embedReplyFailureColor(
                         "Bridge Configure: Error",
-                        `Bridging has already been configured for the channel <#\`${sourceChannelId}\`> (\`${sourceChannelId}\`). :x:\n`,
+                        `Bridging has already been configured for the channel <#${sourceChannelId}> (\`${sourceChannelId}\`). :x:\n`,
                         interaction
                     );
                 }
                 else {
+                    var embedReply = embedReplySuccessColor(
+                        "Bridge Configure: Success",
+                        `Bridging has been successfully configured. :white_check_mark:\nMessages from <#${sourceChannelId}> (\`${sourceChannelId}\`) will now get bridged to <#${targetChannelId}>.`,
+                    );
+
                     await db.query("INSERT INTO configBridging (sourceChannelId, destinationGuildId, destinationGuildName, destinationChannelId, destinationChannelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?)",
                         [
                             sourceChannelId,
@@ -68,7 +73,7 @@ module.exports = {
                 }
             }
             catch (error) {
-                console.error(`Failed to configure bridging: ${error}`);
+                // console.error(`Failed to configure bridging: ${error}`);
                 var embedReply = embedReplyFailureColor(
                     "Bridge Configure: Error",
                     "Failed to configure bridging. Please try again.",
