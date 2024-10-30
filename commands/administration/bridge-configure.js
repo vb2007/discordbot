@@ -35,13 +35,37 @@ module.exports = {
                 const sourceChannelId = interaction.options.getString("source-channel-id");
                 const targetChannel = interaction.options.getChannel("destination-channel");
 
-                const interactionUserId = interaction.user.id;
-                const interactionUsername = interaction.user.username;
+                const guildId = interaction.guild.id;
+                const guildName = interaction.guild.name;
                 const targetChannelId = targetChannel.id;
                 const targetChannelName = targetChannel.name;
-                const guildId = interaction.guild.id;
+                const interactionUserId = interaction.user.id;
+                const interactionUsername = interaction.user.username;
 
-                const query = await db.query("SELECT guildId, sourceChannelId, destinationChannelId FROM configBridging WHERE sourceChannelId = ?", [sourceChannelId]);
+                const query = await db.query("SELECT sourceChannelId, destinationChannelId FROM configBridging WHERE sourceChannelId = ? AND destinationChannelId = ?", [sourceChannelId, targetChannelId]);
+                const existingSourceChannelId = query[0]?.sourceChannelId || null;
+                const existingDestinationChannelId = query[0]?.destinationChannelId || null;
+
+                if (existingSourceChannelId == sourceChannelId && existingDestinationChannelId == targetChannelId) {
+                    var embedReply = embedReplyFailureColor(
+                        "Bridge Configure: Error",
+                        `Bridging has already been configured for the channel <#\`${sourceChannelId}\`> (\`${sourceChannelId}\`). :x:\n`,
+                        interaction
+                    );
+                }
+                else {
+                    await db.query("INSERT INTO configBridging (sourceChannelId, destinationGuildId, destinationGuildName, destinationChannelId, destinationChannelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        [
+                            sourceChannelId,
+                            guildId,
+                            guildName,
+                            targetChannelId,
+                            targetChannelName,
+                            interactionUserId,
+                            interactionUsername
+                        ]
+                    );
+                }
             }
             catch (error) {
                 console.error(`Failed to configure bridging: ${error}`);
