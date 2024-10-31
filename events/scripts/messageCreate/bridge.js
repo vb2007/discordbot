@@ -1,10 +1,10 @@
 const db = require("../../../helpers/db");
-const { embedMessagePrimaryColor } = require("../../../helpers/embeds/embed-message");
+const { embedMessagePrimaryColorWithFields } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendMessageToDestinationChannel(client, message) {
         // const serverId = message.guild.id;
-        // const channelId = message.channel.id;
+        const channelId = message.channel.id;
         const messageContent = message.content;
         const senderUserName = message.author.username;
         const senderUserId = message.author.id;
@@ -21,7 +21,17 @@ module.exports = {
                 const destinationChannel = await client.channels.fetch(destinationChannelId);
                 // const destinationChannel = await destinationGuild.channels.cache.get(destinationChannelId);
 
-                await destinationChannel.send("lol");
+                const embedMessage = embedMessagePrimaryColorWithFields(
+                    "Bridged Message",
+                    `Message successfully bridged from <#${channelId}>.`,
+                    [
+                        { name: "Sender username", value: senderUserName, inline: true },
+                        { name: "Server name", value: serverName, inline: true },
+                        { name: "Message", value: messageContent }
+                    ]
+                );
+
+                await destinationChannel.send({ embeds: [embedMessage] });
             }
         }
         catch (error) {
