@@ -93,6 +93,7 @@ module.exports = {
                     var embedReply = embedReplySuccessColor(
                         "Bridge Configure: Success",
                         `Bridging has been successfully configured. :white_check_mark:\nMessages from <#${sourceChannelId}> (\`${sourceChannelId}\`) will now get bridged to <#${destinationChannelId}>.`,
+                        interaction
                     );
 
                     await db.query("INSERT INTO configBridging (sourceChannelId, destinationGuildId, destinationGuildName, destinationChannelId, destinationChannelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -109,7 +110,7 @@ module.exports = {
                 }
             }
             catch (error) {
-                // console.error(`Failed to configure bridging: ${error}`);
+                console.error(`Failed to configure bridging: ${error.message}\n${error.stack}`);
                 var embedReply = embedReplyFailureColor(
                     "Bridge Configure: Error",
                     "Failed to configure bridging. Please try again.",
