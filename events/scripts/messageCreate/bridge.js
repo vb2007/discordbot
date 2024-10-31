@@ -1,9 +1,8 @@
 const db = require("../../../helpers/db");
 const { embedMessagePrimaryColor } = require("../../../helpers/embeds/embed-message");
-const { client } = require("../../../index");
 
 module.exports = {
-    async sendMessageToDestinationChannel(message) {
+    async sendMessageToDestinationChannel(client, message) {
         // const serverId = message.guild.id;
         // const channelId = message.channel.id;
         const messageContent = message.content;
@@ -19,8 +18,8 @@ module.exports = {
             const destinationGuildId = query[0]?.destinationGuildId || null;
 
             if (sourceChannelId == message.channel.id) {
-                const destinationGuild = await client.guilds.fetch(destinationGuildId);
-                const destinationChannel = await destinationGuild.channels.cache.get(destinationChannelId);
+                const destinationChannel = await client.channels.fetch(destinationChannelId);
+                // const destinationChannel = await destinationGuild.channels.cache.get(destinationChannelId);
 
                 await destinationChannel.send("lol");
             }
