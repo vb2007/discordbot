@@ -6,7 +6,7 @@ const db = require("../../helpers/db");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("bridge-configure")
-        .setDescription("Sets up bridging between a source channel on another server and a destination channel on the current one.")
+        .setDescription("Sets up bridging between a source channel on another server and a destination channel.") //...on the current one. [discord character limit]
         .addStringOption(option =>
             option
                 .setName("source-channel-id")
