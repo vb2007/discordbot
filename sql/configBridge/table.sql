@@ -1,6 +1,6 @@
 -- discordbot.configBridge definition
 
-CREATE TABLE IF NOT EXISTS `configBridge` (
+CREATE TABLE IF NOT EXISTS `configBridging` (
     `id` bigint NOT NULL AUTO_INCREMENT,
     `sourceChannelId` varchar(50) NOT NULL,
     `destinationGuildId` varchar(50) NOT NULL,
