@@ -31,7 +31,6 @@ module.exports = {
                 const query = await db.query("SELECT sourceChannelId, destinationGuildId FROM configBridging WHERE sourceChannelId = ? AND destinationGuildId = ?", [sourceChannelId, guildId]);
                 const existingGuildId = query[0]?.destinationGuildId || null;
                 const existingSourceChannelId = query[0]?.sourceChannelId || null;
-                console.log(existingGuildId, existingSourceChannelId);
 
                 if (existingSourceChannelId && existingGuildId) {
                     await db.query("DELETE FROM configBridging WHERE sourceChannelId = ? AND destinationGuildId = ?", [sourceChannelId, guildId]);
