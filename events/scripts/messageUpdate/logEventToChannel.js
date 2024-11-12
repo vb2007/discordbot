@@ -30,7 +30,7 @@ module.exports = {
             }
         }
         catch(error) {
-            console.error(`Failed to send log info to target channel: ${error}`);
+            console.error(`Failed to send log info to target channel: ${error.stack}`);
         }
     }
 }

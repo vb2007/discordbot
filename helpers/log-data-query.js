@@ -8,9 +8,11 @@ module.exports = {
      */
     async getGuildFromDB(object) {
         const guildId = object.guild.id;
-    
+  
+        console.log(guildId);
         const query = await db.query("SELECT guildId, logChannelId FROM configLogging WHERE guildId = ?", [guildId]);
         const logChannelId = query[0]?.logChannelId;
+        console.log(query);
     
         const doesGuildExist = logChannelId ? true : false;
 
