@@ -2,26 +2,27 @@ const { getGuildFromDB } = require("../../../helpers/log-data-query");
 const { embedMessageWarningColorWithFields } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
-    async sendLogInfo(oldMessage, newMessage) {
+    async sendLogInfo(client, oldMessage, newMessage) {
         try {
-            const { doesGuildExist, logChannelId } = await getGuildFromDB(oldMessage);
+            const guild = await client.guilds.fetch(oldMessage.guildId);
+            const { doesGuildExist, logChannelId } = await getGuildFromDB(oldMessage.guildId);
 
             if (doesGuildExist) {
                 if (oldMessage.content !== newMessage.content) {
-                    const logChannel = oldMessage.guild.channels.cache.get(logChannelId);
+                    const logChannel = guild.channels.cache.get(logChannelId);
                 
                     const logEmbed = embedMessageWarningColorWithFields(
                         "Message updated",
                         `A message was updated.`,
                         [
-                            { name: "From", value: `${oldMessage.content}` },
-                            { name: "To", value: `${newMessage.content}` },
-                            { name: "Channel", value: `<#${oldMessage.channel.id}>` },
-                            { name: "Author", value: `<@${oldMessage.author.id}>` },
-                            { name: "Message Id", value: `${oldMessage.id}`, inline: true },
-                            { name: "Channel Id", value: `${oldMessage.channel.id}`, inline: true },
-                            { name: "Author Id", value: `${oldMessage.author.id}`, inline: true },
-                            { name: "Author Username", value: `${oldMessage.author.username}`, inline: true },
+                            { name: "From", value: `${oldMessage.content}` || "Unknown" },
+                            { name: "To", value: `${newMessage.content}` || "Unknown" },
+                            { name: "Channel", value: `<#${oldMessage.channel.id}>` || "Unknown" },
+                            { name: "Author", value: `<@${oldMessage.author.id}>` || "Unknown" },
+                            { name: "Message Id", value: `${oldMessage.id}` || "Unknown", inline: true },
+                            { name: "Channel Id", value: `${oldMessage.channel.id}` || "Unknown", inline: true },
+                            { name: "Author Id", value: `${oldMessage.author.id}` || "Unknown", inline: true },
+                            { name: "Author Username", value: `${oldMessage.author.username}` || "Unknown", inline: true },
                         ]
                     );
     
