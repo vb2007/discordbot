@@ -2,20 +2,21 @@ const { getGuildFromDB } = require("../../../helpers/log-data-query");
 const { embedMessageFailureColorWithFields } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
-    async sendLogInfo(emoji) {
+    async sendLogInfo(client, emoji) {
         try {
-            const { doesGuildExist, logChannelId } = await getGuildFromDB(emoji);
+            const guild = await client.guilds.fetch(emoji.guild.id);
+            const { doesGuildExist, logChannelId } = await getGuildFromDB(emoji.guild.id);
 
             if (doesGuildExist) {
-                const logChannel = emoji.guild.channels.cache.get(logChannelId);
+                const logChannel = guild.channels.cache.get(logChannelId);
 
                 const logEmbed = embedMessageFailureColorWithFields(
                     "Emoji deleted",
                     `Emoji '${emoji.name}' was deleted.`,
                     [
-                        { name: "Emoji name", value: `${emoji.name}` },
-                        { name: "Emoji Id", value: `${emoji.id}` },
-                        { name: "Animated?", value: `${emoji.animated ? "Yes" : "No"}` },
+                        { name: "Emoji name", value: `${emoji.name}`|| "Unknown" },
+                        { name: "Emoji Id", value: `${emoji.id}`|| "Unknown" },
+                        { name: "Animated?", value: `${emoji.animated ? "Yes" : "No"}`|| "Unknown" },
                     ]
                 );
 
