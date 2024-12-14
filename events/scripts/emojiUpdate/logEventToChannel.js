@@ -2,21 +2,22 @@ const { getGuildFromDB } = require("../../../helpers/log-data-query");
 const { embedMessageSuccessSecondaryColorWithFields } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
-    async sendLogInfo(oldEmoji, newEmoji) {
+    async sendLogInfo(client, oldEmoji, newEmoji) {
         try {
-            const { doesGuildExist, logChannelId } = await getGuildFromDB(oldEmoji);
+            const guild = await client.guilds.fetch(oldEmoji.guild.id);
+            const { doesGuildExist, logChannelId } = await getGuildFromDB(oldEmoji.guild.id);
 
             if (doesGuildExist) {
-                const logChannel = oldEmoji.guild.channels.cache.get(logChannelId);
+                const logChannel = guild.channels.cache.get(logChannelId);
 
                 const logEmbed = embedMessageSuccessSecondaryColorWithFields(
                     "Emoji updated",
                     `${oldEmoji.name} emoji was updated.`,
                     [
-                        { name: "Emoji Id", value: `${oldEmoji.id}`, inline: true },
-                        { name: "Animated?", value: `${oldEmoji.animated ? "Yes" : "No"}`, inline: true },
-                        { name: "Old name", value: `${oldEmoji.name}` },
-                        { name: "New name", value: `${newEmoji.name}` },
+                        { name: "Emoji Id", value: `${oldEmoji.id}`|| "Unknown", inline: true },
+                        { name: "Animated?", value: `${oldEmoji.animated ? "Yes" : "No"}`|| "Unknown", inline: true },
+                        { name: "Old name", value: `${oldEmoji.name}`|| "Unknown" },
+                        { name: "New name", value: `${newEmoji.name}`|| "Unknown" },
                     ]
                 );
 
