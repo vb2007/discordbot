@@ -4,8 +4,10 @@ const { embedMessageFailureColorWithFields } = require("../../../helpers/embeds/
 module.exports = {
     async sendLogInfo(client, member, reason) {
         try {
-            const guild = await client.guilds.fetch(message.guildId);
-            const { doesGuildExist, logChannelId } = await getGuildFromDB(member.guildId);
+            const guild = await client.guilds.fetch(message.guild.id);
+            console.log(member.guild.id);
+            console.log(member.guildId);
+            const { doesGuildExist, logChannelId } = await getGuildFromDB(member.guild.id);
 
             if (doesGuildExist) {
                 const logChannel = guild.channels.cache.get(logChannelId);
