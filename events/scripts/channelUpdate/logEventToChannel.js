@@ -59,7 +59,7 @@ module.exports = {
                 if (oldChannel.rateLimitPerUser !== newChannel.rateLimitPerUser) {
                     const logEmbed = embedMessageSuccessSecondaryColorWithFields(
                         "Channel Updated: Slowmode",
-                        `Channel slowmode was in <#${changedChannelId}>.`,
+                        `Channel slowmode was changed in <#${changedChannelId}>.`,
                         [
                             { name: "Channel name", value: `${newChannel.name}` || "Unknown", inline: true },
                             { name: "Channel Id", value: `${changedChannelId}` || "Unknown", inline: true },
