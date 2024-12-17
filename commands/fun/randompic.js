@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { embedReplyPrimaryColorImg } = require("../../helpers/embed-reply");
+const { embedReplyPrimaryColorImg } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {

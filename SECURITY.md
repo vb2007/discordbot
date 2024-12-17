@@ -17,4 +17,4 @@ I don't maintain any version that's not the latest.
 
 You can report a vulnerability on the [repository's security page](https://github.com/vb2007/discordbot/security).
 
-When reporting, please explain the with as much details as possible.
+When reporting, please explain the vulnerability with as much details as possible.

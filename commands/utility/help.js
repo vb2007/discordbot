@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { embedReplyPrimaryColorWithFields, embedReplyErrorColorWithFields } = require("../../helpers/embed-reply");
+const { embedReplyPrimaryColorWithFields, embedReplyErrorColorWithFields } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -71,6 +71,10 @@ module.exports = {
             "`/autorole-disable` - Disables the autorole feature. New members won't get the specified role automatically on join anymore.\n" +
             "`/welcome-configure` - Sets / modifies the welcome messages feature. When a new member joins the server, the bot send a specified welcome message.\n" +
             "`/welcome-disable` - Disables the welcome messages feature. The bot won't send a welcome message on join anymore.\n" +
+            "`/logging-configure` - Sets / modifies the channel where event on the server will get logged.\n" +
+            "`/logging-disable` - Disables the logging feature. The bot won't log the events on the server anymore.\n" +
+            "`/bridge-configure` - Bridges all messages from one channel to another.\n" +
+            "`/bridge-disable` - Disables briding for a target channel.\n" +
             "`/rename` - Renames a specified user to a specified nickname in the current server."
         };
 

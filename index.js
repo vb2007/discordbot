@@ -12,9 +12,40 @@ db.getConnection();
 require("./scripts/verify-config-syntax");
 // validateConfig();
 
-const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require("discord.js");
+const { Client, Collection, Events, GatewayIntentBits, Partials, ActivityType } = require("discord.js");
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
+const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildEmojisAndStickers,
+		GatewayIntentBits.GuildIntegrations,
+		GatewayIntentBits.GuildInvites,
+		GatewayIntentBits.GuildMembers,
+		GatewayIntentBits.GuildMessageReactions,
+		// GatewayIntentBits.GuildMessageTyping,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.GuildPresences,
+		// GatewayIntentBits.GuildScheduledEvents,
+		GatewayIntentBits.GuildVoiceStates,
+    	GatewayIntentBits.GuildWebhooks,
+		// GatewayIntentBits.DirectMessages,
+		// GatewayIntentBits.DirectMessageTyping,
+		// GatewayIntentBits.DirectMessageReactions,
+		GatewayIntentBits.MessageContent,
+	],
+	partials: [
+		Partials.Channel,
+		Partials.GuildMember,
+		Partials.GuildScheduledEvent,
+		Partials.Message,
+		Partials.Reaction,
+		Partials.ThreadMember,
+		Partials.User,
+	],
+	// allowedMentions: {
+	// 	parse: ["everyone", "roles", "users"],
+	// },
+});
 
 //notifies owner on console if the app is ready
 client.once(Events.ClientReady, readyClient => {
@@ -52,13 +83,13 @@ const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith(".js"
 
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
-	const event = require(filePath)
+	const event = require(filePath);
 
 	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args));
+		client.once(event.name, (...args) => event.execute(client, ...args));
 	}
 	else {
-		client.on(event.name, (...args) => event.execute(...args));
+		client.on(event.name, (...args) => event.execute(client, ...args));
 	}
 }
 

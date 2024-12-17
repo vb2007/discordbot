@@ -1,6 +1,6 @@
--- discordbot.welcome definition
+-- discordbot.configWelcome definition
 
-CREATE TABLE IF NOT EXISTS `welcome` (
+CREATE TABLE IF NOT EXISTS `configWelcome` (
     `guildId` varchar(50) NOT NULL,
     `channelId` text DEFAULT NULL,
     `message` text DEFAULT NULL,

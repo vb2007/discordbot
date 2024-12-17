@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const { embedColors } = require("../config.json");
+const { embedColors } = require("../../config.json");
 
 /**
  * @param {color} color - Embed's sidebar HEX Color
@@ -126,48 +126,6 @@ function embedReplyWarningColor(title, description, interaction) {
     });
 
     return embedReply;
-}
-
-/**
- * @param {title} title - Embed's title
- * @param {description} description - Embed's description
- * @param {interaction} interaction - Interaction object from the command
- * @returns {embedReply} An embed reply object
- */
-function moderationDmEmbedReplyFailureColor(title, description, interaction) {
-    const embedDmReply = new EmbedBuilder({
-        color: parseInt(embedColors.failure),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Moderator: ${interaction.user.username}` ,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-        },
-    });
-
-    return embedDmReply;
-}
-
-/**
- * @param {title} title - Embed's title
- * @param {description} description - Embed's description
- * @param {interaction} interaction - Interaction object from the command
- * @returns {embedReply} An embed reply object
- */
-function moderationDmEmbedReplyWarningColor(title, description, interaction) {
-    const embedDmReply = new EmbedBuilder({
-        color: parseInt(embedColors.warning),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Moderator: ${interaction.user.username}` ,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-        },
-    });
-
-    return embedDmReply;
 }
 
 /**
@@ -313,23 +271,6 @@ function embedReplySaidByPrimaryColor(title, description, interaction) {
     return embedReply;
 }
 
-/**
- * @param {color} color - Embed's sidebar HEX Color
- * @param {title} title - Embed's title
- * @param {description} description - Embed's description
- * @returns {embedReply} An embed reply object
- */
-function embedMessage(color, title, description) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(color),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString()
-    });
-
-    return embedReply;
-}
-
 module.exports = {
     embedReply,
     embedReplyPrimaryColor,
@@ -337,12 +278,10 @@ module.exports = {
     embedReplySuccessSecondaryColor,
     embedReplyFailureColor,
     embedReplyWarningColor,
-    moderationDmEmbedReplyFailureColor,
-    moderationDmEmbedReplyWarningColor,
     embedReplyImg,
     embedReplyPrimaryColorImg,
     embedReplyPrimaryColorWithFields,
+    embedReplyErrorColorWithFields,
     embedReplyPrimaryColorWithFieldsAndAuthor,
     embedReplySaidByPrimaryColor,
-    embedMessage
 }

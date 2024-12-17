@@ -3,7 +3,7 @@
 
   "logToFile" : "[True/False]",
   "logToDatabase" : "[True/False]",
-
+  "logMessagesToLocalDatabase" : "[True/False]",
   
   "//": "Appearance settings",
 

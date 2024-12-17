@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { embedReplySuccessColor, embedReplySuccessSecondaryColor, embedReplyWarningColor, embedReplyFailureColor } = require("../../helpers/embed-reply");
+const { embedReplySuccessColor, embedReplySuccessSecondaryColor, embedReplyWarningColor, embedReplyFailureColor } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -61,7 +61,7 @@ module.exports = {
                 const adderId = interaction.user.id;
                 const adderUsername = interaction.user.username;
 
-                const query = await db.query("SELECT channelId, message, isEmbed, embedColor FROM welcome WHERE guildId = ?", [guildId]);
+                const query = await db.query("SELECT channelId, message, isEmbed, embedColor FROM configWelcome WHERE guildId = ?", [guildId]);
                 const existingChannelId = query[0]?.channelId || null;
                 const existingWelcomeMessage = query[0]?.message || null;
                 const existingIsEmbed = query[0]?.isEmbed || 0;
@@ -116,7 +116,7 @@ module.exports = {
                     }
                 }
 
-                await db.query("INSERT INTO welcome (guildId, channelId, message, isEmbed, embedColor, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE channelId = ?, message = ?, adderId = ?, adderUsername = ?, isEmbed = ?, embedColor = ?",
+                await db.query("INSERT INTO configWelcome (guildId, channelId, message, isEmbed, embedColor, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE channelId = ?, message = ?, adderId = ?, adderUsername = ?, isEmbed = ?, embedColor = ?",
                     [guildId, channelId, welcomeMessage, isEmbed, embedColor, adderId, adderUsername, channelId, welcomeMessage, adderId, adderUsername, isEmbed, embedColor]
                 );
             }

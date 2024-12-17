@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { embedReply } = require("../../helpers/embed-reply");
+const { embedReply } = require("../../helpers/embeds/embed-reply");
 const { embedColors } = require("../../config.json");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
@@ -39,7 +39,7 @@ module.exports = {
                 const adderId = interaction.user.id;
                 const guildId = interaction.guild.id;
 
-                const query = await db.query("SELECT guildId, roleId FROM autorole WHERE guildId = ?", [guildId]);
+                const query = await db.query("SELECT guildId, roleId FROM configAutorole WHERE guildId = ?", [guildId]);
                 const autoRoleGuildId = query[0]?.guildId || null;
                 const autoRoleRoleId = query[0]?.roleId || null;
 
@@ -71,7 +71,7 @@ module.exports = {
                         );
                     }
 
-                    await db.query("INSERT INTO autorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, targetRole, adderId, adderUsername, targetRole, adderId, adderUsername]);
+                    await db.query("INSERT INTO configAutorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, targetRole, adderId, adderUsername, targetRole, adderId, adderUsername]);
                 }
             }
             catch (error) {

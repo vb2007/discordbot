@@ -48,9 +48,9 @@ Response: ${response}\n\n`;
                 channelId = null;
             }
 
-            //insert data into the log table
+            //insert data into the commandUsageLog table
             await db.query(
-                `INSERT INTO log (commandName, executorUserName, executorUserId, isInServer, serverName, serverId, channelName, channelId, time, response) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                `INSERT INTO commandUsageLog (commandName, executorUserName, executorUserId, isInServer, serverName, serverId, channelName, channelId, usageTime, response) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     interaction.commandName,
                     interaction.user.username,

@@ -1,6 +1,6 @@
 const db = require("../../../helpers/db");
 const { embedColors } = require("../../../config.json");
-const { embedMessage } = require("../../../helpers/embed-reply");
+const { embedMessage } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendWelcomeMessage(member) {
@@ -11,7 +11,7 @@ module.exports = {
         const userId = member.user.id;
 
         try {
-            const rows = await db.query("SELECT channelId, message, isEmbed, embedColor FROM welcome WHERE guildId = ?", [guildId]);
+            const rows = await db.query("SELECT channelId, message, isEmbed, embedColor FROM configWelcome WHERE guildId = ?", [guildId]);
             const channelId = rows[0]?.channelId;
             let message = rows[0]?.message;
             const isEmbed = rows[0]?.isEmbed;

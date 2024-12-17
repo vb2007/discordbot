@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { embedReplyPrimaryColorWithFieldsAndAuthor, embedReplyFailureColor } = require("../../helpers/embed-reply");
+const { embedReplyPrimaryColorWithFieldsAndAuthor, embedReplyFailureColor } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
