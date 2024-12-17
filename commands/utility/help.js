@@ -73,6 +73,8 @@ module.exports = {
             "`/welcome-disable` - Disables the welcome messages feature. The bot won't send a welcome message on join anymore.\n" +
             "`/logging-configure` - Sets / modifies the channel where event on the server will get logged.\n" +
             "`/logging-disable` - Disables the logging feature. The bot won't log the events on the server anymore.\n" +
+            "`/bridge-configure` - Bridges all messages from one channel to another.\n" +
+            "`/bridge-disable` - Disables briding for a target channel.\n" +
             "`/rename` - Renames a specified user to a specified nickname in the current server."
         };
 
