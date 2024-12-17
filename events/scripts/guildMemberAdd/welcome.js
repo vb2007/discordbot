@@ -11,7 +11,7 @@ module.exports = {
         const userId = member.user.id;
 
         try {
-            const rows = await db.query("SELECT channelId, message, isEmbed, embedColor FROM welcome WHERE guildId = ?", [guildId]);
+            const rows = await db.query("SELECT channelId, message, isEmbed, embedColor FROM configWelcome WHERE guildId = ?", [guildId]);
             const channelId = rows[0]?.channelId;
             let message = rows[0]?.message;
             const isEmbed = rows[0]?.isEmbed;

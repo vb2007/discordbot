@@ -2,12 +2,13 @@ const { getGuildFromDB } = require("../../../helpers/log-data-query");
 const { embedMessageSuccessSecondaryColorWithFields } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
-    async sendLogInfo(oldChannel, newChannel) {
+    async sendLogInfo(client, oldChannel, newChannel) {
         try {
-            const { doesGuildExist, logChannelId } = await getGuildFromDB(oldChannel);
+            const guild = await client.guilds.fetch(oldChannel.guildId);
+            const { doesGuildExist, logChannelId } = await getGuildFromDB(oldChannel.guildId);
 
             if (doesGuildExist) {
-                const logChannel = oldChannel.guild.channels.cache.get(logChannelId);
+                const logChannel = guild.channels.cache.get(logChannelId);
                 const changedChannelId = newChannel.id;
 
                 if (oldChannel.nsfw !== newChannel.nsfw) {
@@ -15,10 +16,10 @@ module.exports = {
                         "Channel Updated: NSFW status",
                         `Channel NSFW status was changed in <#${changedChannelId}>.`,
                         [
-                            { name: "Channel name", value: `${newChannel.name}`, inline: true },
-                            { name: "Channel Id", value: `${changedChannelId}`, inline: true },
-                            { name: "From", value: `**${oldChannel.nsfw ? "NSFW" : "Not NSFW"}**` },
-                            { name: "To", value: `**${newChannel.nsfw ? "NSFW" : "Not NSFW"}**` },
+                            { name: "Channel name", value: `${newChannel.name}` || "Unknown", inline: true },
+                            { name: "Channel Id", value: `${changedChannelId}` || "Unknown", inline: true },
+                            { name: "From", value: `**${oldChannel.nsfw ? "NSFW" : "Not NSFW"}**` || "Unknown" },
+                            { name: "To", value: `**${newChannel.nsfw ? "NSFW" : "Not NSFW"}**` || "Unknown" },
                         ]
                     );
     
@@ -30,10 +31,10 @@ module.exports = {
                         "Channel Updated: Name",
                         `Channel name was changed in <#${changedChannelId}>.`,
                         [
-                            { name: "Channel name", value: `${newChannel.name}`, inline: true },
-                            { name: "Channel Id", value: `${changedChannelId}`, inline: true },
-                            { name: "From", value: `**${oldChannel.name}**` },
-                            { name: "To", value: `**${newChannel.name}**` },
+                            { name: "Channel name", value: `${newChannel.name}` || "Unknown", inline: true },
+                            { name: "Channel Id", value: `${changedChannelId}` || "Unknown", inline: true },
+                            { name: "From", value: `**${oldChannel.name}**` || "Unknown" },
+                            { name: "To", value: `**${newChannel.name}**` || "Unknown" },
                         ]
                     );
     
@@ -45,10 +46,10 @@ module.exports = {
                         "Channel Updated: Topic",
                         `Channel topic *(description)* was changed in <#${changedChannelId}>.`,
                         [
-                            { name: "Channel name", value: `${newChannel.name}`, inline: true },
-                            { name: "Channel Id", value: `${changedChannelId}`, inline: true },
-                            { name: "From", value: `**${oldChannel.topic == "" ? "*empty description*" : oldChannel.topic}**` },
-                            { name: "To", value: `**${newChannel.topic == "" ? "*empty description*" : newChannel.topic}**` },
+                            { name: "Channel name", value: `${newChannel.name}` || "Unknown", inline: true },
+                            { name: "Channel Id", value: `${changedChannelId}` || "Unknown", inline: true },
+                            { name: "From", value: `**${oldChannel.topic == "" ? "*empty description*" : oldChannel.topic}**` || "Unknown" },
+                            { name: "To", value: `**${newChannel.topic == "" ? "*empty description*" : newChannel.topic}**` || "Unknown" },
                         ]
                     );
     
@@ -58,12 +59,12 @@ module.exports = {
                 if (oldChannel.rateLimitPerUser !== newChannel.rateLimitPerUser) {
                     const logEmbed = embedMessageSuccessSecondaryColorWithFields(
                         "Channel Updated: Slowmode",
-                        `Channel slowmode was changed to "**${newChannel.rateLimitPerUser}**" seconds from "**${oldChannel.rateLimitPerUser}**" seconds in <#${changedChannelId}>.`,
+                        `Channel slowmode was changed in <#${changedChannelId}>.`,
                         [
-                            { name: "Channel name", value: `${newChannel.name}`, inline: true },
-                            { name: "Channel Id", value: `${changedChannelId}`, inline: true },
-                            { name: "From", value: `**${oldChannel.rateLimitPerUser} seconds**` },
-                            { name: "To", value: `**${newChannel.rateLimitPerUser} seconds**` },
+                            { name: "Channel name", value: `${newChannel.name}` || "Unknown", inline: true },
+                            { name: "Channel Id", value: `${changedChannelId}` || "Unknown", inline: true },
+                            { name: "From", value: `**${oldChannel.rateLimitPerUser} seconds**` || "Unknown" },
+                            { name: "To", value: `**${newChannel.rateLimitPerUser} seconds**` || "Unknown" },
                         ]
                     );
     

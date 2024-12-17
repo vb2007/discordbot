@@ -114,7 +114,7 @@ module.exports = {
             }
         }
 
-        await interaction.reply({ embeds: [embedReply] });4
+        await interaction.reply({ embeds: [embedReply] });
 
         //logging
         const response = JSON.stringify(embedReply.toJSON());

@@ -31,11 +31,11 @@ module.exports = {
             try {
                 const currentGuildId = interaction.guild.id;
                 //we need rows, because the query gives back a messed up array
-                const query = await db.query("SELECT guildId FROM autorole WHERE guildId = ?", [currentGuildId]);
+                const query = await db.query("SELECT guildId FROM configAutorole WHERE guildId = ?", [currentGuildId]);
                 const autoroleGuildId = query[0]?.guildId || null;
 
                 if (autoroleGuildId) {
-                    await db.query("DELETE FROM autorole WHERE guildId = ?", [autoroleGuildId]);
+                    await db.query("DELETE FROM configAutorole WHERE guildId = ?", [autoroleGuildId]);
 
                     var localEmbedResponse = embedReply(
                         embedColors.success,

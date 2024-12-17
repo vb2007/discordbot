@@ -50,7 +50,7 @@ module.exports = {
                console.error(`Error while disabling logging: ${error}`);
                var embedReply = embedReplyFailureColor(
                     "Logging Disable: Error",
-                    "An error occurred while disabling the logging feature.",
+                    "An error occurred while disabling the logging feature.\nPlease try again.",
                     interaction
                );
             }

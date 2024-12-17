@@ -55,7 +55,7 @@ module.exports = {
                 ]
             );
 
-            var embedReply = embedSuccessColor(
+            var embedReply = embedReplySuccessColor(
                 "Working.",
                 `You've worked and succesfully earned \`$${amount}\` dollars.`,
                 interaction

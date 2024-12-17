@@ -27,11 +27,11 @@ module.exports = {
         else {
             try {
                 const currentGuildId = interaction.guild.id;
-                const query = await db.query("SELECT guildId FROM welcome WHERE guildId = ?", [currentGuildId]);
+                const query = await db.query("SELECT guildId FROM configWelcome WHERE guildId = ?", [currentGuildId]);
                 const welcomeGuildId = query[0]?.guildId || null;
 
                 if (welcomeGuildId) {
-                    await db.query("DELETE FROM welcome WHERE guildId = ?", [welcomeGuildId]);
+                    await db.query("DELETE FROM configWelcome WHERE guildId = ?", [welcomeGuildId]);
 
                     var embedReply = embedReplySuccessColor(
                         "Welcome Disable: Success",

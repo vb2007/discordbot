@@ -1,6 +1,6 @@
--- discordbot.autorole definition
+-- discordbot.configAutorole definition
 
-CREATE TABLE IF NOT EXISTS `autorole` (
+CREATE TABLE IF NOT EXISTS `configAutorole` (
     `guildId` varchar(50) NOT NULL,
     `roleId` text DEFAULT NULL,
     `addedAt` timestamp NOT NULL DEFAULT current_timestamp(),

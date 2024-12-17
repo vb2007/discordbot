@@ -2,7 +2,7 @@ const logEventToChannel = require("./scripts/guildMemberRemove/logEventToChannel
 
 module.exports = {
     name: "guildMemberRemove",
-    async execute(member) {
-        await logEventToChannel.sendLogInfo(member);
+    async execute(client, member) {
+        await logEventToChannel.sendLogInfo(client, member);
     },
 }
