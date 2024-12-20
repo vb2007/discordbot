@@ -18,6 +18,11 @@ module.exports = {
                     { name: "Administration", value: "administration" },
                 )
                 .setRequired(false))
+        .addStringOption(option =>
+            option
+                .setName("command")
+                .setDescription("Specify a command you would like to know more information about.")
+                .setRequired(false))
         .setDMPermission(true),
     async execute(interaction) {
         const commandCategory = interaction.options.getString("category");
