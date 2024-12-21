@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { embedReplyPrimaryColorWithFields, embedReplyErrorColorWithFields } = require("../../helpers/embeds/embed-reply");
+const { embedReplyPrimaryColorWithFields, embedReplyErrorColorWithFields, embedReplyFailureColor } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
+const db = require("../../helpers/db");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,68 +21,43 @@ module.exports = {
                 .setRequired(false))
         .addStringOption(option =>
             option
-                .setName("command")
-                .setDescription("Specify a command you would like to know more information about.")
+                .setName("commandName")
+                .setDescription("Specify a command's name you would like to know more information about.")
                 .setRequired(false))
         .setDMPermission(true),
     async execute(interaction) {
         const commandCategory = interaction.options.getString("category");
+        const commandName = interaction.options.getString("commandName");
+        
+        if (commandCategory && command) {
+            var embedReply = embedReplyFailureColor(
+                "Help: Error",
+                "Please only provide one parameter for the command.",
+                interaction
+            );
+        }
+        if (!commandCategory) {
+            const commandsQuery = await db.query("SELECT name, category FROM commandData WHERE category = ?", [commandCategory]);
+            console.log(commandsQuery);
+        }
+        else if (!command) {
+            const commandQuery = await db.query("SELECT category, description FROM commandData WHERE name = ?", [commandName]);
+            const category = commandQuery[0]?.category || "Unknown";
+            const description = commandQuery[0]?.description || "Unknown";
 
-        const utilityCommands = 
-        { name: "Utility", value:
-            "`/help`\n" +
-            "`/ping`\n" +
-            "`/ping-db`\n" +
-            "`/server`\n" +
-            "`/user`\n" +
-            "`/translate`\n" +
-            "`/say`"
-        };
+            var embedReply = embedReplyPrimaryColorWithFields(
+                `Help: /${commandName}`,
+                "",
+                [
+                    { name: "Category", value: category },
+                    { name: "Description", value: description }
+                ],
+                interaction
+            );
+        }
+        else {
 
-        const funCommands = 
-        { name: "Fun", value:
-            "`/coinflip`\n" +
-            "`/randompic`\n" +
-            "`/randomfeet`\n" +
-            "`/911-countdown`"
-        };
-
-        const economyCommands = 
-        { name: "Economy", value:
-            "`/work`\n" +
-            "`/beg`\n" +
-            "`/rob`\n" +
-            "`/balance`\n" +
-            "`/deposit`\n" +
-            "`/withdraw`\n" +
-            "`/pay`\n" +
-            "`/roulette`\n" +
-            "`/leaderboard`"
-        };
-
-        const moderationCommands = 
-        { name: "Moderation", value:
-            "**__NOTE__**: The following commands require relevant **moderation permissions** for both the bot and the command's executor to work.\n" +
-            "`/warn`\n" +
-            "`/timeout`\n" +
-            "`/kick`\n" +
-            "`/ban`\n" +
-            "`/purge`"
-        };
-
-        const administrationCommands = 
-        { name: "Administration", value:
-            "**__NOTE__**: The following commands require relevant **administration permissions** for both the bot and the command's executor to work.\n" +
-            "`/autorole-configure`\n" +
-            "`/autorole-disable`\n" +
-            "`/welcome-configure`\n" +
-            "`/welcome-disable`\n" +
-            "`/logging-configure`\n" +
-            "`/logging-disable`\n" +
-            "`/bridge-configure`\n" +
-            "`/bridge-disable`\n" +
-            "`/rename`"
-        };
+        }
 
         const tipField = 
         { name: "Tip.", value:
