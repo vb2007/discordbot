@@ -32,105 +32,69 @@ module.exports = {
         if (commandCategory && commandName) {
             var embedReply = embedReplyFailureColor(
                 "Help: Error",
-                "Please only provide one parameter for the command.",
+                "Please only provide one parameter at a time for the command.",
                 interaction
             );
         }
-        if (!commandName) {
+        if (commandCategory) {
             const commandsQuery = await db.query("SELECT name, category FROM commandData WHERE category = ?", [commandCategory]);
-            console.log(commandsQuery);
-        }
-        else if (!commandCategory) {
-            const commandQuery = await db.query("SELECT category, description FROM commandData WHERE name = ?", [commandName]);
-            const category = commandQuery[0]?.category || "Unknown";
-            const description = commandQuery[0]?.description || "Unknown";
-            console.log(category);
-            console.log(description);
+    
+            if (commandsQuery.length === 0) {
+                var embedReply = embedReplyFailureColor(
+                    "Help: Error",
+                    "Invalid command category provided as parameter.\nPlease choose a valid category: `utility`, `fun`, `economy`, `moderation`, `administration`.",
+                    interaction
+                );
+            }
+            else {
+                const commandsList = commandsQuery
+                    .map(cmd => `\`/${cmd.name}\``)
+                    .join(", ");
 
-            var embedReply = embedReplyPrimaryColorWithFields(
-                `Help: /${commandName}`,
-                "",
-                [
-                    { name: "Category", value: category },
-                    { name: "Description", value: description }
-                ],
-                interaction
-            );
+                var embedReply = embedReplyPrimaryColorWithFields(
+                    `Help - ${commandCategory.charAt(0).toUpperCase() + commandCategory.slice(1)} Commands`,
+                    `Here is a list of the bot's currently available **${commandCategory}** commands:`,
+                    [{ name: "Commands", value: commandsList }],
+                    interaction
+                );
+            }
+        }
+        else if (commandName) {
+            const commandQuery = await db.query("SELECT category, description FROM commandData WHERE name = ?", [commandName]);
+            const category = commandQuery[0]?.category || null;
+            const description = commandQuery[0]?.description || null;
+            
+            if (!description) {
+                var embedReply = embedReplyFailureColor(
+                    "Help - Error",
+                    `There is no such command as \`/${commandName}\`.\nPlease provide a valid command name.`,
+                    interaction
+                );
+            }
+            else {
+                var embedReply = embedReplyPrimaryColorWithFields(
+                    `Help - /${commandName}`,
+                    "",
+                    [
+                        { name: "Category", value: category },
+                        { name: "Description", value: description }
+                    ],
+                    interaction
+                );
+            }
         }
         else {
-            console.log();
+            var embedReply = embedReplyFailureColor(
+                "Help - Error",
+                "Please only provide one parameter at a time for the command.",
+                interaction
+            );
         }
 
         const tipField = 
         { name: "Tip.", value:
             "**Friendly reminder**: You can use `/help <category>` to get a list of commands from a specific category. :grin:"
         }
-
-        const errorField =
-        { name: "Error", value:
-            "Invalid command category provided as parameter.\n" +
-            "Please choose a valid category: `utility`, `fun`, `economy`, `moderation`, `administration`."
-        }
-
-        // if (!commandCategory) {
-        //     embedReply = embedReplyPrimaryColorWithFields(
-        //         "Help - All Commands.",
-        //         "Here is a list of the bot's currently avaliable commands:",
-        //         [ utilityCommands, funCommands, economyCommands, moderationCommands, administrationCommands, tipField ],
-        //         interaction
-        //     );
-        // }
-        // else {
-        //     switch (commandCategory) {
-        //         case "utility":
-        //             embedReply = embedReplyPrimaryColorWithFields(
-        //                 "Help - Utility Commands.",
-        //                 "Here is a list of the bot's currently avaliable **utility** commands:",
-        //                 [ utilityCommands ],
-        //                 interaction
-        //             );
-        //             break;
-        //         case "fun":
-        //             embedReply = embedReplyPrimaryColorWithFields(
-        //                 "Help - Fun Commands.",
-        //                 "Here is a list of the bot's currently avaliable **fun** commands:",
-        //                 [ funCommands ],
-        //                 interaction
-        //             );
-        //             break;
-        //         case "economy":
-        //             embedReply = embedReplyPrimaryColorWithFields(
-        //                 "Help - Economy Commands.",
-        //                 "Here is a list of the bot's currently avaliable **economy** commands:",
-        //                 [ economyCommands ],
-        //                 interaction
-        //             );
-        //             break;
-        //         case "moderation":
-        //             embedReply = embedReplyPrimaryColorWithFields(
-        //                 "Help - Moderation Commands.",
-        //                 "Here is a list of the bot's currently avaliable **moderation** commands:",
-        //                 [ moderationCommands ],
-        //                 interaction
-        //             );
-        //             break;
-        //         case "administration":
-        //             embedReply = embedReplyPrimaryColorWithFields(
-        //                 "Help - Administration Commands.",
-        //                 "Here is a list of the bot's currently avaliable **administration** commands:",
-        //                 [ administrationCommands ],
-        //                 interaction
-        //             );
-        //             break;
-        //         default:
-        //             embedReply = embedReplyErrorColorWithFields(
-        //                 "Help - Utility Commands.",
-        //                 "Here is a list of the bot's currently avaliable **utility** commands:",
-        //                 [ errorField ],
-        //                 interaction
-        //             );
-        //     }
-        // }
 
         await interaction.reply({ embeds: [embedReply] });
 
