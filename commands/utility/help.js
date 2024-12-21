@@ -36,7 +36,7 @@ module.exports = {
                 interaction
             );
         }
-        if (commandCategory) {
+        else if (commandCategory) {
             const commandsQuery = await db.query("SELECT name, category FROM commandData WHERE category = ?", [commandCategory]);
     
             if (commandsQuery.length === 0) {
@@ -76,7 +76,7 @@ module.exports = {
                     `Help - /${commandName}`,
                     "",
                     [
-                        { name: "Category", value: category },
+                        { name: "Category", value: category.charAt(0).toUpperCase() + category.slice(1) },
                         { name: "Description", value: description }
                     ],
                     interaction
@@ -86,7 +86,7 @@ module.exports = {
         else {
             var embedReply = embedReplyFailureColor(
                 "Help - Error",
-                "Please only provide one parameter at a time for the command.",
+                "Please provide a parameter for the command.",
                 interaction
             );
         }
