@@ -37,7 +37,7 @@ module.exports = {
             );
         }
         else if (commandCategory) {
-            const commandsQuery = await db.query("SELECT name, category FROM commandData WHERE category = ?", [commandCategory]);
+            const commandsQuery = await db.query("SELECT name, category FROM commandData WHERE category = ? ORDER BY name", [commandCategory]);
     
             if (commandsQuery.length === 0) {
                 var embedReply = embedReplyFailureColor(
@@ -84,16 +84,35 @@ module.exports = {
             }
         }
         else {
-            var embedReply = embedReplyFailureColor(
-                "Help - Error",
-                "Please provide a parameter for the command.",
+            const allCommandsQuery = await db.query("SELECT name, category FROM commandData ORDER BY category, name");
+
+            //grouping commands by category
+            const commandsByCategory = allCommandsQuery.reduce((acc, cmd) => {
+                if (!acc[cmd.category]) {
+                    acc[cmd.category] = [];
+                }
+                acc[cmd.category].push(cmd.name);
+                return acc;
+            }, {});
+
+            //fields for each category
+            const categoryFields = Object.entries(commandsByCategory).map(([category, commands]) => ({
+                name: category.charAt(0).toUpperCase() + category.slice(1),
+                value: commands.map(cmd => `\`/${cmd}\``).join(", ")
+            }));
+
+            var embedReply = embedReplyPrimaryColorWithFields(
+                "Help - All Commands",
+                "Here is a list of all the available commands, sorted into categories:",
+                [
+                    ...categoryFields,
+                    {
+                        name: "Tip.",
+                        value: "**Friendly reminder**: You can use `/help <category>` to get a list of commands from a specific category. :grin:"
+                    }
+                ],
                 interaction
             );
-        }
-
-        const tipField = 
-        { name: "Tip.", value:
-            "**Friendly reminder**: You can use `/help <category>` to get a list of commands from a specific category. :grin:"
         }
 
         await interaction.reply({ embeds: [embedReply] });
