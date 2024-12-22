@@ -1,12 +1,12 @@
-const { SlashCommandBuilder, PermissionFlagBits } = require("discord.js");
-const {  } = require("../../helpers/embeds/embed-reply");
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { embedReplyFailureColor, embedReplySuccessColor, embedReplySuccessSecondaryColor, embedReplyWarningColor } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("goodbye-configure")
-        .setDescription("Sets a goodbye message that will be displayed in a specified channel for the members who have left the server.")
+        .setDescription("Sets a goodbye message that will be displayed for the members who've left the server.")
         .addChannelOption(option =>
             option
                 .setName("channel")
