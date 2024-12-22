@@ -46,4 +46,6 @@ INSERT IGNORE INTO commandData(name,category,description) VALUES
 	('logging-disable','administration','Disables the logging feature. The bot won''t log the events on the server anymore.'),
 	('bridge-configure','administration','Bridges all messages from one channel to another.'),
 	('bridge-disable','administration','Disables briding for a target channel.'),
-	('rename','administration','Renames a specified user to a specified nickname in the current server.');
+	('rename','administration','Renames a specified user to a specified nickname in the current server.'),
+	('goodbye-configure','administration','Sets / modifies the goodbye messages feature. When a member leaves the server, the bot send a specified goodbye message.'),
+	('goodbye-disable','administration','Disables the goodbye messages feature. The bot won''t send goodbye messages anymore when a member leaves the server.');
