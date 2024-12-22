@@ -28,7 +28,10 @@ module.exports = {
         }
         else {
             const amount = interaction.options.getInteger("amount");
-            const targetUserId = interaction.options.getUser("target").id;
+            
+            const targetUser = interaction.options.getUser("target");
+            const targetUserId = targetUser.id;
+            const targetUserName = targetUser.username;
             const interactionUserId = interaction.user.id;
 
             const interactionUserBalanceQuery = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
@@ -60,8 +63,9 @@ module.exports = {
                 );
 
                 if (!targetUserBalance) {
-                    await db.query("INSERT INTO economy (userId, balance) VALUES (?, ?)",
+                    await db.query("INSERT INTO economy (userName, userId, balance) VALUES (?, ?, ?)",
                         [
+                            targetUserName,
                             targetUserId,
                             amount
                         ]
