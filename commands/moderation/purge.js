@@ -61,6 +61,7 @@ module.exports = {
             embeds: [embedReply],
             components: [row]
         });
+        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
 
         const filter = i => i.customId === 'delete' && i.user.id === interaction.user.id;
         const collector = interaction.channel.createMessageComponentCollector({ filter, time: 30000 });
@@ -75,9 +76,5 @@ module.exports = {
                 interaction.editReply({ components: [] });
             }
         });
-
-        //logging
-        const response = JSON.stringify(embedReply.toJSON());
-		await logToFileAndDatabase(interaction, response);
     }
 }
