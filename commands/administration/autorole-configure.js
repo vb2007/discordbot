@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { embedReply } = require("../../helpers/embeds/embed-reply");
-const { embedColors } = require("../../config.json");
+const { embedReplyFailureColor, embedReplySuccessColor, embedReplySuccessSecondaryColor } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -17,16 +16,14 @@ module.exports = {
         .setDMPermission(false),
     async execute(interaction) {
         if (!interaction.inGuild()) {
-            var localEmbedResponse = embedReply(
-                embedColors.failure,
+            var embedReply = embedReplyFailureColor(
                 "AutoRole Configure: Error",
                 "You can only set up autorole in a server.",
                 interaction
             );
         }
         else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administrator)) {
-            var localEmbedResponse = embedReply(
-                embedColors.failure,
+            var embedReply = embedReplyFailureColor(
                 "AutoRole Configure: Error",
                 "This feature requires **administrator** *(8)* privileges witch the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges.",
                 interaction
@@ -45,8 +42,7 @@ module.exports = {
 
                 //if autorole has already been configured for this server...
                 if (autoRoleRoleId == targetRole) {
-                    var localEmbedResponse = embedReply(
-                        embedColors.failure,
+                    var embedReply = embedReplyFailureColor(
                         "AutoRole Configure: Error",
                         "Autorole has already been configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.\nRun `/autorole-disable` to disable this feature completely.",
                         interaction
@@ -55,16 +51,14 @@ module.exports = {
                 else {
                     if (autoRoleGuildId == guildId) {
                         //if the target role is already the role that's in the database, then we don't need to insert data
-                        var localEmbedResponse = embedReply(
-                            embedColors.successSecondary,
+                        var embedReply = embedReplySuccessSecondaryColor(
                             "AutoRole Configure: Configuration Modified",
                             `The role that will get assigned to new members has been **modified** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.\nRun \`/autorole-disable\` to disable this feature.`,
                             interaction
                         );
                     }
                     else {
-                        var localEmbedResponse = embedReply(
-                            embedColors.success,
+                        var embedReply = embedReplySuccessColor(
                             "AutoRole Configure: Configuration Set",
                             `The role that will get assigned to new members has been **set** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.\nRun \`/autorole-disable\` to disable this feature.`,
                             interaction
@@ -79,10 +73,7 @@ module.exports = {
             }
         }
 
-        await interaction.reply({ embeds: [localEmbedResponse] });
-
-        //logging
-        const response = JSON.stringify(localEmbedResponse.toJSON());
-		await logToFileAndDatabase(interaction, response);
+        await interaction.reply({ embeds: [embedReply] });
+        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
     }
 }
