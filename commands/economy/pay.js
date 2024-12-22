@@ -34,11 +34,19 @@ module.exports = {
             const targetUserName = targetUser.username;
             const interactionUserId = interaction.user.id;
 
-            const interactionUserBalanceQuery = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
-            const userBalance = interactionUserBalanceQuery[0]?.balance || null;
+            if (targetUserId === interactionUserId) {
+                var embedReply = embedReplyFailureColor(
+                    "Payment - Error",
+                    "You cannot issue a payment to yourself.",
+                    interaction
+                );
+            }
 
-            const targetUserBalanceQuery = await db.query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
-            const targetUserBalance = targetUserBalanceQuery[0]?.balance || null;
+            const interactionUserBalanceQuery = await db.query("SELECT balance FROM economy WHERE userId = ?", [interactionUserId]);
+            const userBalance = interactionUserBalanceQuery[0]?.balance || 0;
+
+            const targetUserQuery = await db.query("SELECT * FROM economy WHERE userId = ?", [targetUserId]);
+            const targetUserExists = targetUserQuery.length > 0;
 
             if (amount > userBalance) {
                 var embedReply = embedReplyFailureColor(
@@ -56,27 +64,17 @@ module.exports = {
             }
             else {
                 await db.query("UPDATE economy SET balance = balance - ? WHERE userId = ?",
-                    [
-                        amount,
-                        interactionUserId
-                    ]
+                    [amount, interactionUserId]
                 );
 
-                if (!targetUserBalance) {
+                if (!targetUserExists) {
                     await db.query("INSERT INTO economy (userName, userId, balance) VALUES (?, ?, ?)",
-                        [
-                            targetUserName,
-                            targetUserId,
-                            amount
-                        ]
+                        [targetUserName, targetUserId, amount]
                     );
                 }
                 else {
                     await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?",
-                        [
-                            amount,
-                            targetUserId
-                        ]
+                        [amount, targetUserId]
                     );
                 }
 
@@ -89,9 +87,6 @@ module.exports = {
         }
 
         await interaction.reply({ embeds: [embedReply] });
-
-        //logging
-        const response = JSON.stringify(embedReply.toJSON());
-		await logToFileAndDatabase(interaction, response);
+        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
     }
 }
