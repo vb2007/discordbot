@@ -1,5 +1,5 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require("discord.js");
-const { embedReplyFailureColor, embedReplySuccessColor } = require("../../helpers/embeds/embed-reply");
+const { embedReplyFailureColor, embedReplySuccessColor, embedReplyWarningColor } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -140,10 +140,7 @@ module.exports = {
 
         if (!isCommandReplied) {
             await interaction.reply({ embeds: [embedReply] });
-        }
-
-        //logging
-        const response = JSON.stringify(embedReply.toJSON());
-		await logToFileAndDatabase(interaction, response);
+            await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
+        }        
     }
 }
