@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS `economy` (
     `lastDepositTime` datetime DEFAULT NULL,
     `dailyDeposits` int DEFAULT 0 NOT NULL,
     `robSuccessChance` float DEFAULT 1,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `userId` (`userId`)
 );
 
 CREATE INDEX IF NOT EXISTS idx_userId ON economy(userId);

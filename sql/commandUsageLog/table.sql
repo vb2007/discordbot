@@ -1,4 +1,4 @@
--- discordbotTest.commandUsageLog definition
+-- discordbot.commandUsageLog definition
 
 CREATE TABLE IF NOT EXISTS `commandUsageLog` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,

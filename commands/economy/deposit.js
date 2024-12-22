@@ -1,5 +1,5 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require("discord.js");
-const { embedReplyFailureColor, embedReplySuccessColor } = require("../../helpers/embeds/embed-reply");
+const { embedReplyFailureColor, embedReplySuccessColor, embedReplyWarningColor } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -10,7 +10,7 @@ const feePercentage = 0.3;
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("deposit")
-        .setDescription("Desposits a specified amount of money to your bank account.")
+        .setDescription("Deposits a specified amount of money to your bank account.")
         .addIntegerOption(option =>
             option
                 .setName("amount")
@@ -76,7 +76,7 @@ module.exports = {
                 isCommandReplied = true;
 
                 const filter = i => i.user.id === interaction.user.id;
-                const collector = message.createMessageComponentCollector({ filter, time: 30000 });
+                const collector = message.createMessageComponentCollector({ filter, time: 15000 });
 
                 collector.on("collect", async i => {
                     if (i.customId === "confirm") {
@@ -91,11 +91,12 @@ module.exports = {
 
                         var embedReply = embedReplySuccessColor(
                             "Deposit successful.",
-                            `You've successfully deposited \`$${amount}\` for a fee of \`$${fee}\`.\Your balance decreased by total of \`$${totalAmount}\`.`,
+                            `You've successfully deposited \`$${amount}\` for a fee of \`$${fee}\`.\nYour balance decreased by total of \`$${totalAmount}\`.`,
                             interaction
                         );
 
                         await i.update({ embeds: [embedReply], components: [] });
+                        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
                     }
                     else if (i.customId === "cancel") {
                         var embedReply = embedReplyFailureColor(
@@ -140,10 +141,7 @@ module.exports = {
 
         if (!isCommandReplied) {
             await interaction.reply({ embeds: [embedReply] });
-        }
-
-        //logging
-        const response = JSON.stringify(embedReply.toJSON());
-		await logToFileAndDatabase(interaction, response);
+            await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
+        }        
     }
 }

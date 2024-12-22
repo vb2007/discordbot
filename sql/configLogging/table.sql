@@ -1,3 +1,5 @@
+-- discordbot.configLogging definition
+
 CREATE TABLE IF NOT EXISTS `configLogging` (
     `guildId` varchar(50) NOT NULL,
     `logChannelId` text NOT NULL,
