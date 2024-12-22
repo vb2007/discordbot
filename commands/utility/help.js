@@ -74,7 +74,7 @@ module.exports = {
             else {
                 var embedReply = embedReplyPrimaryColorWithFields(
                     `Help - /${commandName}`,
-                    "",
+                    "You can check out all commands with descriptions on [the bot's wiki](https://github.com/vb2007/discordbot/wiki/Commands)",
                     [
                         { name: "Category", value: category.charAt(0).toUpperCase() + category.slice(1) },
                         { name: "Description", value: description }
@@ -103,12 +103,12 @@ module.exports = {
 
             var embedReply = embedReplyPrimaryColorWithFields(
                 "Help - All Commands",
-                "Here is a list of all the available commands, sorted into categories:",
+                "You can check out all commands with descriptions on [the bot's wiki](https://github.com/vb2007/discordbot/wiki/Commands)",
                 [
                     ...categoryFields,
                     {
                         name: "Tip.",
-                        value: "**Friendly reminder**: You can use `/help <category>` to get a list of commands from a specific category. :grin:"
+                        value: "You can use `/help <category>` to get a list of commands from a specific category."
                     }
                 ],
                 interaction
