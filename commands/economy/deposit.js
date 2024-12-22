@@ -76,7 +76,7 @@ module.exports = {
                 isCommandReplied = true;
 
                 const filter = i => i.user.id === interaction.user.id;
-                const collector = message.createMessageComponentCollector({ filter, time: 30000 });
+                const collector = message.createMessageComponentCollector({ filter, time: 15000 });
 
                 collector.on("collect", async i => {
                     if (i.customId === "confirm") {
@@ -91,11 +91,12 @@ module.exports = {
 
                         var embedReply = embedReplySuccessColor(
                             "Deposit successful.",
-                            `You've successfully deposited \`$${amount}\` for a fee of \`$${fee}\`.\Your balance decreased by total of \`$${totalAmount}\`.`,
+                            `You've successfully deposited \`$${amount}\` for a fee of \`$${fee}\`.\nYour balance decreased by total of \`$${totalAmount}\`.`,
                             interaction
                         );
 
                         await i.update({ embeds: [embedReply], components: [] });
+                        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
                     }
                     else if (i.customId === "cancel") {
                         var embedReply = embedReplyFailureColor(
