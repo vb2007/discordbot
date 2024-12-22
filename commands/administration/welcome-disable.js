@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { embedReplyPrimaryColor, embedReplyFailureColor, embedReplyWarningColor, embedReplySuccessColor } = require("../../helpers/embeds/embed-reply");
+const { embedReplyFailureColor, embedReplyWarningColor, embedReplySuccessColor } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -58,5 +58,6 @@ module.exports = {
         }
 
         await interaction.reply({ embeds: [embedReply] });
+        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
     }
 }
