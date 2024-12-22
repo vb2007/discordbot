@@ -6,7 +6,7 @@ function parseCommandsFromSQL(sqlPath) {
   const commands = [];
   
   //splitting by lines that contain insert statements
-  const chunks = sql.split('INSERT INTO commandData');
+  const chunks = sql.split('INSERT IGNORE INTO commandData');
   chunks.shift(); //skipping the create table part
   
   chunks.forEach(chunk => {
