@@ -10,7 +10,7 @@ const feePercentage = 0.3;
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("deposit")
-        .setDescription("Desposits a specified amount of money to your bank account.")
+        .setDescription("Deposits a specified amount of money to your bank account.")
         .addIntegerOption(option =>
             option
                 .setName("amount")
