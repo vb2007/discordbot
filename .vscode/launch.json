@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/index.js"
+            "program": "${workspaceFolder}/src/index.js"
         },
         {
             "name": "Deploy slash commands.",
@@ -20,7 +20,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/deploy-commands.js"
+            "program": "${workspaceFolder}/src/deploy-commands.js"
         },
         {
             "name": "Run unit tests.",
@@ -41,7 +41,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/create-tables.js"
+            "program": "${workspaceFolder}/src/create-tables.js"
         }
     ]
 }
