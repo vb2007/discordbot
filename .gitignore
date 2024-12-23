@@ -1,6 +1,5 @@
-.env
-config.json
+/src/.env
+/src/config.json
 /node_modules
-/test
-/command-logs
-/data/links.json
+/src/command-logs
+/src/data/links.json
