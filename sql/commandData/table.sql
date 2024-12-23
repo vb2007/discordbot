@@ -49,3 +49,4 @@ INSERT IGNORE INTO commandData(name,category,description) VALUES
 	('rename','administration','Renames a specified user to a specified nickname in the current server.'),
 	('goodbye-configure','administration','Sets / modifies the goodbye messages feature. When a member leaves the server, the bot send a specified goodbye message.'),
 	('goodbye-disable','administration','Disables the goodbye messages feature. The bot won''t send goodbye messages anymore when a member leaves the server.');
+	('slowmode', 'administration', 'Sets / disables the slowmode for a specified channel.')
