@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
+const { SlashCommandBuilder, PermissionFlagsBits, InviteType } = require("discord.js");
 const { embedReplyFailureColor, embedReplySuccessColor, embedReplyWarningColor, moderationDmEmbedReplyWarningColor } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
@@ -6,6 +6,13 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("slowmode")
         .setDescription("Sets / modifies the slowmode for a channel.")
+        .addIntegerOption(option =>
+            option
+                .setName("time")
+                .setDescription("The time you would like to set slowmode for (in seconds, max 21600).")
+                .setMinValue(0)
+                .setMaxValue(21600)
+                .setRequired(true))
         .addChannelOption(option =>
             option
                 .setName("channel")
@@ -22,8 +29,17 @@ module.exports = {
             );
         }
         else {
+            const targetTime = interaction.options.getInteger("time");
+            const channel = interaction.options.getChannel("channel") || interaction.channel;
+
             try {
-                
+                await channel.setRateLimitPerUser(targetTime);
+
+                var embedReply = embedReplySuccessColor(
+                    "Slowmode: Success",
+                    `Successfully set slowmode to **${targetTime} seconds** for channel <#${channel.id}>.`,
+                    interaction
+                );
             }
             catch (error) {
                 var embedReply = embedReplyFailureColor(
@@ -31,6 +47,7 @@ module.exports = {
                     "An error occurred while trying to set slowmode for the channel.",
                     interaction
                 );
+                console.error(error.stack);
             }
         }
 
