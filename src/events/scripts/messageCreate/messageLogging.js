@@ -1,5 +1,5 @@
 const db = require("../../../helpers/db");
-const { logMessagesToLocalDatabase } = require("../../../config.json");
+const { logMessagesToLocalDatabase } = require("../../../../config.json");
 
 module.exports = {
     async logMessagesToLocalDatabase(message) {

@@ -1,5 +1,5 @@
 const db = require("../../../helpers/db");
-const { embedColors } = require("../../../config.json");
+const { embedColors } = require("../../../../config.json");
 const { embedMessage } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {

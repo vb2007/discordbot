@@ -1,4 +1,4 @@
-jest.mock('../config.json', () => ({
+jest.mock('../../config.json', () => ({
     databaseHostAddress: 'mock-host',
     databaseName: 'mock-db',
     databaseUser: 'mock-user',

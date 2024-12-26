@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const Ajv = require("ajv");
 
-const configPath = path.join(__dirname, "..", "config.json");
+const configPath = path.join(__dirname, "..", "..", "config.json");
 const configSchemaPath = path.join(__dirname, "config-schema.json");
 
 const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
