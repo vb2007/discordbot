@@ -1,9 +1,9 @@
 const db = require("../../../helpers/db");
-const { embedColors } = require("../../../config.json");
+const { embedColors } = require("../../../../config.json");
 const { embedMessage } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
-    async sendWelcomeMessage(member) {
+    async sendGoodbyeMessage(member) {
         const guildId = member.guild.id;
         const serverName = member.guild.name;
         const memberCount = member.guild.memberCount;
@@ -11,7 +11,7 @@ module.exports = {
         const userId = member.user.id;
 
         try {
-            const rows = await db.query("SELECT channelId, message, isEmbed, embedColor FROM configWelcome WHERE guildId = ?", [guildId]);
+            const rows = await db.query("SELECT channelId, message, isEmbed, embedColor FROM configGoodbye WHERE guildId = ?", [guildId]);
             const channelId = rows[0]?.channelId;
             let message = rows[0]?.message;
             const isEmbed = rows[0]?.isEmbed;
@@ -28,7 +28,7 @@ module.exports = {
                     if (isEmbed) {
                         const embedContent = embedMessage(
                             embedColor,
-                            "Welcome!",
+                            "Goodbye...",
                             message,
                         );
 
@@ -38,12 +38,12 @@ module.exports = {
                         await channel.send(message);
                     }
                     
-                    console.log(`Sent welcome message to ${userTag} in ${serverName}.`);
+                    console.log(`Sent goodbye message to ${userTag} in ${serverName}.`);
                 }
             }
         }
         catch (error) {
-            console.error(`Failed to display welcome message: ${error}`);
+            console.error(`Failed to display goodbye message: ${error}`);
         }
     }
 };

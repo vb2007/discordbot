@@ -46,11 +46,11 @@
     "nodemon": "^3.0.2"
   },
   "scripts": {
-    "app": "node index.js",
-    "dev": "nodemon index.js",
-    "deploy": "node deploy-commands.js",
-    "create-tables": "node create-tables.js",
-    "verify-config": "node ./scripts/verify-config-syntax.js",
+    "app": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js",
+    "deploy": "node ./src/deploy-commands.js",
+    "create-tables": "node ./src/create-tables.js",
+    "verify-config": "node ./src/scripts/verify-config-syntax.js",
     "test": "jest"
   }
 }
