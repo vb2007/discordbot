@@ -1,6 +1,8 @@
 name: Update Wiki Commands
 
 on:
+  pull_request:
+    branches: [ main, dev ]
   push:
     branches:
       - main
@@ -23,9 +25,9 @@ jobs:
         
       - name: Update Wiki
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git
+          git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.wiki.git
           cp commands.md ./${{ github.repository }}.wiki/Commands.md
           cd ${{ github.repository }}.wiki
           git config user.name "GitHub Actions Bot"
