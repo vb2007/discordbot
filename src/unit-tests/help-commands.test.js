@@ -1,32 +1,29 @@
 const fs = require('fs');
 const path = require('path');
 
-function parseCommandsFromSQL(sqlPath) {
-  const sql = fs.readFileSync(sqlPath, 'utf8');
-  const commands = [];
+function parseCommandsFromCSV(csvPath) {
+  const csvContent = fs.readFileSync(csvPath, 'utf8');
   
-  //splitting by lines that contain insert statements
-  const chunks = sql.split('INSERT IGNORE INTO commandData');
-  chunks.shift(); //skipping the create table part
-  
-  chunks.forEach(chunk => {
-    const lines = chunk
-      .split('\n')
-      .filter(line => line.includes('(\''))
-      .map(line => {
-        const match = line.match(/\((.*?)\)/);
-        if (!match) return null;
-        const [name, category, description] = match[1]
-          .split(',')
-          .map(str => str.trim().replace(/^'|'$/g, ''));
-        return { name, category, description };
-      })
-      .filter(Boolean);
-    
-    commands.push(...lines);
-  });
-  
-  return commands;
+  return csvContent
+    .split('\n')
+    .slice(1)
+    .filter(line => line.trim())
+    .map(line => {
+      const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^,"]*))/g;
+      const values = [];
+      let match;
+      
+      while ((match = regex.exec(line))) {
+        const value = match[1] || match[2];
+        values.push(value ? value.replace(/""/g, '"').trim() : '');
+      }
+      
+      if (values.length < 4) return null;
+      
+      const [id, name, category, description] = values;
+      return { name, category, description };
+    })
+    .filter(cmd => cmd !== null);
 }
 
 function getCommandsFromFS(commandsDir) {
@@ -52,28 +49,28 @@ function getCommandsFromFS(commandsDir) {
 }
 
 describe('Command Data Tests', () => {
-  const sqlCommands = parseCommandsFromSQL(path.join(__dirname, '../sql/commandData/table.sql'));
+  const csvCommands = parseCommandsFromCSV(path.join(__dirname, '../data/commandData.csv'));
   const fsCommands = getCommandsFromFS(path.join(__dirname, '../commands'));
   
-  test('All filesystem commands exist in SQL', () => {
+  test('All filesystem commands exist in CSV', () => {
     fsCommands.forEach(fsCommand => {
-      const sqlCommand = sqlCommands.find(cmd => cmd.name === fsCommand.name);
-      expect(sqlCommand).toBeTruthy();
+      const csvCommand = csvCommands.find(cmd => cmd.name === fsCommand.name);
+      expect(csvCommand).toBeTruthy();
     });
   });
 
-  test('All commands have valid categories in SQL', () => {
+  test('All commands have valid categories in CSV', () => {
     fsCommands.forEach(fsCommand => {
-      const sqlCommand = sqlCommands.find(cmd => cmd.name === fsCommand.name);
-      expect(sqlCommand.category).toBe(fsCommand.category);
+      const csvCommand = csvCommands.find(cmd => cmd.name === fsCommand.name);
+      expect(csvCommand.category).toBe(fsCommand.category);
     });
   });
 
-  test('All commands have descriptions in SQL', () => {
+  test('All commands have descriptions in CSV', () => {
     fsCommands.forEach(fsCommand => {
-      const sqlCommand = sqlCommands.find(cmd => cmd.name === fsCommand.name);
-      expect(sqlCommand.description).toBeTruthy();
-      expect(sqlCommand.description.length).toBeGreaterThan(0);
+      const csvCommand = csvCommands.find(cmd => cmd.name === fsCommand.name);
+      expect(csvCommand.description).toBeTruthy();
+      expect(csvCommand.description.length).toBeGreaterThan(0);
     });
   });
 });
