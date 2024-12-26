@@ -1,0 +1,38 @@
+"id","name","category","description"
+1,help,utility,Displays a message with the currently available commands.
+2,ping,utility,Displays the discord API's current latency.
+3,ping-db,utility,Displays the current latency between the bot and it's database.
+4,server,utility,Provides information about the current server.
+5,user,utility,Provides information about a specified user.
+6,translate,utility,Translates a message from any language to any language.
+7,say,utility,Makes the bot say a specified message.
+8,coinflip,fun,Flips a coin that has a 50/50 chance landing on heads or tails.
+9,randompic,fun,Send a random picture using the [picsum.photos](https://picsum.photos/) API.
+10,randomfeet,fun,I have nothing to say about my greatest shame...
+11,"911-countdown",fun,Displays huw much time is left until Spetember 11th.
+12,work,economy,Lets you work for a random amount of money.
+13,beg,economy,Lets you beg for a random (or no) amount of money.
+14,rob,economy,"Steals a random amount of money from the target user, and adds it to your balance."
+15,balance,economy,Displays the user's current bank and handheld balance.
+16,deposit,economy,"Deposits money into the user's bank account. It has a daily limit for free deposits, but the users can choose to pay a small deposit fee if they exceed the limit."
+17,withdraw,economy,Withdraws money from the user's bank account.
+18,pay,economy,Transfers money from one user to another.
+19,roulette,economy,"Lets you pick a color, then gives you a great price if you guess the color right."
+20,leaderboard,economy,Displays users with the most money on the server.
+21,warn,moderation,Warns a specified member on the server.
+22,timeout,moderation,Times out a specified member for a specified time.
+23,kick,moderation,Kicks a specified member from the server.
+24,ban,moderation,Bans a specified member from the server.
+25,purge,moderation,Purges (mass deletes) a specified amount of messages from the current channel.
+26,autorole-configure,administration,"Sets / modifies the autorole feature. When a new member joins the server, a specified role will get assigned to them automatically."
+27,autorole-disable,administration,Disables the autorole feature. New members won't get the specified role automatically on join anymore.
+28,welcome-configure,administration,"Sets / modifies the welcome messages feature. When a new member joins the server, the bot send a specified welcome message."
+29,welcome-disable,administration,Disables the welcome messages feature. The bot won't send a welcome message on join anymore.
+30,logging-configure,administration,Sets / modifies the channel where event on the server will get logged.
+31,logging-disable,administration,Disables the logging feature. The bot won't log the events on the server anymore.
+32,bridge-configure,administration,Bridges all messages from one channel to another.
+33,bridge-disable,administration,Disables briding for a target channel.
+34,rename,administration,Renames a specified user to a specified nickname in the current server.
+35,slowmode,administration,Sets / disables the slowmode for a specified channel.
+36,goodbye-configure,administration,"Sets / modifies the goodbye messages feature. When a member leaves the server, the bot send a specified goodbye message."
+37,goodbye-disable,administration,Disables the goodbye messages feature. The bot won''t send goodbye messages anymore when a member leaves the server.
