@@ -25,7 +25,7 @@ function parseCommandsFromCSV(csvPath) {
 }
 
 function generateWikiContent(commands) {
-    let content = '# Bot Commands\n\n';
+    let content = "#Bot commands\n\nEvery command the bot currently has to offer can be found here.\n\n> [!NOTE] \n> This wiki gets updated automatically. After release, it can take up to 5 minutes for the possible new commands to appear on this page.\n\n## Categories\n\n";
     
     const categories = {};
     commands.forEach(cmd => {
@@ -36,7 +36,7 @@ function generateWikiContent(commands) {
     });
     
     Object.keys(categories).sort().forEach(category => {
-        content += `## ${category.charAt(0).toUpperCase() + category.slice(1)}\n\n`;
+        content += `### ${category.charAt(0).toUpperCase() + category.slice(1)}\n\n`;
         content += '| Command | Description |\n';
         content += '|---------|-------------|\n';
         
