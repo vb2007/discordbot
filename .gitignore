@@ -3,3 +3,4 @@ config.json
 /node_modules
 /src/command-logs
 /src/data/links.json
+/src/data/commands.md
