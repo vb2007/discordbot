@@ -1,5 +1,5 @@
 "id","name","category","description"
-1,help,utility,Displays a message with the currently available commands.
+1,help,utility,Displays a message with the currently available commands.test1
 2,ping,utility,Displays the discord API's current latency.
 3,ping-db,utility,Displays the current latency between the bot and it's database.
 4,server,utility,Provides information about the current server.
