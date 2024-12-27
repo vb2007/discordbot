@@ -44,5 +44,7 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add Commands.md
-          git commit -m "Update commands documentation"
+          git commit -m "Update commands documentation
+
+          Co-authored-by: vb2007 <admin@vb2007.hu>"
           git push
