@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
 const { embedReplySuccessColor, embedReplyFailureColor, embedReplyWarningColor, embedReplyPrimaryColor } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
+const db = require("../../helpers/db");
 
 const suits = ['♠', '♥', '♦', '♣'];
 const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
