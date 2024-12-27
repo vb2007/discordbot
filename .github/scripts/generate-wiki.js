@@ -1,8 +1,8 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 function parseCommandsFromCSV(csvPath) {
-    const csvContent = fs.readFileSync(csvPath, 'utf8');
+    const csvContent = fs.readFileSync(csvPath, "utf8");
     
     return csvContent
         .split('\n')
@@ -37,8 +37,8 @@ function generateWikiContent(commands) {
     
     Object.keys(categories).sort().forEach(category => {
         content += `### ${category.charAt(0).toUpperCase() + category.slice(1)}\n\n`;
-        content += '| Command | Description |\n';
-        content += '|---------|-------------|\n';
+        content += "| Command | Description |\n";
+        content += "|---------|-------------|\n";
         
         categories[category].sort((a, b) => a.name.localeCompare(b.name)).forEach(cmd => {
             content += `| \`/${cmd.name}\` | ${cmd.description} |\n`;
@@ -50,6 +50,6 @@ function generateWikiContent(commands) {
     return content;
 }
 
-const commands = parseCommandsFromCSV(path.join(__dirname, '../../src/data/commandData.csv'));
+const commands = parseCommandsFromCSV(path.join(__dirname, "../../src/data/commandData.csv"));
 const wikiContent = generateWikiContent(commands);
-fs.writeFileSync('commands.md', wikiContent);
+fs.writeFileSync("commands.md", wikiContent);

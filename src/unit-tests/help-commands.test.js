@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 function parseCommandsFromCSV(csvPath) {
-  const csvContent = fs.readFileSync(csvPath, 'utf8');
+  const csvContent = fs.readFileSync(csvPath, "utf8");
   
   return csvContent
-    .split('\n')
+    .split("\n")
     .slice(1)
     .filter(line => line.trim())
     .map(line => {
@@ -35,9 +35,9 @@ function getCommandsFromFS(commandsDir) {
     if (fs.statSync(categoryPath).isDirectory()) {
       const files = fs.readdirSync(categoryPath);
       files.forEach(file => {
-        if (file.endsWith('.js')) {
+        if (file.endsWith(".js")) {
           commands.push({
-            name: file.replace('.js', ''),
+            name: file.replace(".js", ''),
             category
           });
         }
@@ -48,25 +48,25 @@ function getCommandsFromFS(commandsDir) {
   return commands;
 }
 
-describe('Command Data Tests', () => {
-  const csvCommands = parseCommandsFromCSV(path.join(__dirname, '../data/commandData.csv'));
-  const fsCommands = getCommandsFromFS(path.join(__dirname, '../commands'));
+describe("Command Data Tests", () => {
+  const csvCommands = parseCommandsFromCSV(path.join(__dirname, "../data/commandData.csv"));
+  const fsCommands = getCommandsFromFS(path.join(__dirname, "../commands"));
   
-  test('All filesystem commands exist in CSV', () => {
+  test("All filesystem commands exist in CSV", () => {
     fsCommands.forEach(fsCommand => {
       const csvCommand = csvCommands.find(cmd => cmd.name === fsCommand.name);
       expect(csvCommand).toBeTruthy();
     });
   });
 
-  test('All commands have valid categories in CSV', () => {
+  test("All commands have valid categories in CSV", () => {
     fsCommands.forEach(fsCommand => {
       const csvCommand = csvCommands.find(cmd => cmd.name === fsCommand.name);
       expect(csvCommand.category).toBe(fsCommand.category);
     });
   });
 
-  test('All commands have descriptions in CSV', () => {
+  test("All commands have descriptions in CSV", () => {
     fsCommands.forEach(fsCommand => {
       const csvCommand = csvCommands.find(cmd => cmd.name === fsCommand.name);
       expect(csvCommand.description).toBeTruthy();

@@ -1,8 +1,8 @@
-jest.mock('../../config.json', () => ({
-    databaseHostAddress: 'mock-host',
-    databaseName: 'mock-db',
-    databaseUser: 'mock-user',
-    databasePassword: 'mock-password'
+jest.mock("../../config.json", () => ({
+    databaseHostAddress: "mock-host",
+    databaseName: "mock-db",
+    databaseUser: "mock-user",
+    databasePassword: "mock-password"
 }), { virtual: true });
 
 const fs = require("fs");
