@@ -7,7 +7,7 @@ on:
     branches:
       - main
     paths:
-      - 'src/data/commandData.csv'
+      - "src/data/commandData.csv"
 
 jobs:
   update-wiki:
@@ -31,7 +31,7 @@ jobs:
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.wiki.git wiki
           
           # Copy new content
-          cp commands.md ./wiki/Commands.md
+          cp src/data/commands.md ./wiki/Commands.md
           cd wiki
           
           # Configure git

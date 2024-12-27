@@ -52,4 +52,5 @@ function generateWikiContent(commands) {
 
 const commands = parseCommandsFromCSV(path.join(__dirname, "../../src/data/commandData.csv"));
 const wikiContent = generateWikiContent(commands);
-fs.writeFileSync("commands.md", wikiContent);
+const outputPath = path.join(__dirname, "../../src/data/commands.md");
+fs.writeFileSync(outputPath, wikiContent);
