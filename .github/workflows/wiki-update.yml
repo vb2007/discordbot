@@ -23,11 +23,6 @@ jobs:
       - name: Generate Wiki Content
         run: node .github/scripts/generate-wiki.js
         
-      - name: Debug Directory
-        run: |
-          pwd
-          ls -la
-        
       - name: Update Wiki
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -35,16 +30,22 @@ jobs:
           # Clone wiki repo
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.wiki.git wiki
           
-          # Debug wiki directory
-          ls -la wiki
-          
-          # Copy and commit changes
+          # Copy new content
           cp commands.md ./wiki/Commands.md
           cd wiki
+          
+          # Configure git
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add Commands.md
-          git commit -m "Update commands documentation
+          
+          # Check for changes
+          if git diff --quiet HEAD; then
+            echo "No changes to commit"
+            exit 0
+          else
+            git add Commands.md
+            git commit -m "Update commands documentation
 
-          Co-authored-by: vb2007 <admin@vb2007.hu>"
-          git push
+            Co-authored-by: vb2007 <admin@vb2007.hu>"
+            git push
+          fi
