@@ -63,15 +63,17 @@ module.exports = {
                 .setRequired(true))
         .setDMPermission(false),
     async execute(interaction) {
+        let isResponseDefined = false;
+        
         if (!interaction.inGuild()) {
             var embedReply = embedReplyFailureColor(
                 "Roulette - Error",
                 "You can only play roulette in a server.",
                 interaction
             );
+            isResponseDefined = true;
         }
         else {
-            let isInteractionHandled = false;
             const interactionUserId = interaction.user.id;
             const amount = interaction.options.getInteger("amount");
 
@@ -91,6 +93,7 @@ module.exports = {
                     `You've already played blackjack in the last 8 minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to **play blackjack** again.`,
                     interaction
                 );
+                isResponseDefined = true;
             }
             else if (userBalance < amount) {
                 var embedReply = embedReplyFailureColor(
@@ -98,6 +101,7 @@ module.exports = {
                     `You can't play with that much money!\nYour current balance is only \`$${userBalance}\`.`,
                     interaction
                 );
+                isResponseDefined = true;
             }
             else if (amount <= 0) {
                 var embedReply = embedReplyFailureColor(
@@ -105,6 +109,7 @@ module.exports = {
                     "You can't play without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.",
                     interaction
                 );
+                isResponseDefined = true;
             }
             else {
                 const deck = createDeck();
@@ -209,12 +214,11 @@ module.exports = {
                     );
 
                     await i.update({ embeds: [finalEmbed], components: [] });
-                    isInteractionHandled = true;
                 }
             }
         }
 
-        if (isInteractionHandled) {
+        if (isResponseDefined) {
             await interaction.reply({ embeds: [embedReply] });
             await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
         }
