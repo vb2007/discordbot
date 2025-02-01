@@ -71,6 +71,7 @@ module.exports = {
             );
         }
         else {
+            let isInteractionHandled = false;
             const interactionUserId = interaction.user.id;
             const amount = interaction.options.getInteger("amount");
 
@@ -170,7 +171,7 @@ module.exports = {
                 async function handleGameEnd(i, playerHand, dealerHand, amount, reason) {
                     const playerValue = calculateHandValue(playerHand);
                     const dealerValue = calculateHandValue(dealerHand);
-                    let results;
+                    let result;
                     let winnings = 0;
 
                     if (reason === "bust") {
@@ -208,11 +209,14 @@ module.exports = {
                     );
 
                     await i.update({ embeds: [finalEmbed], components: [] });
+                    isInteractionHandled = true;
                 }
             }
         }
 
-        // await interaction.reply({ embeds: [embedReply] });
-        // await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
+        if (isInteractionHandled) {
+            await interaction.reply({ embeds: [embedReply] });
+            await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
+        }
     }
 }
