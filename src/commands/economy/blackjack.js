@@ -81,7 +81,7 @@ module.exports = {
             const userBalance = query[0]?.balance;
 
             const lastBlackjackTime = query[0]?.lastBlackjackTime;
-            const nextApprovedBlackjackTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() - 8 * 60000); //8 minutes
+            const nextApprovedBlackjackTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 8 * 60000); //8 minutes
 
             if (lastBlackjackTime >= nextApprovedBlackjackTimeUTC) {
                 const remainingTimeInSeconds = Math.ceil((lastBlackjackTime.getTime() - nextApprovedBlackjackTimeUTC.getTime()) / 1000);
@@ -218,6 +218,7 @@ module.exports = {
                     );
 
                     await i.update({ embeds: [finalEmbed], components: [] });
+                    await logToFileAndDatabase(interaction, JSON.stringify(finalEmbed.toJSON()));
                 }
             }
         }
