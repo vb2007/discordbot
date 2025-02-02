@@ -67,8 +67,8 @@ module.exports = {
         
         if (!interaction.inGuild()) {
             var embedReply = embedReplyFailureColor(
-                "Roulette - Error",
-                "You can only play roulette in a server.",
+                "Blackjack - Error",
+                "You can only play blackjack in a server.",
                 interaction
             );
             isResponseDefined = true;
@@ -81,7 +81,7 @@ module.exports = {
             const userBalance = query[0]?.balance;
 
             const lastBlackjackTime = query[0]?.lastBlackjackTime;
-            const nextApprovedBlackjackTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 8 * 60000); //8 minutes
+            const nextApprovedBlackjackTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() - 8 * 60000); //8 minutes
 
             if (lastBlackjackTime >= nextApprovedBlackjackTimeUTC) {
                 const remainingTimeInSeconds = Math.ceil((lastBlackjackTime.getTime() - nextApprovedBlackjackTimeUTC.getTime()) / 1000);
@@ -97,7 +97,7 @@ module.exports = {
             }
             else if (userBalance < amount) {
                 var embedReply = embedReplyFailureColor(
-                    "Roulette - Error",
+                    "Blackjack - Error",
                     `You can't play with that much money!\nYour current balance is only \`$${userBalance}\`.`,
                     interaction
                 );
@@ -203,8 +203,12 @@ module.exports = {
                     }
 
                     await db.query(
-                        "UPDATE economy SET balance = balance + ?, lastBlackjackTime = NOW() WHERE userId = ?",
-                        [winnings, interactionUserId]
+                        "UPDATE economy SET balance = balance + ?, lastBlackjackTime = ? WHERE userId = ?",
+                        [
+                            winnings,
+                            new Date().toISOString().slice(0, 19).replace('T', ' '),
+                            interactionUserId
+                        ]
                     );
 
                     const finalEmbed = embedReplySuccessColor(
