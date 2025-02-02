@@ -182,23 +182,53 @@ module.exports = {
                     if (reason === "bust") {
                         result = "You bust! Dealer wins.";
                         winnings = -amount;
+
+                        var finalEmbed = embedReplyFailureColor(
+                            "Blackjack Game - Final",
+                            `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n${result}\nNet change: $${winnings}`,
+                            interaction
+                        );
                     }
                     else {
                         if (dealerValue > 21) {
                             result = "Dealer busts! You win!";
                             winnings = amount;
+
+                            var finalEmbed = embedReplySuccessColor(
+                                "Blackjack - Results",
+                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n${result}\nNet change: $${winnings}`,
+                                interaction
+                            );
                         }
                         else if (playerValue > dealerValue) {
                             result = "You win!";
                             winnings = amount;
+
+                            var finalEmbed = embedReplySuccessColor(
+                                "Blackjack Game - Final",
+                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n${result}\nNet change: $${winnings}`,
+                                interaction
+                            );
                         }
                         else if (playerValue < dealerValue) {
                             result = "Dealer wins!";
                             winnings = -amount;
+
+                            var finalEmbed = embedReplyFailureColor(
+                                "Blackjack Game - Final",
+                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n${result}\nNet change: $${winnings}`,
+                                interaction
+                            );
                         }
                         else {
                             result = "Push! Tie game.";
                             winnings = 0;
+
+                            var finalEmbed = embedReplyWarningColor(
+                                "Blackjack Game - Final",
+                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n${result}\nYour balance stays the same.`,
+                                interaction
+                            );
                         }
                     }
 
@@ -209,12 +239,6 @@ module.exports = {
                             new Date().toISOString().slice(0, 19).replace('T', ' '),
                             interactionUserId
                         ]
-                    );
-
-                    const finalEmbed = embedReplySuccessColor(
-                        "Blackjack Game - Final",
-                        `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n${result}\nNet change: $${winnings}`,
-                        interaction
                     );
 
                     await i.update({ embeds: [finalEmbed], components: [] });
