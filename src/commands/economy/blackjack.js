@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
-const { embedReplySuccessColor, embedReplyFailureColor, embedReplyWarningColor, embedReplyPrimaryColor } = require("../../helpers/embeds/embed-reply");
+const { embedReplySuccessColor, embedReplyFailureColor, embedReplyWarningColor, embedReplyPrimaryColor, embedReplyPrimaryColorWithFields } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -106,7 +106,7 @@ module.exports = {
             else if (amount <= 0) {
                 var embedReply = embedReplyFailureColor(
                     "Blackjack - Error",
-                    "You can't play without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.",
+                    `You can't play without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.`,
                     interaction
                 );
                 isResponseDefined = true;
@@ -128,9 +128,14 @@ module.exports = {
                 
                 const row = new ActionRowBuilder().addComponents(hitButton, standButton);
 
-                const embedReply = embedReplyPrimaryColor(
+                const embedReply = embedReplyPrimaryColorWithFields(
                     "Blackjack - New Game",
-                    `Your hand: ${formatCards(playerHand)} (${calculateHandValue(playerHand)})\nDealer's hand: ${dealerHand[0].value}${dealerHand[0].suit} ??\nBet amount: $${amount}`,
+                    "",
+                    [
+                        { name: "Your hand", value: `${formatCards(playerHand)} (${calculateHandValue(playerHand)}) ??`},
+                        { name: "Dealer's hand", value: `${dealerHand[0].value}${dealerHand[0].suit} ??`},
+                        { name: "Bet amount", values: `\`$${amount}\``}
+                    ],
                     interaction
                 );
 
