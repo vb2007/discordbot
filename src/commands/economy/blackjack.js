@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
-const { embedReplySuccessColor, embedReplyFailureColor, embedReplyWarningColor, embedReplyPrimaryColor, embedReplyPrimaryColorWithFields } = require("../../helpers/embeds/embed-reply");
+const { embedReplySuccessColor, embedReplyFailureColor, embedReplyWarningColor, embedReplyPrimaryColorWithFields } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
@@ -134,7 +134,7 @@ module.exports = {
                     [
                         { name: "Your hand", value: `${formatCards(playerHand)} (${calculateHandValue(playerHand)}) ??`},
                         { name: "Dealer's hand", value: `${dealerHand[0].value}${dealerHand[0].suit} ??`},
-                        { name: "Bet amount", values: `\`$${amount}\``}
+                        { name: "Bet amount", value: `\`$${amount}\``}
                     ],
                     interaction
                 );
