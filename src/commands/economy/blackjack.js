@@ -51,6 +51,34 @@ function formatCards(hand) {
     return hand.map(card => `${card.value}${card.suit}`).join(' ');
 }
 
+async function updateBalance(won, amount) {
+    switch (won) {
+        case true:
+            await db.query(
+                "UPDATE economy SET balance = balance + ?, lastBlackjackTime = ? WHERE userId = ?",
+                [
+                    amount,
+                    new Date().toISOString().slice(0, 19).replace('T', ' '),
+                    interactionUserId
+                ]
+            );
+            break;
+        case false:
+            await db.query(
+                "UPDATE economy SET balance = balance - ?, lastBlackjackTime = ? WHERE userId = ?",
+                [
+                    amount,
+                    new Date().toISOString().slice(0, 19).replace('T', ' '),
+                    interactionUserId
+                ]
+            );
+            break;
+        default:
+            throw new Error('Invalid parameter: won must be true or false');
+            break;
+    }
+}
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -181,70 +209,52 @@ module.exports = {
                 async function handleGameEnd(i, playerHand, dealerHand, amount, reason) {
                     const playerValue = calculateHandValue(playerHand);
                     const dealerValue = calculateHandValue(dealerHand);
-                    let result;
-                    let winnings = 0;
 
                     if (reason === "bust") {
-                        result = "You bust! Dealer wins.";
-                        winnings = -amount;
+                        updateBalance(false, amount);
 
                         var finalEmbed = embedReplyFailureColor(
                             "Blackjack Game - Final",
-                            `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n${result}\nNet change: $${winnings}`,
+                            `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n"You bust! Dealer wins."\nYou've lost: $${amount}`,
                             interaction
                         );
                     }
                     else {
                         if (dealerValue > 21) {
-                            result = "Dealer busts! You win!";
-                            winnings = amount;
+                            updateBalance(true, amount);
 
                             var finalEmbed = embedReplySuccessColor(
                                 "Blackjack - Results",
-                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n${result}\nNet change: $${winnings}`,
+                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n"Dealer busts! You win!"\nYou won: $${amount}`,
                                 interaction
                             );
                         }
                         else if (playerValue > dealerValue) {
-                            result = "You win!";
-                            winnings = amount;
+                            updateBalance(true, amount);
 
                             var finalEmbed = embedReplySuccessColor(
                                 "Blackjack Game - Final",
-                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n${result}\nNet change: $${winnings}`,
+                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n"You win!"\nYou won: $${amount}`,
                                 interaction
                             );
                         }
                         else if (playerValue < dealerValue) {
-                            result = "Dealer wins!";
-                            winnings = -amount;
+                            updateBalance(false, amount);
 
                             var finalEmbed = embedReplyFailureColor(
                                 "Blackjack Game - Final",
-                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n${result}\nNet change: $${winnings}`,
+                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n"Dealer wins!"\nYou've lost: $${amount}`,
                                 interaction
                             );
                         }
                         else {
-                            result = "Push! Tie game.";
-                            winnings = 0;
-
                             var finalEmbed = embedReplyWarningColor(
                                 "Blackjack Game - Final",
-                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n${result}\nYour balance stays the same.`,
+                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n"Push! Tie game."\nYour balance stays the same.`,
                                 interaction
                             );
                         }
                     }
-
-                    await db.query(
-                        "UPDATE economy SET balance = balance + ?, lastBlackjackTime = ? WHERE userId = ?",
-                        [
-                            winnings,
-                            new Date().toISOString().slice(0, 19).replace('T', ' '),
-                            interactionUserId
-                        ]
-                    );
 
                     await i.update({ embeds: [finalEmbed], components: [] });
                     await logToFileAndDatabase(interaction, JSON.stringify(finalEmbed.toJSON()));
