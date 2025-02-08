@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { embedReplySuccessColor, embedReplyFailureColor } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
+const db = require("../../helpers/db");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,8 +12,8 @@ module.exports = {
                 .setName("side")
                 .setDescription("The side of the coin you would like to place your bet on.")
                 .addChoices(
-                    { name: "Head", value: false },
-                    { name: "Tails", value: true }
+                    { name: "Head", value: "head" },
+                    { name: "Tails", value: "tails" }
                 )
                 .setRequired(true))
         .addIntegerOption(option =>
@@ -34,13 +35,13 @@ module.exports = {
             const amount = interaction.options.getInteger("amount");
 
             const query = await db.query("SELECT balance, lastCoinflipTime FROM economy WHERE userId = ?", [interactionUserId]);
-            const userBalance = query[0]?.balance;
+            const userBalance = Number(query[0]?.balance);
 
             const lastCoinflipTime = query[0]?.lastCoinflipTime;
             const nextApprovedCoinflipTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 3 * 60000); //3 minutes
 
             if(lastCoinflipTime >= nextApprovedCoinflipTimeUTC) {
-                const remainingTimeInSeconds = Math.ceil((lastRouletteTime.getTime() - nextApprovedRouletteTimeUTC.getTime()) / 1000);
+                const remainingTimeInSeconds = Math.ceil((lastCoinflipTime.getTime() - nextApprovedCoinflipTimeUTC.getTime()) / 1000);
                 const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
                 const remainingSeconds = remainingTimeInSeconds % 60;
 
@@ -66,7 +67,7 @@ module.exports = {
             }
             else {
                 const userBet = interaction.options.getString("side");
-                const flip = Math.random() < 0.5;
+                const flip = Math.random() < 0.5 ? "tails" : "head";
                 const won = userBet === flip;
 
                 if (won) {
@@ -78,10 +79,10 @@ module.exports = {
                         ]
                     );
 
-                    var embedReply = embedReplySuccessColor(
+                    var embedReply = embedReplyFailureColor(
                         "Coinflip - Won",
                         `The coin landed on **${flip ? 'Tails' : 'Heads'}**, matching your bet.\nYou won \`$${amount}\`!\nYour new balance is \`$${userBalance + amount}\`.`,
-                        interactionUserId
+                        interaction
                     );
                 }
                 else {
@@ -96,7 +97,7 @@ module.exports = {
                     var embedReply = embedReplySuccessColor(
                         "Coinflip - Lost",
                         `The coin landed on **${flip ? 'Tails' : 'Heads'}**, not matching your bet.\nYou've lost \`$${amount}\`!\nYour new balance is \`$${userBalance - amount}\`.`,
-                        interactionUserId
+                        interaction
                     );
                 }
             }
