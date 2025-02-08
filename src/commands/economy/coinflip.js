@@ -79,9 +79,9 @@ module.exports = {
                         ]
                     );
 
-                    var embedReply = embedReplyFailureColor(
+                    var embedReply = embedReplySuccessColor(
                         "Coinflip - Won",
-                        `The coin landed on **${flip ? 'Tails' : 'Heads'}**, matching your bet.\nYou won \`$${amount}\`!\nYour new balance is \`$${userBalance + amount}\`.`,
+                        `The coin landed on **${flip}**, matching your bet.\nYou won \`$${amount}\`!\nYour new balance is \`$${userBalance + amount}\`.`,
                         interaction
                     );
                 }
@@ -94,9 +94,9 @@ module.exports = {
                         ]
                     );
 
-                    var embedReply = embedReplySuccessColor(
+                    var embedReply = embedReplyFailureColor(
                         "Coinflip - Lost",
-                        `The coin landed on **${flip ? 'Tails' : 'Heads'}**, not matching your bet.\nYou've lost \`$${amount}\`!\nYour new balance is \`$${userBalance - amount}\`.`,
+                        `The coin landed on **${flip}**, not matching your bet.\nYou've lost \`$${amount}\`!\nYour new balance is \`$${userBalance - amount}\`.`,
                         interaction
                     );
                 }
