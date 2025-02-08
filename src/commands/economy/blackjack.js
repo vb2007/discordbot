@@ -51,7 +51,7 @@ function formatCards(hand) {
     return hand.map(card => `${card.value}${card.suit}`).join(' ');
 }
 
-async function updateBalance(won, amount) {
+async function updateBalance(won, amount, interactionUserId) {
     switch (won) {
         case true:
             await db.query(
@@ -75,7 +75,6 @@ async function updateBalance(won, amount) {
             break;
         default:
             throw new Error('Invalid parameter: won must be true or false');
-            break;
     }
 }
 
@@ -158,11 +157,10 @@ module.exports = {
 
                 const embedReply = embedReplyPrimaryColorWithFields(
                     "Blackjack - New Game",
-                    "",
+                    `Bet amount: \`$${amount}\``,
                     [
-                        { name: "Your hand", value: `${formatCards(playerHand)} (${calculateHandValue(playerHand)}) ??`},
-                        { name: "Dealer's hand", value: `${dealerHand[0].value}${dealerHand[0].suit} ??`},
-                        { name: "Bet amount", value: `\`$${amount}\``}
+                        { name: "Your hand", value: `${formatCards(playerHand)} **(${calculateHandValue(playerHand)})** ??`},
+                        { name: "Dealer's hand", value: `${dealerHand[0].value}${dealerHand[0].suit} ??`}
                     ],
                     interaction
                 );
@@ -189,9 +187,13 @@ module.exports = {
                             collector.stop();
                         }
                         else {
-                            const updatedEmbed = embedReplySuccessColor(
+                            const updatedEmbed = embedReplyPrimaryColorWithFields(
                                 "Blackjack - Hit",
-                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${dealerHand[0].value}${dealerHand[0].suit} ??\nBet amount: $${amount}`,
+                                `Bet amount: \`$${amount}\``,
+                                [
+                                    { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
+                                    { name: "Dealer's hand", value: `${dealerHand[0].value}${dealerHand[0].suit} ??`}
+                                ],
                                 interaction
                             );
                             await i.update({ embeds: [updatedEmbed], components: [row] });
@@ -211,46 +213,71 @@ module.exports = {
                     const dealerValue = calculateHandValue(dealerHand);
 
                     if (reason === "bust") {
-                        updateBalance(false, amount);
+                        updateBalance(false, amount, interactionUserId);
 
-                        var finalEmbed = embedReplyFailureColor(
-                            "Blackjack Game - Final",
-                            `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n"You bust! Dealer wins."\nYou've lost: $${amount}`,
+                        var finalEmbed = embedReplyFailureColorWithFields(
+                            "Blackjack Game - Results",
+                            "You bust! Dealer wins.",
+                            [
+                                { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
+                                { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
+                                { name: "You've lost", value: `\`$${amount}\``}
+                            ],
                             interaction
                         );
                     }
                     else {
                         if (dealerValue > 21) {
-                            updateBalance(true, amount);
+                            updateBalance(true, amount, interactionUserId);
 
-                            var finalEmbed = embedReplySuccessColor(
+                            var finalEmbed = embedReplySuccessColorWithFields(
                                 "Blackjack - Results",
-                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n"Dealer busts! You win!"\nYou won: $${amount}`,
+                                "Dealer busts! You won!",
+                                [
+                                    { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
+                                    { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
+                                    { name: "You won", value: `\`$${amount}\``}
+                                ],
                                 interaction
                             );
                         }
                         else if (playerValue > dealerValue) {
-                            updateBalance(true, amount);
+                            updateBalance(true, amount, interactionUserId);
 
-                            var finalEmbed = embedReplySuccessColor(
-                                "Blackjack Game - Final",
-                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n"You win!"\nYou won: $${amount}`,
+                            var finalEmbed = embedReplySuccessColorWithFields(
+                                "Blackjack Game - Results",
+                                "You won!",
+                                [
+                                    { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
+                                    { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
+                                    { name: "You won", value: `\`$${amount}\``}
+                                ],
                                 interaction
                             );
                         }
                         else if (playerValue < dealerValue) {
-                            updateBalance(false, amount);
+                            updateBalance(false, amount, interactionUserId);
 
-                            var finalEmbed = embedReplyFailureColor(
-                                "Blackjack Game - Final",
-                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n"Dealer wins!"\nYou've lost: $${amount}`,
+                            var finalEmbed = embedReplyFailureColorWithFields(
+                                "Blackjack Game - Results",
+                                "Dealer won!",
+                                [
+                                    { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
+                                    { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
+                                    { name: "You've lost", value: `\`$${amount}\``}
+                                ],
                                 interaction
                             );
                         }
                         else {
-                            var finalEmbed = embedReplyWarningColor(
-                                "Blackjack Game - Final",
-                                `Your hand: ${formatCards(playerHand)} (${playerValue})\nDealer's hand: ${formatCards(dealerHand)} (${dealerValue})\n\n"Push! Tie game."\nYour balance stays the same.`,
+                            var finalEmbed = embedReplyWarningColorWithFields(
+                                "Blackjack Game - Results",
+                                "Push! Tie game.",
+                                [
+                                    { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
+                                    { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
+                                    { name: "Tie game", value: "Your balance stays the same."}
+                                ],
                                 interaction
                             );
                         }
