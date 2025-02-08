@@ -102,7 +102,7 @@ module.exports = {
                     else {
                         await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
                             [
-                                amount * 2,
+                                amount,
                                 new Date().toISOString().slice(0, 19).replace('T', ' '),
                                 interactionUserId
                             ]
