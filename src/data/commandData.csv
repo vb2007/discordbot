@@ -6,7 +6,7 @@
 5,user,utility,Provides information about a specified user.
 6,translate,utility,Translates a message from any language to any language.
 7,say,utility,Makes the bot say a specified message.
-8,coinflip,fun,Flips a coin that has a 50/50 chance landing on heads or tails.
+8,coinflip-fun,fun,Flips a coin that has a 50/50 chance landing on heads or tails. Has an economy (*/coinflip*) version with gambling.
 9,randompic,fun,Send a random picture using the [picsum.photos](https://picsum.photos/) API.
 10,randomfeet,fun,I have nothing to say about my greatest shame...
 11,"911-countdown",fun,Displays huw much time is left until Spetember 11th.
@@ -37,3 +37,4 @@
 36,goodbye-configure,administration,"Sets / modifies the goodbye messages feature. When a member leaves the server, the bot send a specified goodbye message."
 37,goodbye-disable,administration,Disables the goodbye messages feature. The bot won''t send goodbye messages anymore when a member leaves the server.
 38,blackjack,economy,Lets you play a game of blackjack with a specified amount. You can pick **Hit** or **Stand** until the player or the house wins, or the game runs into a tie.
+39,coinflip,economy,Let's you bet a specified amout of money on heads or tais. You have a 50/50 percent chance of doubling or losing your bet, based on what side the coin lands on.
