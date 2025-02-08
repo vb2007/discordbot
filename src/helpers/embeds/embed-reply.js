@@ -257,7 +257,7 @@ function embedReplyWarningColorWithFields(title, description, fields, interactio
  */
 function embedReplyFailureColorWithFields(title, description, fields, interaction) {
     const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.error),
+        color: parseInt(embedColors.failure),
         title: title,
         description: description,
         fields: fields,

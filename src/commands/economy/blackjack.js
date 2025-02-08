@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
-const { embedReplySuccessColor, embedReplyFailureColor, embedReplyWarningColor, embedReplyPrimaryColorWithFields } = require("../../helpers/embeds/embed-reply");
+const { embedReplySuccessColorWithFields, embedReplyFailureColor, embedReplyFailureColorWithFields, embedReplyWarningColorWithFields, embedReplyPrimaryColorWithFields } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
