@@ -8,7 +8,7 @@ module.exports = {
         const serverName = member.guild.name;
         const memberCount = member.guild.memberCount;
         const userTag = member.user.tag;
-        const userId = member.user.id;
+        // const userId = member.user.id;
 
         try {
             const rows = await db.query("SELECT channelId, message, isEmbed, embedColor FROM configGoodbye WHERE guildId = ?", [guildId]);
@@ -21,7 +21,8 @@ module.exports = {
                 const channel = member.guild.channels.cache.get(channelId);
                 if (channel) {
                     message = message
-                        .replace("{user}", `<@${userId}>`)
+                        // .replace("{user}", `<@${userId}>`) //pinged users who've left the server are usually unaccessable due to discord's limitations
+                        .replace("{user}", `**${userTag}**`)
                         .replace("{server}", serverName)
                         .replace("{memberCount}", memberCount);
                     
