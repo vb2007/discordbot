@@ -8,13 +8,15 @@ async function getUserAndCommandData(commandName, interaction) {
     const configuredCooldown = economyCooldown[commandName];
     const queryColumnName = "last" + commandNameCapitalized + "Time";
 
-    const query = await db.query(`SELECT userId, ${queryColumnName} FROM economy WHERE userId = ?`, [interaction.user.id]);
+    const query = await db.query(`SELECT balance, ${queryColumnName} FROM economy WHERE userId = ?`, [interaction.user.id]);
     const lastUsageTime = query[0]?.[queryColumnName] || null;
+    const userBalance = query[0]?.balance;
     const nextApprovedUsageTime = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - configuredCooldown * 60000);
 
     return {
         lastUsageTime,
         nextApprovedUsageTime,
+        userBalance,
         commandNameCapitalized,
         configuredCooldown
     };
@@ -46,8 +48,32 @@ async function checkCooldown(commandName, interaction) {
     }
 }
 
-async function checkBalance(commandName, interaction) {
-    
+async function checkBalanceAndBetAmount(commandName, interaction, amount) {
+    const {
+        userBalance
+    } = await getUserAndCommandData(commandName, interaction);
+
+    if (userBalance < amount) {
+        var embedReply = embedReplyFailureColor(
+            "Roulette - Insufficient balance",
+            `You can't play with that much money!\nYour current balance is only \`$${userBalance}\`.`,
+            interaction
+        );
+
+        return embedReply;
+    }
+
+    if (amount <= 0) {
+        var embedReply = embedReplyFailureColor(
+            "Roulette - Insufficient balance",
+            `You can't play without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.`,
+            interaction
+        );
+
+        return embedReply;
+    }
+
+    return null;
 }
 
-module.exports = checkCooldown;
+module.exports = { checkCooldown, checkBalanceAndBetAmount };

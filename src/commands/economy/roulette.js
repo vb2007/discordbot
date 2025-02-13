@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { embedReplySuccessColor, embedReplyFailureColor, embedReplyWarningColor } = require("../../helpers/embeds/embed-reply");
-const checkCooldown = require("../../helpers/economy");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+const { checkCooldown, checkBalanceAndBetAmount } = require("../../helpers/economy");
+const replyAndLog = require("../../helpers/reply");
 const format = require("../../helpers/format");
 const generate = require("../../helpers/generate");
 const db = require("../../helpers/db");
@@ -40,76 +40,48 @@ module.exports = {
             const interactionUserId = interaction.user.id;
             const amount = interaction.options.getInteger("amount");
 
-            const query = await db.query("SELECT balance, lastRouletteTime FROM economy WHERE userId = ?", [interactionUserId]);
-            const userBalance = query[0]?.balance;
-
             const cooldownCheck = await checkCooldown(commandName, interaction);
             if (cooldownCheck) {
-                return await interaction.reply({ embeds: [cooldownCheck] });
+                return await replyAndLog(interaction, cooldownCheck);
             }
-            else if (userBalance < amount) {
+
+            const balanceCheck = await checkBalanceAndBetAmount(commandName, interaction, amount);
+            if (balanceCheck) {
+                return await replyAndLog(interaction, cooldownCheck);
+            }
+
+            const validColors = ["red", "black", "green"];
+            const guessedColor = interaction.options.getString("color");
+
+            const randomOutcome = generate.generateRandomOutcome();
+            const randomColor = randomOutcome.color;
+            const randomNumber = randomOutcome.number;
+
+            if(!validColors.includes(guessedColor)) {
                 var embedReply = embedReplyFailureColor(
                     "Roulette - Error",
-                    `You can't play with that much money!\nYour current balance is only \`$${userBalance}\`.`,
+                    "The color you've chosen is invalid.\nPlease choose from `red`, `black` or `green`.",
                     interaction
                 );
             }
-            else if (amount <= 0) {
-                var embedReply = embedReplyFailureColor(
-                    "Roulette - Error",
-                    `You can't play without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.`,
-                    interaction
-                );
-            }
-            else {
-                const validColors = ["red", "black", "green"];
-                const guessedColor = interaction.options.getString("color");
+            else if (guessedColor === randomColor) {
+                if (guessedColor === "green") {
+                    await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
+                        [
+                            amount * 35,
+                            new Date().toISOString().slice(0, 19).replace('T', ' '),
+                            interactionUserId
+                        ]
+                    );
 
-                const randomOutcome = generate.generateRandomOutcome();
-                const randomColor = randomOutcome.color;
-                const randomNumber = randomOutcome.number;
-
-                if(!validColors.includes(guessedColor)) {
-                    var embedReply = embedReplyFailureColor(
-                        "Roulette - Error",
-                        "The color you've chosen is invalid.\nPlease choose from `red`, `black` or `green`.",
+                    var embedReply = embedReplySuccessColor(
+                        "Roulette - Jackpot",
+                        `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}**.\nYou hit the jackpot, and won \`$${amount * 35}\`! :money_mouth:`,
                         interaction
                     );
                 }
-                else if (guessedColor === randomColor) {
-                    if (guessedColor === "green") {
-                        await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
-                            [
-                                amount * 35,
-                                new Date().toISOString().slice(0, 19).replace('T', ' '),
-                                interactionUserId
-                            ]
-                        );
-
-                        var embedReply = embedReplySuccessColor(
-                            "Roulette - Jackpot",
-                            `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}**.\nYou hit the jackpot, and won \`$${amount * 35}\`! :money_mouth:`,
-                            interaction
-                        );
-                    }
-                    else {
-                        await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
-                            [
-                                amount,
-                                new Date().toISOString().slice(0, 19).replace('T', ' '),
-                                interactionUserId
-                            ]
-                        );
-
-                        var embedReply = embedReplySuccessColor(
-                            "Roulette - Won",
-                            `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}** as well!\nYou won \`$${amount * 2}\`. :money_mouth:`,
-                            interaction
-                        );
-                    }
-                }
                 else {
-                    await db.query("UPDATE economy SET balance = balance - ?, lastRouletteTime = ? WHERE userId = ?",
+                    await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
                         [
                             amount,
                             new Date().toISOString().slice(0, 19).replace('T', ' '),
@@ -117,16 +89,30 @@ module.exports = {
                         ]
                     );
 
-                    var embedReply = embedReplyWarningColor(
-                        "Roulette - Lost",
-                        `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}**.\nMaybe try your luck again. :upside_down:`,
+                    var embedReply = embedReplySuccessColor(
+                        "Roulette - Won",
+                        `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}** as well!\nYou won \`$${amount * 2}\`. :money_mouth:`,
                         interaction
                     );
                 }
             }
+            else {
+                await db.query("UPDATE economy SET balance = balance - ?, lastRouletteTime = ? WHERE userId = ?",
+                    [
+                        amount,
+                        new Date().toISOString().slice(0, 19).replace('T', ' '),
+                        interactionUserId
+                    ]
+                );
+
+                var embedReply = embedReplyWarningColor(
+                    "Roulette - Lost",
+                    `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}**.\nMaybe try your luck again. :upside_down:`,
+                    interaction
+                );
+            }
         }
 
-        await interaction.reply({ embeds: [embedReply] })
-        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
+        return await replyAndLog(interaction, embedReply);
     }
 }
