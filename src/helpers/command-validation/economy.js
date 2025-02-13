@@ -1,7 +1,7 @@
-const { economyCooldown } = require("../../config.json");
-const { capitalizeFirstLetter } = require("./format");
-const { embedReplyFailureColor } = require("./embeds/embed-reply");
-const db = require("./db");
+const { economyCooldown } = require("../../../config.json");
+const { capitalizeFirstLetter } = require("../format");
+const { embedReplyFailureColor } = require("../embeds/embed-reply");
+const db = require("../db");
 
 async function getUserAndCommandData(commandName, interaction) {
     const commandNameCapitalized = capitalizeFirstLetter(commandName);
