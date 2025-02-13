@@ -22,15 +22,15 @@
 
   "economyCooldown" : {
     "balance" : "0",
-    "beg" : "",
-    "blackjack" : "",
-    "coinflip" : "",
+    "beg" : "2",
+    "blackjack" : "3",
+    "coinflip" : "3",
     "deposit" : "0",
     "leaderboard" : "0",
     "pay" : "0",
-    "rob" : "",
-    "roulette" : "",
+    "rob" : "5",
+    "roulette" : "3",
     "withdraw" : "0",
-    "work" : ""
+    "work" : "1"
   }
 }
