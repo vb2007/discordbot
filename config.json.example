@@ -21,16 +21,11 @@
   "//Schema" : "A simple integer. '6' will represent a 6 minute cooldown. The command won't have a cooldown if '0' is specified.",
 
   "economyCooldown" : {
-    "balance" : "0",
     "beg" : "2",
     "blackjack" : "8",
     "coinflip" : "8",
-    "deposit" : "0",
-    "leaderboard" : "0",
-    "pay" : "0",
     "rob" : "12",
     "roulette" : "10",
-    "withdraw" : "0",
     "work" : "1"
   }
 }
