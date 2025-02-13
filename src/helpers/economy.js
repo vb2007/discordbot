@@ -4,9 +4,9 @@ const { embedReplyFailureColor } = require("./embeds/embed-reply");
 const db = require("./db");
 
 async function getUserAndCommandData(commandName, interaction) {
-    const commnandNameCapitalized = capitalizeFirstLetter(commandName);
+    const commandNameCapitalized = capitalizeFirstLetter(commandName);
     const configuredCooldown = economyCooldown[commandName];
-    const queryColumnName = "last" + commnandNameCapitalized + "Time";
+    const queryColumnName = "last" + commandNameCapitalized + "Time";
 
     const query = await db.query(`SELECT userId, ${queryColumnName} FROM economy WHERE userId = ?`, [interaction.user.id]);
     const lastUsageTime = query[0]?.[queryColumnName] || null;
@@ -24,6 +24,7 @@ async function checkCooldown(commandName, interaction) {
     const {
         lastUsageTime,
         nextApprovedUsageTime,
+        commandNameCapitalized,
         configuredCooldown
     } = await getUserAndCommandData(commandName, interaction);
 
@@ -33,7 +34,7 @@ async function checkCooldown(commandName, interaction) {
         const remainingSeconds = remainingTimeInSeconds % 60;
 
         var embedReply = embedReplyFailureColor(
-            `${commnandNameCapitalized} - Error`,
+            `${commandNameCapitalized} - Error`,
             `You've already used the \`/${commandName}\` command in the last ${configuredCooldown} minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to use this again.`,
             interaction
         );
