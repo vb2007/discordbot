@@ -59,7 +59,7 @@ module.exports = {
                 interaction
             );
 
-            return await replyAndLog(interaction, cooldownCheck);
+            return await replyAndLog(interaction, embedReply);
         }
 
         const randomOutcome = generate.generateRandomOutcome();
