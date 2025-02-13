@@ -5,13 +5,24 @@
   "logToDatabase" : "[True/False]",
   "logMessagesToLocalDatabase" : "[True/False]",
   
-  "//": "Appearance settings",
+  "//" : "Appearance settings",
 
-  "embedColors": {
+  "embedColors" : {
     "primary" : "[HEX Color, like: '0x5F0FD6']",
     "success" : "[HEX Color, like: '0x0DFF00']",
     "successSecondary" : "[HEX Color, like: '0x87FF9D']",
     "failure" : "[HEX Color, like: '0xFF0D0D']",
     "warning" : "[HEX Color, like: '0xE3F51B']"
-  }
+  },
+
+  "//" : "Economy command cooldown times in minutes",
+
+  "economyCooldown" : {
+    "beg" : "",
+    "blackjack" : "",
+    "coinflip" : "",
+    "rob" : "",
+    "roulette" : "",
+    "work" : ""
+  } 
 }
