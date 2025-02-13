@@ -35,12 +35,6 @@ module.exports = {
             return await replyAndLog(interaction, guildCheck);
         }
 
-        const cooldownCheck = await checkCooldown(commandName, interaction);
-        if (cooldownCheck) {
-            return await replyAndLog(interaction, cooldownCheck);
-        }
-
-        const interactionUserId = interaction.user.id;
         const amount = interaction.options.getInteger("amount");
 
         const balanceCheck = await checkBalanceAndBetAmount(commandName, interaction, amount);
@@ -48,12 +42,15 @@ module.exports = {
             return await replyAndLog(interaction, balanceCheck);
         }
 
+        const cooldownCheck = await checkCooldown(commandName, interaction);
+        if (cooldownCheck) {
+            return await replyAndLog(interaction, cooldownCheck);
+        }
+
+        const interactionUserId = interaction.user.id;
+
         const validColors = ["red", "black", "green"];
         const guessedColor = interaction.options.getString("color");
-
-        const randomOutcome = generate.generateRandomOutcome();
-        const randomColor = randomOutcome.color;
-        const randomNumber = randomOutcome.number;
 
         if(!validColors.includes(guessedColor)) {
             var embedReply = embedReplyFailureColor(
@@ -61,8 +58,15 @@ module.exports = {
                 "The color you've chosen is invalid.\nPlease choose from `red`, `black` or `green`.",
                 interaction
             );
+
+            return await replyAndLog(interaction, cooldownCheck);
         }
-        else if (guessedColor === randomColor) {
+
+        const randomOutcome = generate.generateRandomOutcome();
+        const randomColor = randomOutcome.color;
+        const randomNumber = randomOutcome.number;
+
+        if (guessedColor === randomColor) {
             if (guessedColor === "green") {
                 await db.query("UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
                     [
