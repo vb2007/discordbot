@@ -34,7 +34,7 @@ async function checkCooldown(commandName, interaction) {
         const remainingSeconds = remainingTimeInSeconds % 60;
 
         var embedReply = embedReplyFailureColor(
-            `${commandNameCapitalized} - Error`,
+            `${commandNameCapitalized} - Cooldown`,
             `You've already used the \`/${commandName}\` command in the last ${configuredCooldown} minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to use this again.`,
             interaction
         );
@@ -44,6 +44,10 @@ async function checkCooldown(commandName, interaction) {
     else {
         return null;
     }
+}
+
+async function checkBalance(commandName, interaction) {
+    
 }
 
 module.exports = checkCooldown;

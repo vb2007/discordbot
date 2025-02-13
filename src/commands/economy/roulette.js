@@ -43,9 +43,6 @@ module.exports = {
             const query = await db.query("SELECT balance, lastRouletteTime FROM economy WHERE userId = ?", [interactionUserId]);
             const userBalance = query[0]?.balance;
 
-            const lastRouletteTime = query[0]?.lastRouletteTime;
-            const nextApprovedRouletteTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 15 * 60000); //15 minutes
-
             const cooldownCheck = await checkCooldown(commandName, interaction);
             if (cooldownCheck) {
                 return await interaction.reply({ embeds: [cooldownCheck] });
