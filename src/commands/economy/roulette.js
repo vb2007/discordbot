@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { embedReplySuccessColor, embedReplyFailureColor, embedReplyWarningColor } = require("../../helpers/embeds/embed-reply");
-const { checkIfInGuild } = require("../../helpers/command-validation/general");
+const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
 const { checkCooldown, checkBalanceAndBetAmount } = require("../../helpers/command-validation/economy");
 const replyAndLog = require("../../helpers/reply");
 const format = require("../../helpers/format");
