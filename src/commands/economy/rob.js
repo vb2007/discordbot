@@ -42,12 +42,11 @@ module.exports = {
 
         const query = await db.query("SELECT balance, userId FROM economy WHERE userId = ?", [targetUserId]);
         const targetUserBalance = query[0]?.balance || null;
-        const userId = query[0]?.userId || null;
 
         //if target user's balance is below 50...
         if (targetUserBalance < 50) {
             var embedReply = embedReplyFailureColor(
-                "Robbing - Error",
+                "Robbing - Insufficient target balance",
                 `Your target (<@${targetUserId}>) must have a minimum of \`$50\`.\nPlease choose another target.\n**TIP:** You can check how much money the top memebers have with the \`/leaderboard\` command.`,
                 interaction
             );
@@ -64,6 +63,9 @@ module.exports = {
                 targetUserId
             ]
         );
+
+        const uidquery = await db.query("SELECT balance, userId FROM economy WHERE userId = ?", [interaction.user.id]);
+        const userId = Number(uidquery[0]?.userId) || null;
 
         if(userId) {
             //adds the robbed amount to the interaction's executor
