@@ -1,13 +1,16 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { embedReplySuccessColor, embedReplyFailureColor, embedReplyWarningColor } = require("../../helpers/embeds/embed-reply");
+const checkCooldown = require("../../helpers/economy");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const format = require("../../helpers/format");
 const generate = require("../../helpers/generate");
 const db = require("../../helpers/db");
 
+const commandName = "roulette";
+
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("roulette")
+        .setName(commandName)
         .setDescription("Try your luck and play a game of roulette.")
         .addIntegerOption(option =>
             option
@@ -43,16 +46,9 @@ module.exports = {
             const lastRouletteTime = query[0]?.lastRouletteTime;
             const nextApprovedRouletteTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 15 * 60000); //15 minutes
 
-            if(lastRouletteTime >= nextApprovedRouletteTimeUTC) {
-                const remainingTimeInSeconds = Math.ceil((lastRouletteTime.getTime() - nextApprovedRouletteTimeUTC.getTime()) / 1000);
-                const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
-                const remainingSeconds = remainingTimeInSeconds % 60;
-
-                var embedReply = embedReplyFailureColor(
-                    "Roulette - Error",
-                    `You've already played roulette in the last 15 minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to **play roulette** again.`,
-                    interaction
-                );
+            const cooldownCheck = await checkCooldown(commandName, interaction);
+            if (cooldownCheck) {
+                return await interaction.reply({ embeds: [cooldownCheck] });
             }
             else if (userBalance < amount) {
                 var embedReply = embedReplyFailureColor(

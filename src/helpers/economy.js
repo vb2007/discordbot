@@ -3,14 +3,29 @@ const { capitalizeFirstLetter } = require("./format");
 const { embedReplyFailureColor } = require("./embeds/embed-reply");
 const db = require("./db");
 
-async function checkCooldown(commandName, interaction) {
+async function getUserAndCommandData(commandName, interaction) {
     const commnandNameCapitalized = capitalizeFirstLetter(commandName);
-    const configuredCooldown = economyCooldown.commandName;
-    const queryColumnName = "last" + commnandNameCapitalized + "time";
+    const configuredCooldown = economyCooldown[commandName];
+    const queryColumnName = "last" + commnandNameCapitalized + "Time";
 
     const query = await db.query(`SELECT userId, ${queryColumnName} FROM economy WHERE userId = ?`, [interaction.user.id]);
-    const lastUsageTime = query[0]?.queryColumnName || null;
+    const lastUsageTime = query[0]?.[queryColumnName] || null;
     const nextApprovedUsageTime = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - configuredCooldown * 60000);
+
+    return {
+        lastUsageTime,
+        nextApprovedUsageTime,
+        commandNameCapitalized,
+        configuredCooldown
+    };
+}
+
+async function checkCooldown(commandName, interaction) {
+    const {
+        lastUsageTime,
+        nextApprovedUsageTime,
+        configuredCooldown
+    } = await getUserAndCommandData(commandName, interaction);
 
     if(lastUsageTime >= nextApprovedUsageTime) {
         const remainingTimeInSeconds = Math.ceil((lastUsageTime.getTime() - nextApprovedUsageTime.getTime()) / 1000);
@@ -26,7 +41,7 @@ async function checkCooldown(commandName, interaction) {
         return embedReply;
     }
     else {
-        return;
+        return null;
     }
 }
 
