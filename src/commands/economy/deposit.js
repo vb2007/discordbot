@@ -44,6 +44,16 @@ module.exports = {
             await db.query("UPDATE economy SET dailyDeposits = 0 WHERE userId = ?", [interactionUserId]);
         }
         
+        if (amount <= 0) {
+            var embedReply = embedReplyFailureColor(
+                "Deposit - Invalid amount",
+                `You can't use the \`/deposit\` command without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${balance}\`.`,
+                interaction
+            );
+
+            return await replyAndLog(interaction, embedReply);
+        }
+
         if (balance < amount) {
             var embedReply = embedReplyFailureColor(
                 "Failed to deposit.",

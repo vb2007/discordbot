@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { embedReplySuccessColor, embedReplyFailureColor } = require("../../helpers/embeds/embed-reply");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
+const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
 
 module.exports = {
@@ -14,6 +15,11 @@ module.exports = {
                 .setRequired(true))
         .setDMPermission(false),
     async execute(interaction) {
+        const guildCheck = checkIfNotInGuild(commandName, interaction);
+        if (guildCheck) {
+            return await replyAndLog(interaction, guildCheck);
+        }
+
         const amount = interaction.options.getInteger("amount");
         const interactionUserId = interaction.user.id;
         const query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [interactionUserId]);
@@ -26,24 +32,24 @@ module.exports = {
                 `You can't withdraw that much money from your bank account.\nYour current bank balance is only \`$${balanceInBank}\`. :bank:`,
                 interaction
             );
-        }
-        else {
-            await db.query("UPDATE economy SET balance = balance + ?, balanceInBank = balanceInBank - ? WHERE userId = ?",
-                [
-                    amount,
-                    amount,
-                    interactionUserId
-                ]
-            );
 
-            var embedReply = embedReplySuccessColor(
-                "Withdraw successful.",
-                `You've successfully withdrawn \`$${amount}\` from your bank account.\nYour current balance in the bank is \`$${balanceInBank - amount}\`. :bank:\nYour current balance is \`$${balance + amount}\`. :moneybag:`,
-                interaction
-            );
+            return await replyAndLog(interaction, embedReply);
         }
 
-        await interaction.reply({ embeds: [embedReply] });
-        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
+        await db.query("UPDATE economy SET balance = balance + ?, balanceInBank = balanceInBank - ? WHERE userId = ?",
+            [
+                amount,
+                amount,
+                interactionUserId
+            ]
+        );
+
+        var embedReply = embedReplySuccessColor(
+            "Withdraw - Success",
+            `You've successfully withdrawn \`$${amount}\` from your bank account.\nYour current balance in the bank is \`$${balanceInBank - amount}\`. :bank:\nYour current balance is \`$${balance + amount}\`. :moneybag:`,
+            interaction
+        );
+
+        return await replyAndLog(interaction, embedReply);
     }
 }    

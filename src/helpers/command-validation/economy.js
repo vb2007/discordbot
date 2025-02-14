@@ -66,7 +66,7 @@ async function checkBalanceAndBetAmount(commandName, interaction, amount) {
 
     if (amount <= 0) {
         var embedReply = embedReplyFailureColor(
-            `${commandNameCapitalized} - Insufficient balance`,
+            `${commandNameCapitalized} - Invalid amount`,
             `You can't use the \`/${commandName}\` command without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.`,
             interaction
         );
