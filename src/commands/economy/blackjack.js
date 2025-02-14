@@ -191,7 +191,7 @@ module.exports = {
                 updateBalance(false, amount, interactionUserId);
 
                 var finalEmbed = embedReplyFailureColorWithFields(
-                    "Blackjack Game - Results",
+                    "Blackjack - Results",
                     "You bust! Dealer wins.",
                     [
                         { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
@@ -220,7 +220,7 @@ module.exports = {
                     updateBalance(true, amount, interactionUserId);
 
                     var finalEmbed = embedReplySuccessColorWithFields(
-                        "Blackjack Game - Results",
+                        "Blackjack - Results",
                         "You won!",
                         [
                             { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
@@ -234,7 +234,7 @@ module.exports = {
                     updateBalance(false, amount, interactionUserId);
 
                     var finalEmbed = embedReplyFailureColorWithFields(
-                        "Blackjack Game - Results",
+                        "Blackjack - Results",
                         "Dealer won!",
                         [
                             { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
@@ -246,7 +246,7 @@ module.exports = {
                 }
                 else {
                     var finalEmbed = embedReplyWarningColorWithFields(
-                        "Blackjack Game - Results",
+                        "Blackjack - Results",
                         "Push! Tie game.",
                         [
                             { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
