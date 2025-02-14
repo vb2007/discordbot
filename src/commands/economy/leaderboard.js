@@ -4,9 +4,11 @@ const { checkIfNotInGuild } = require("../../helpers/command-validation/general"
 const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
 
+const commandName = "leaderboard";
+
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("leaderboard")
+        .setName(commandName)
         .setDescription("Check the users with the most money on the server.")
         .addStringOption(option =>
             option

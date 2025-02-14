@@ -4,9 +4,11 @@ const { checkIfNotInGuild } = require("../../helpers/command-validation/general"
 const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
 
+const commandName = "withdraw";
+
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("withdraw")
+        .setName(commandName)
         .setDescription("Withdraws a specified amount of money from your bank account.")
         .addIntegerOption(option =>
             option

@@ -4,7 +4,7 @@ const { checkIfNotInGuild } = require("../../helpers/command-validation/general"
 const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
 
-const commandName = "pay"
+const commandName = "pay";
 
 module.exports = {
     data: new SlashCommandBuilder()

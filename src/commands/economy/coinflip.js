@@ -5,7 +5,7 @@ const { checkCooldown, checkBalanceAndBetAmount } = require("../../helpers/comma
 const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
 
-const commandName = "coinflip"
+const commandName = "coinflip";
 
 module.exports = {
     data: new SlashCommandBuilder()
