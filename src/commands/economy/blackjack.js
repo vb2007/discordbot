@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
-const { embedReplySuccessColorWithFields, embedReplyFailureColor, embedReplyFailureColorWithFields, embedReplyWarningColorWithFields, embedReplyPrimaryColorWithFields } = require("../../helpers/embeds/embed-reply");
+const { embedReplySuccessColorWithFields, embedReplyFailureColorWithFields, embedReplyWarningColorWithFields, embedReplyPrimaryColorWithFields } = require("../../helpers/embeds/embed-reply");
 const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
 const { checkCooldown, checkBalanceAndBetAmount } = require("../../helpers/command-validation/economy");
 const { logToFileAndDatabase } = require("../../helpers/logger");
@@ -169,6 +169,7 @@ module.exports = {
                         ],
                         interaction
                     );
+
                     await i.update({ embeds: [updatedEmbed], components: [row] });
                 }
             }
@@ -176,6 +177,7 @@ module.exports = {
                 while (calculateHandValue(dealerHand) < 17) {
                     dealerHand.push(deck.pop());
                 }
+
                 await handleGameEnd(i, playerHand, dealerHand, amount, "stand");
                 collector.stop();
             }
