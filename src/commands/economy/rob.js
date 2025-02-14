@@ -40,7 +40,7 @@ module.exports = {
             return await replyAndLog(interaction, cooldownCheck);
         }
 
-        const query = await db.query("SELECT balance, userId FROM economy WHERE userId = ?", [targetUserId]);
+        const query = await db.query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
         const targetUserBalance = query[0]?.balance || null;
 
         //if target user's balance is below 50...
@@ -64,7 +64,7 @@ module.exports = {
             ]
         );
 
-        const uidquery = await db.query("SELECT balance, userId FROM economy WHERE userId = ?", [interaction.user.id]);
+        const uidquery = await db.query("SELECT userId FROM economy WHERE userId = ?", [interaction.user.id]);
         const userId = Number(uidquery[0]?.userId) || null;
 
         if(userId) {
