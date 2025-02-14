@@ -70,25 +70,26 @@ module.exports = {
                     interaction
                 );
             }
-        }
-        else {
-            //if it's the executor's first time using any economy command (so it's userId is not in the database yet...)
-            await db.query("INSERT INTO economy (userName, userId, balance, firstTransactionDate, lastBegTime) VALUES (?, ?, ?, ?, ?)",
-                [
-                    interaction.user.username,
-                    interaction.user.id,
-                    amount,
-                    new Date().toISOString().slice(0, 19).replace('T', ' '),
-                    new Date().toISOString().slice(0, 19).replace('T', ' ')
-                ]
-            );
 
-            var embedReply = embedSuccessColor(
-                "Begging.",
-                `You've begged and some random guy gave you \`$${amount}\` dollars.`,
-                interaction
-            );
+            return await replyAndLog(interaction, embedReply);
         }
+        
+        //if it's the executor's first time using any economy command (so it's userId is not in the database yet...)
+        await db.query("INSERT INTO economy (userName, userId, balance, firstTransactionDate, lastBegTime) VALUES (?, ?, ?, ?, ?)",
+            [
+                interaction.user.username,
+                interaction.user.id,
+                amount,
+                new Date().toISOString().slice(0, 19).replace('T', ' '),
+                new Date().toISOString().slice(0, 19).replace('T', ' ')
+            ]
+        );
+
+        var embedReply = embedSuccessColor(
+            "Begging.",
+            `You've begged and some random guy gave you \`$${amount}\` dollars.`,
+            interaction
+        );
 
         return await replyAndLog(interaction, embedReply);
     }
