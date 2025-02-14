@@ -1,13 +1,14 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { embedReplyFailureColor, embedReplySuccessColor } = require("../../helpers/embeds/embed-reply");
 const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const { checkCooldown, checkBalanceAndBetAmount } = require("../../helpers/command-validation/economy");
 const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
 
+const commandName = "pay"
+
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("pay")
+        .setName(commandName)
         .setDescription("Pay someone a specified amount of money.")
         .addUserOption(option =>
             option
@@ -47,11 +48,6 @@ module.exports = {
         const targetUserQuery = await db.query("SELECT * FROM economy WHERE userId = ?", [targetUserId]);
         const targetUserExists = targetUserQuery.length > 0;
 
-        const balanceCheck = await checkBalanceAndBetAmount(commandName, interaction, amount);
-        if (balanceCheck) {
-            return await replyAndLog(interaction, balanceCheck);
-        }
-        
         if (amount > userBalance) {
             var embedReply = embedReplyFailureColor(
                 "Payment - Error",
