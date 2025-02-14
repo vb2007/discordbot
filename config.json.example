@@ -1,17 +1,31 @@
 {
   "//" : "Logging settings",
+  "//Schema" : "True or False.",
 
-  "logToFile" : "[True/False]",
-  "logToDatabase" : "[True/False]",
-  "logMessagesToLocalDatabase" : "[True/False]",
+  "logToFile" : "False",
+  "logToDatabase" : "True",
+  "logMessagesToLocalDatabase" : "True",
   
-  "//": "Appearance settings",
+  "//" : "Appearance settings",
+  "//Schema" : "HEX Color, like: '0x5F0FD6'.",
 
-  "embedColors": {
-    "primary" : "[HEX Color, like: '0x5F0FD6']",
-    "success" : "[HEX Color, like: '0x0DFF00']",
-    "successSecondary" : "[HEX Color, like: '0x87FF9D']",
-    "failure" : "[HEX Color, like: '0xFF0D0D']",
-    "warning" : "[HEX Color, like: '0xE3F51B']"
+  "embedColors" : {
+    "primary" : "0x5F0FD6",
+    "success" : "0x0DFF00",
+    "successSecondary" : "0x87FF9D",
+    "failure" : "0xFF0D0D",
+    "warning" : "0xE3F51B"
+  },
+
+  "//" : "Economy command cooldown times in minutes",
+  "//Schema" : "A simple integer. '6' will represent a 6 minute cooldown. The command won't have a cooldown if '0' is specified.",
+
+  "economyCooldown" : {
+    "beg" : "2",
+    "blackjack" : "8",
+    "coinflip" : "8",
+    "rob" : "12",
+    "roulette" : "10",
+    "work" : "1"
   }
 }
