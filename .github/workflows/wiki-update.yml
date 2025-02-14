@@ -42,8 +42,6 @@ jobs:
             exit 0
           else
             git add Commands.md
-            git commit -m "Update commands documentation
-
-            Co-authored-by: vb2007 <admin@vb2007.hu>"
+            git commit -m "Update commands documentation"
             git push
           fi
