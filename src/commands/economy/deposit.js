@@ -44,9 +44,14 @@ module.exports = {
             await db.query("UPDATE economy SET dailyDeposits = 0 WHERE userId = ?", [interactionUserId]);
         }
         
-        const balanceCheck = await checkBalanceAndBetAmount(commandName, interaction, amount);
-        if (balanceCheck) {
-            return await replyAndLog(interaction, balanceCheck);
+        if (balance < amount) {
+            var embedReply = embedReplyFailureColor(
+                "Failed to deposit.",
+                `You can't deposit that much money into your bank account.\nYour current balance is only \`$${balance}\`. :moneybag:`,
+                interaction
+            );
+
+            return await replyAndLog(interaction, embedReply);
         }
 
         if (dailyDeposits >= dailyDepositLimit) {
