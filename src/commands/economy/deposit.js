@@ -163,8 +163,7 @@ module.exports = {
         }
 
         if (!isCommandReplied) {
-            await interaction.reply({ embeds: [embedReply] });
-            await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
+            return await replyAndLog(interaction, embedReply);
         }        
     }
 }

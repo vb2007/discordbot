@@ -67,22 +67,23 @@ module.exports = {
                 `The coin landed on **${flip}**, matching your bet.\nYou won \`$${amount}\`!\nYour new balance is \`$${userBalance + amount}\`.`,
                 interaction
             );
-        }
-        else {
-            await db.query("UPDATE economy SET balance = balance - ?, lastCoinflipTime = ? WHERE userId = ?",
-                [
-                    amount,
-                    new Date().toISOString().slice(0, 19).replace('T', ' '),
-                    interactionUserId
-                ]
-            );
 
-            var embedReply = embedReplyFailureColor(
-                "Coinflip - Lost",
-                `The coin landed on **${flip}**, not matching your bet.\nYou've lost \`$${amount}\`!\nYour new balance is \`$${userBalance - amount}\`.`,
-                interaction
-            );
+            return await replyAndLog(interaction, embedReply);
         }
+        
+        await db.query("UPDATE economy SET balance = balance - ?, lastCoinflipTime = ? WHERE userId = ?",
+            [
+                amount,
+                new Date().toISOString().slice(0, 19).replace('T', ' '),
+                interactionUserId
+            ]
+        );
+
+        var embedReply = embedReplyFailureColor(
+            "Coinflip - Lost",
+            `The coin landed on **${flip}**, not matching your bet.\nYou've lost \`$${amount}\`!\nYour new balance is \`$${userBalance - amount}\`.`,
+            interaction
+        );
 
         return await replyAndLog(interaction, embedReply);
     }

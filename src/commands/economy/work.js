@@ -37,7 +37,7 @@ module.exports = {
             );
             
             var embedReply = embedReplySuccessColor(
-                "Working.",
+                "Working",
                 `You've worked and succesfully earned \`$${amount}\` dollars.`,
                 interaction
             );
@@ -57,7 +57,7 @@ module.exports = {
         );
 
         var embedReply = embedReplySuccessColor(
-            "Working.",
+            "Working",
             `You've worked and succesfully earned \`$${amount}\` dollars.`,
             interaction
         );
