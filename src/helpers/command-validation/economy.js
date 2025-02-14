@@ -37,7 +37,7 @@ async function checkCooldown(commandName, interaction) {
 
         var embedReply = embedReplyFailureColor(
             `${commandNameCapitalized} - Cooldown`,
-            `You've already used the \`/${commandName}\` command in the last ${configuredCooldown} minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to use this again.`,
+            `You've already used the \`/${commandName}\` command in the last ${configuredCooldown} ${configuredCooldown === 1 ? 'minute' : 'minutes'}.\nPlease wait **${remainingMinutes} minute${remainingMinutes === 1 ? '' : 's'}** and **${remainingSeconds} second${remainingSeconds === 1 ? '' : 's'}** before trying to use this again.`,
             interaction
         );
 
