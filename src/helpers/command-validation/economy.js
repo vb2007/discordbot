@@ -50,13 +50,14 @@ async function checkCooldown(commandName, interaction) {
 
 async function checkBalanceAndBetAmount(commandName, interaction, amount) {
     const {
+        commandNameCapitalized,
         userBalance
     } = await getUserAndCommandData(commandName, interaction);
 
     if (userBalance < amount) {
         var embedReply = embedReplyFailureColor(
-            "Roulette - Insufficient balance",
-            `You can't play with that much money!\nYour current balance is only \`$${userBalance}\`.`,
+            `${commandNameCapitalized} - Insufficient balance`,
+            `You can't use the \`/${commandName}\` command with that much money!\nYour current balance is only \`$${userBalance}\`.`,
             interaction
         );
 
@@ -65,8 +66,8 @@ async function checkBalanceAndBetAmount(commandName, interaction, amount) {
 
     if (amount <= 0) {
         var embedReply = embedReplyFailureColor(
-            "Roulette - Insufficient balance",
-            `You can't play without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.`,
+            `${commandNameCapitalized} - Insufficient balance`,
+            `You can't use the \`/${commandName}\` command without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.`,
             interaction
         );
 
