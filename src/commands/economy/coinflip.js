@@ -30,7 +30,6 @@ module.exports = {
             return await replyAndLog(interaction, guildCheck);
         }
 
-        const interactionUserId = interaction.user.id;
         const amount = interaction.options.getInteger("amount");
 
         const balanceCheck = await checkBalanceAndBetAmount(commandName, interaction, amount);
@@ -42,7 +41,8 @@ module.exports = {
         if (cooldownCheck) {
             return await replyAndLog(interaction, cooldownCheck);
         }
-
+        
+        const interactionUserId = interaction.user.id;
         const userBet = interaction.options.getString("side");
         const flip = Math.random() < 0.5 ? "tails" : "head";
         const won = userBet === flip;
