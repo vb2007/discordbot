@@ -45,6 +45,10 @@ module.exports = {
         }
 
         const interactionUserId = interaction.user.id;
+
+        const query = await db.query("SELECT balance, lastCoinflipTime FROM economy WHERE userId = ?", [interactionUserId]);
+        const userBalance = Number(query[0]?.balance);
+        
         const userBet = interaction.options.getString("side");
         const flip = Math.random() < 0.5 ? "tails" : "head";
         const won = userBet === flip;
