@@ -1,6 +1,9 @@
 const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
 const { embedReplySuccessColorWithFields, embedReplyFailureColor, embedReplyFailureColorWithFields, embedReplyWarningColorWithFields, embedReplyPrimaryColorWithFields } = require("../../helpers/embeds/embed-reply");
+const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
+const { checkCooldown, checkBalanceAndBetAmount } = require("../../helpers/command-validation/economy");
 const { logToFileAndDatabase } = require("../../helpers/logger");
+const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
 
 const suits = ['♠', '♥', '♦', '♣'];
@@ -78,10 +81,11 @@ async function updateBalance(won, amount, interactionUserId) {
     }
 }
 
+const commandName = "blackjack";
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("blackjack")
+        .setName(commandName)
         .setDescription("Play a game of blackjack.")
         .addIntegerOption(option =>
             option
@@ -90,208 +94,170 @@ module.exports = {
                 .setRequired(true))
         .setDMPermission(false),
     async execute(interaction) {
-        let isResponseDefined = false;
-        
-        if (!interaction.inGuild()) {
-            var embedReply = embedReplyFailureColor(
-                "Blackjack - Error",
-                "You can only play blackjack in a server.",
-                interaction
-            );
-            isResponseDefined = true;
+        const guildCheck = checkIfNotInGuild(commandName, interaction);
+        if (guildCheck) {
+            return await replyAndLog(interaction, guildCheck);
         }
-        else {
-            const interactionUserId = interaction.user.id;
-            const amount = interaction.options.getInteger("amount");
 
-            const query = await db.query("SELECT balance, lastBlackjackTime FROM economy WHERE userId = ?", [interactionUserId]);
-            const userBalance = query[0]?.balance;
+        const interactionUserId = interaction.user.id;
+        const amount = interaction.options.getInteger("amount");
 
-            const lastBlackjackTime = query[0]?.lastBlackjackTime;
-            const nextApprovedBlackjackTimeUTC = new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60000 - 8 * 60000); //8 minutes
+        const balanceCheck = await checkBalanceAndBetAmount(commandName, interaction, amount);
+        if (balanceCheck) {
+            return await replyAndLog(interaction, balanceCheck);
+        }
 
-            if (lastBlackjackTime >= nextApprovedBlackjackTimeUTC) {
-                const remainingTimeInSeconds = Math.ceil((lastBlackjackTime.getTime() - nextApprovedBlackjackTimeUTC.getTime()) / 1000);
-                const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
-                const remainingSeconds = remainingTimeInSeconds % 60;
+        const cooldownCheck = await checkCooldown(commandName, interaction);
+        if (cooldownCheck) {
+            return await replyAndLog(interaction, cooldownCheck);
+        }
+        
+        const deck = createDeck();
+        const playerHand = [deck.pop(), deck.pop()];
+        const dealerHand = [deck.pop(), deck.pop()];
 
-                var embedReply = embedReplyFailureColor(
-                    "Blackjack - Error",
-                    `You've already played blackjack in the last 8 minutes.\nPlease wait **${remainingMinutes} minute(s)** and **${remainingSeconds} second(s)** before trying to **play blackjack** again.`,
-                    interaction
-                );
-                isResponseDefined = true;
+        const hitButton = new ButtonBuilder()
+            .setCustomId("hit")
+            .setLabel("Hit")
+            .setStyle(ButtonStyle.Primary);
+        
+        const standButton = new ButtonBuilder()
+            .setCustomId("stand")
+            .setLabel("Stand")
+            .setStyle(ButtonStyle.Secondary);
+        
+        const row = new ActionRowBuilder().addComponents(hitButton, standButton);
+
+        const embedReply = embedReplyPrimaryColorWithFields(
+            "Blackjack - New Game",
+            `Bet amount: \`$${amount}\``,
+            [
+                { name: "Your hand", value: `${formatCards(playerHand)} **(${calculateHandValue(playerHand)})** ??`},
+                { name: "Dealer's hand", value: `${dealerHand[0].value}${dealerHand[0].suit} ??`}
+            ],
+            interaction
+        );
+
+        const response = await interaction.reply({
+            embeds: [embedReply],
+            components: [row],
+            fetchReply: true
+        });
+
+        const collector = response.createMessageComponentCollector({ 
+            time: 30000 
+        });
+
+        collector.on("collect", async i => {
+            if (i.user.id !== interactionUserId) return;
+
+            if (i.customId == "hit") {
+                playerHand.push(deck.pop());
+                const playerValue = calculateHandValue(playerHand);
+
+                if (playerValue > 21) {
+                    await handleGameEnd(i, playerHand, dealerHand, amount, "bust");
+                    collector.stop();
+                }
+                else {
+                    const updatedEmbed = embedReplyPrimaryColorWithFields(
+                        "Blackjack - Hit",
+                        `Bet amount: \`$${amount}\``,
+                        [
+                            { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
+                            { name: "Dealer's hand", value: `${dealerHand[0].value}${dealerHand[0].suit} ??`}
+                        ],
+                        interaction
+                    );
+                    await i.update({ embeds: [updatedEmbed], components: [row] });
+                }
             }
-            else if (userBalance < amount) {
-                var embedReply = embedReplyFailureColor(
-                    "Blackjack - Error",
-                    `You can't play with that much money!\nYour current balance is only \`$${userBalance}\`.`,
-                    interaction
-                );
-                isResponseDefined = true;
+            else if (i.customId == "stand") {
+                while (calculateHandValue(dealerHand) < 17) {
+                    dealerHand.push(deck.pop());
+                }
+                await handleGameEnd(i, playerHand, dealerHand, amount, "stand");
+                collector.stop();
             }
-            else if (amount <= 0) {
-                var embedReply = embedReplyFailureColor(
-                    "Blackjack - Error",
-                    `You can't play without money.\nPlease enter a positive amount that's in you balance range.\nYour current balance is \`$${userBalance}\`.`,
-                    interaction
-                );
-                isResponseDefined = true;
-            }
-            else {
-                const deck = createDeck();
-                const playerHand = [deck.pop(), deck.pop()];
-                const dealerHand = [deck.pop(), deck.pop()];
+        });
 
-                const hitButton = new ButtonBuilder()
-                    .setCustomId("hit")
-                    .setLabel("Hit")
-                    .setStyle(ButtonStyle.Primary);
-                
-                const standButton = new ButtonBuilder()
-                    .setCustomId("stand")
-                    .setLabel("Stand")
-                    .setStyle(ButtonStyle.Secondary);
-                
-                const row = new ActionRowBuilder().addComponents(hitButton, standButton);
+        async function handleGameEnd(i, playerHand, dealerHand, amount, reason) {
+            const playerValue = calculateHandValue(playerHand);
+            const dealerValue = calculateHandValue(dealerHand);
 
-                const embedReply = embedReplyPrimaryColorWithFields(
-                    "Blackjack - New Game",
-                    `Bet amount: \`$${amount}\``,
+            if (reason === "bust") {
+                updateBalance(false, amount, interactionUserId);
+
+                var finalEmbed = embedReplyFailureColorWithFields(
+                    "Blackjack Game - Results",
+                    "You bust! Dealer wins.",
                     [
-                        { name: "Your hand", value: `${formatCards(playerHand)} **(${calculateHandValue(playerHand)})** ??`},
-                        { name: "Dealer's hand", value: `${dealerHand[0].value}${dealerHand[0].suit} ??`}
+                        { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
+                        { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
+                        { name: "You've lost", value: `\`$${amount}\``}
                     ],
                     interaction
                 );
+            }
+            else {
+                if (dealerValue > 21) {
+                    updateBalance(true, amount, interactionUserId);
 
-                const response = await interaction.reply({
-                    embeds: [embedReply],
-                    components: [row],
-                    fetchReply: true
-                });
+                    var finalEmbed = embedReplySuccessColorWithFields(
+                        "Blackjack - Results",
+                        "Dealer busts! You won!",
+                        [
+                            { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
+                            { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
+                            { name: "You won", value: `\`$${amount}\``}
+                        ],
+                        interaction
+                    );
+                }
+                else if (playerValue > dealerValue) {
+                    updateBalance(true, amount, interactionUserId);
 
-                const collector = response.createMessageComponentCollector({ 
-                    time: 30000 
-                });
+                    var finalEmbed = embedReplySuccessColorWithFields(
+                        "Blackjack Game - Results",
+                        "You won!",
+                        [
+                            { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
+                            { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
+                            { name: "You won", value: `\`$${amount}\``}
+                        ],
+                        interaction
+                    );
+                }
+                else if (playerValue < dealerValue) {
+                    updateBalance(false, amount, interactionUserId);
 
-                collector.on("collect", async i => {
-                    if (i.user.id !== interactionUserId) return;
-
-                    if (i.customId == "hit") {
-                        playerHand.push(deck.pop());
-                        const playerValue = calculateHandValue(playerHand);
-
-                        if (playerValue > 21) {
-                            await handleGameEnd(i, playerHand, dealerHand, amount, "bust");
-                            collector.stop();
-                        }
-                        else {
-                            const updatedEmbed = embedReplyPrimaryColorWithFields(
-                                "Blackjack - Hit",
-                                `Bet amount: \`$${amount}\``,
-                                [
-                                    { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
-                                    { name: "Dealer's hand", value: `${dealerHand[0].value}${dealerHand[0].suit} ??`}
-                                ],
-                                interaction
-                            );
-                            await i.update({ embeds: [updatedEmbed], components: [row] });
-                        }
-                    }
-                    else if (i.customId == "stand") {
-                        while (calculateHandValue(dealerHand) < 17) {
-                            dealerHand.push(deck.pop());
-                        }
-                        await handleGameEnd(i, playerHand, dealerHand, amount, "stand");
-                        collector.stop();
-                    }
-                });
-
-                async function handleGameEnd(i, playerHand, dealerHand, amount, reason) {
-                    const playerValue = calculateHandValue(playerHand);
-                    const dealerValue = calculateHandValue(dealerHand);
-
-                    if (reason === "bust") {
-                        updateBalance(false, amount, interactionUserId);
-
-                        var finalEmbed = embedReplyFailureColorWithFields(
-                            "Blackjack Game - Results",
-                            "You bust! Dealer wins.",
-                            [
-                                { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
-                                { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
-                                { name: "You've lost", value: `\`$${amount}\``}
-                            ],
-                            interaction
-                        );
-                    }
-                    else {
-                        if (dealerValue > 21) {
-                            updateBalance(true, amount, interactionUserId);
-
-                            var finalEmbed = embedReplySuccessColorWithFields(
-                                "Blackjack - Results",
-                                "Dealer busts! You won!",
-                                [
-                                    { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
-                                    { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
-                                    { name: "You won", value: `\`$${amount}\``}
-                                ],
-                                interaction
-                            );
-                        }
-                        else if (playerValue > dealerValue) {
-                            updateBalance(true, amount, interactionUserId);
-
-                            var finalEmbed = embedReplySuccessColorWithFields(
-                                "Blackjack Game - Results",
-                                "You won!",
-                                [
-                                    { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
-                                    { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
-                                    { name: "You won", value: `\`$${amount}\``}
-                                ],
-                                interaction
-                            );
-                        }
-                        else if (playerValue < dealerValue) {
-                            updateBalance(false, amount, interactionUserId);
-
-                            var finalEmbed = embedReplyFailureColorWithFields(
-                                "Blackjack Game - Results",
-                                "Dealer won!",
-                                [
-                                    { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
-                                    { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
-                                    { name: "You've lost", value: `\`$${amount}\``}
-                                ],
-                                interaction
-                            );
-                        }
-                        else {
-                            var finalEmbed = embedReplyWarningColorWithFields(
-                                "Blackjack Game - Results",
-                                "Push! Tie game.",
-                                [
-                                    { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
-                                    { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
-                                    { name: "Tie game", value: "Your balance stays the same."}
-                                ],
-                                interaction
-                            );
-                        }
-                    }
-
-                    await i.update({ embeds: [finalEmbed], components: [] });
-                    await logToFileAndDatabase(interaction, JSON.stringify(finalEmbed.toJSON()));
+                    var finalEmbed = embedReplyFailureColorWithFields(
+                        "Blackjack Game - Results",
+                        "Dealer won!",
+                        [
+                            { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
+                            { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
+                            { name: "You've lost", value: `\`$${amount}\``}
+                        ],
+                        interaction
+                    );
+                }
+                else {
+                    var finalEmbed = embedReplyWarningColorWithFields(
+                        "Blackjack Game - Results",
+                        "Push! Tie game.",
+                        [
+                            { name: "Your hand", value: `${formatCards(playerHand)} **(${playerValue})**`},
+                            { name: "Dealer's hand", value: `${formatCards(dealerHand)} **(${dealerValue})**`},
+                            { name: "Tie game", value: "Your balance stays the same."}
+                        ],
+                        interaction
+                    );
                 }
             }
-        }
 
-        if (isResponseDefined) {
-            await interaction.reply({ embeds: [embedReply] });
-            await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
+            await i.update({ embeds: [finalEmbed], components: [] });
+            await logToFileAndDatabase(interaction, JSON.stringify(finalEmbed.toJSON()));
         }
     }
 }
