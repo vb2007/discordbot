@@ -5,9 +5,11 @@ const { checkCooldown, checkBalanceAndBetAmount } = require("../../helpers/comma
 const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
 
+const commandName = "coinflip"
+
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("coinflip")
+        .setName(commandName)
         .setDescription("Let's you bet a specified amout of money on heads or tais.")
         .addStringOption(option =>
             option
@@ -41,7 +43,7 @@ module.exports = {
         if (cooldownCheck) {
             return await replyAndLog(interaction, cooldownCheck);
         }
-        
+
         const interactionUserId = interaction.user.id;
         const userBet = interaction.options.getString("side");
         const flip = Math.random() < 0.5 ? "tails" : "head";

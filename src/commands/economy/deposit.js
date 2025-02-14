@@ -9,9 +9,11 @@ const db = require("../../helpers/db");
 const dailyDepositLimit = 10;
 const feePercentage = 0.3;
 
+const commandName = "deposit";
+
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("deposit")
+        .setName(commandName)
         .setDescription("Deposits a specified amount of money to your bank account.")
         .addIntegerOption(option =>
             option
