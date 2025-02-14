@@ -63,7 +63,7 @@ module.exports = {
                 return await replyAndLog(interaction, embedReply);
             }
 
-            const embedReply = embedReplyWarningColor(
+            var embedReply = embedReplyWarningColor(
                 "Deposit - Fee",
                 `You've reached your daily free deposit limit, but you can still deposit money for a fee of \`$${fee}\`.\nDo you want to deposit the money?`,
                 interaction
