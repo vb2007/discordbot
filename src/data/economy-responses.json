@@ -1,0 +1,57 @@
+{
+    "balace" : {
+        "success" : {
+
+        },
+        "warn" : {
+
+        },
+        "error" : {
+
+        }
+    },
+    "beg" : {
+        "success" : {
+
+        },
+        "warn" : {
+
+        },
+        "error" : {
+
+        }
+    },
+    "blackjack" : {
+        "success" : {
+
+        },
+        "warn" : {
+
+        },
+        "error" : {
+
+        }
+    },
+    "coinflip" : {
+        "success" : {
+
+        },
+        "warn" : {
+
+        },
+        "error" : {
+
+        }
+    },
+    "work" : {
+        "success" : {
+
+        },
+        "warn" : {
+
+        },
+        "error" : {
+
+        }
+    }
+}
