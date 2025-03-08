@@ -1,6 +1,6 @@
 const db = require("../../../helpers/db");
 const { embedColors } = require("../../../../config.json");
-const { embedMessage } = require("../../../helpers/embeds/embed-message");
+const { embedMessageWithServerIcon } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
     async sendWelcomeMessage(member) {
@@ -26,10 +26,11 @@ module.exports = {
                         .replace("{memberCount}", memberCount);
                     
                     if (isEmbed) {
-                        const embedContent = embedMessage(
+                        const embedContent = embedMessageWithServerIcon(
                             embedColor,
                             "Welcome!",
                             message,
+                            member.guild
                         );
 
                         await channel.send({ embeds: [embedContent] });
