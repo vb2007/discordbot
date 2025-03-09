@@ -14,7 +14,7 @@ module.exports = {
                 const isBotsLogDeleted = isBotMessage && message.embeds.length > 0 && message.embeds[0]?.title === "Message deleted";
                 let logEmbed;
 
-                if (isBotsLogDeleted){
+                if (isBotsLogDeleted) {
                     const originalEmbed = message.embeds[0];
                     const fieldData = {};
 
