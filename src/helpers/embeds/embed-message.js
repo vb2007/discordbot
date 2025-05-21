@@ -19,6 +19,27 @@ function embedMessage(color, title, description) {
 }
 
 /**
+ * @param {color} color - Embed's sidebar HEX Color
+ * @param {title} title - Embed's title
+ * @param {description} description - Embed's description
+ * @returns {embedReply} An embed message object
+ */
+function embedMessageWithServerIcon(color, title, description, guild) {
+    const embedReply = new EmbedBuilder({
+        color: parseInt(color),
+        title: title,
+        description: description,
+        timestamp: new Date().toISOString(),
+        footer: {
+            text: `In: ${guild.name}`,
+            icon_url: guild.iconURL({ dynamic: true })
+        }
+    });
+
+    return embedReply;
+}
+
+/**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
  * @returns {embedReply} An embed message object
@@ -209,6 +230,7 @@ function embedMessageWarningColorWithFields(title, description, fields) {
 
 module.exports = {
     embedMessage,
+    embedMessageWithServerIcon,
     embedMessagePrimaryColor,
     embedMessageSuccessColor,
     embedMessageSuccessSecondaryColor,

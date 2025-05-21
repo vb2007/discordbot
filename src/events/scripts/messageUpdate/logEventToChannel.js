@@ -17,12 +17,12 @@ module.exports = {
                         [
                             { name: "From", value: `${oldMessage.content}` || "Unknown" },
                             { name: "To", value: `${newMessage.content}` || "Unknown" },
+                            { name: "Author", value: `<@${oldMessage.author.id}>` || "Unknown", inline: true },
+                            { name: "Author Username", value: `${oldMessage.author.username}` || "Unknown", inline: true },
                             { name: "Channel", value: `<#${oldMessage.channel.id}>` || "Unknown" },
-                            { name: "Author", value: `<@${oldMessage.author.id}>` || "Unknown" },
                             { name: "Message Id", value: `${oldMessage.id}` || "Unknown", inline: true },
                             { name: "Channel Id", value: `${oldMessage.channel.id}` || "Unknown", inline: true },
                             { name: "Author Id", value: `${oldMessage.author.id}` || "Unknown", inline: true },
-                            { name: "Author Username", value: `${oldMessage.author.username}` || "Unknown", inline: true },
                         ]
                     );
     
