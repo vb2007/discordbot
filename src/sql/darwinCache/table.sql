@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS `darwinCache` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `videoUrl` VARCHAR(255) NOT NULL,
+    `processedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY (`videoUrl`)
+);
