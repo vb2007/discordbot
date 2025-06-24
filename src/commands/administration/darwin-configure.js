@@ -90,7 +90,7 @@ module.exports = {
                     );
                     
                     await db.query(
-                        "INSERT INTO configDarwin (guildId, channelId, channelName, feedUrl, interval, markerOne, markerTwo, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        "INSERT INTO configDarwin (guildId, channelId, channelName, feedUrl, `interval`, markerOne, markerTwo, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                         [guildId, channelId, channelName, feedUrl, interval, DEFAULT_MARKER_ONE, DEFAULT_MARKER_TWO, adderId, adderUsername]
                     );
                 }
