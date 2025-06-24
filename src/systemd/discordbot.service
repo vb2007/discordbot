@@ -7,8 +7,7 @@ After=local-fs.target network-online.target nss-lookup.target
 
 [Service]
 ExecStartPre=/bin/mkdir -p /home/vb2007/prod/discordbot/temp
-ExecStartPre=/bin/chown -R vb2007:vb2007 /home/vb2007/prod/discordbot/temp
-ExecStartPre=/bin/chmod 755 /home/vb2007/prod/discordbot/temp
+ExecStartPre=/bin/chmod -R 777 /home/vb2007/prod/discordbot/temp
 
 ExecStart=/usr/bin/npm run app
 WorkingDirectory=/home/vb2007/prod/discordbot
