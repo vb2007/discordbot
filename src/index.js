@@ -93,7 +93,7 @@ for (const file of eventFiles) {
 	}
 }
 
-//haldes slash commands
+//handles slash commands
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
