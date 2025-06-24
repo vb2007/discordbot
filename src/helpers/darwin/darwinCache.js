@@ -6,6 +6,12 @@ const db = require("../db");
  */
 async function addToCache(url) {
     try {
+        const exists = await isInCache(url);
+        if (exists) {
+            console.log(`URL already in cache: ${url}`);
+            return true;
+        }
+        
         console.log(`Adding "${url}" to Darwin cache`);
         await db.query("INSERT INTO darwinCache (videoUrl) VALUES (?)", [url]);
         return true;
