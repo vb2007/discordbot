@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const stream = require('stream');
 const { promisify } = require('util');
-const darwinCache = require('../../helpers/darwin-cache');
-const db = require('../../helpers/db');
+const darwinCache = require('./darwinCache');
+const db = require('../db');
 const pipeline = promisify(stream.pipeline);
 
 async function getDestination(url) {
