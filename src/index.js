@@ -14,6 +14,8 @@ require("./scripts/verify-config-syntax");
 
 const { Client, Collection, Events, GatewayIntentBits, Partials, ActivityType } = require("discord.js");
 
+const { runDarwinProcess } = require('./helpers/darwin/darwinProcess');
+
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -50,6 +52,18 @@ const client = new Client({
 //notifies owner on console if the app is ready
 client.once(Events.ClientReady, readyClient => {
 	console.log(`Bot is ready! Logged in as ${readyClient.user.tag}`);
+
+	console.log('Initializing Darwin video processing system...');
+    
+    //run Darwin process every 60 seconds
+    const darwinInterval = 60000;
+    
+    setInterval(() => {
+        console.log('Running Darwin process check...');
+        runDarwinProcess(client).catch(error => {
+            console.error('Error in Darwin process:', error);
+        });
+    }, darwinInterval);
 });
 
 client.commands = new Collection();
