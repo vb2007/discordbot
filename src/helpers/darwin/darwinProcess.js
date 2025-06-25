@@ -65,7 +65,6 @@ async function processVideo(video, client, channelId) {
     console.log(`Processing ${title} ${href}`);
     
     try {
-        // Ensure temp directory exists
         const tempDir = path.join(__dirname, '../../../temp');
         if (!fs.existsSync(tempDir)) {
             fs.mkdirSync(tempDir, { recursive: true });
@@ -111,7 +110,8 @@ async function processVideo(video, client, channelId) {
         //cache cleanup
         fs.unlinkSync(safeFilename);
         await darwinCache.addToCache(href);
-    } catch (error) {
+    } 
+    catch (error) {
         console.error(`Error processing video ${title}: ${error}`);
     }
 }
@@ -121,7 +121,7 @@ async function processGuild(client, guildConfig) {
         console.log(`Running Darwin process for guild: ${guildConfig.guildId}`);
         
         const response = await fetch(guildConfig.feedUrl, {
-            headers: { 'User-Agent': 'darwin' }
+            headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0" }
         });
         
         const html = await response.text();
@@ -147,6 +147,8 @@ async function processGuild(client, guildConfig) {
                 const isInCache = await darwinCache.isInCache(videoLocation);
                 if (isInCache) continue;
                 
+                await darwinCache.markAsProcessing(videoLocation);
+                
                 console.log(`Discovered "${title.trim()}" at "${videoLocation}"`);
                 videos.push({ title, href: videoLocation, comments: href });
             } catch (error) {
@@ -160,7 +162,8 @@ async function processGuild(client, guildConfig) {
             
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
-    } catch (error) {
+    }
+    catch (error) {
         console.error(`Error in Darwin process: ${error}`);
     }
 }
@@ -181,7 +184,8 @@ async function runDarwinProcess(client) {
         for (const config of configs) {
             await processGuild(client, config);
         }
-    } catch (error) {
+    }
+    catch (error) {
         console.error(`Error running Darwin process: ${error}`);
     }
 }
