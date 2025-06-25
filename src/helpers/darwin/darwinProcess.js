@@ -151,7 +151,8 @@ async function processGuild(client, guildConfig) {
                 
                 console.log(`Discovered "${title.trim()}" at "${videoLocation}"`);
                 videos.push({ title, href: videoLocation, comments: href });
-            } catch (error) {
+            }
+            catch (error) {
                 console.error(`Error processing item: ${error}`);
             }
         }

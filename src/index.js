@@ -75,7 +75,8 @@ client.once(Events.ClientReady, readyClient => {
 		console.log('Running Darwin process check...');
 		try {
 			await runDarwinProcess(client);
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Error in Darwin process:', error);
 		}
 	}, darwinInterval);
