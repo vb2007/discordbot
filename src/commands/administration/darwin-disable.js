@@ -16,7 +16,8 @@ module.exports = {
                 "You can only disable Darwin in a server.",
                 interaction
             );
-        } else {
+        }
+        else {
             try {
                 const guildId = interaction.guild.id;
                 
@@ -50,7 +51,8 @@ module.exports = {
                         interaction
                     );
                 }
-            } catch (error) {
+            }
+            catch (error) {
                 console.error(`Error disabling Darwin: ${error}`);
 
                 var embedReply = embedReplyFailureColor(

@@ -29,7 +29,8 @@ module.exports = {
                 "You can only set up Darwin in a server.",
                 interaction
             );
-        } else {
+        }
+        else {
             try {
                 const channel = interaction.options.getChannel("channel");
                 
@@ -59,7 +60,8 @@ module.exports = {
                             "UPDATE configDarwin SET channelId = ?, channelName = ?, adderId = ?, adderUsername = ?, isEnabled = TRUE WHERE guildId = ?",
                             [channelId, channelName, adderId, adderUsername, guildId]
                         );
-                    } else if (!existingConfig.isEnabled) {
+                    }
+                    else if (!existingConfig.isEnabled) {
                         var embedReply = embedReplySuccessColor(
                             "Darwin Configure: Re-enabled",
                             `Darwin has been re-enabled! :white_check_mark:\n` +
@@ -72,7 +74,8 @@ module.exports = {
                             "UPDATE configDarwin SET isEnabled = TRUE, adderId = ?, adderUsername = ? WHERE guildId = ?",
                             [adderId, adderUsername, guildId]
                         );
-                    } else {
+                    }
+                    else {
                         var embedReply = embedReplyFailureColor(
                             "Darwin Configure: No Change",
                             `Darwin is already configured to post videos to <#${channelId}>.\n` + 
@@ -80,7 +83,8 @@ module.exports = {
                             interaction
                         );
                     }
-                } else {
+                }
+                else {
                     var embedReply = embedReplySuccessColor(
                         "Darwin Configure: Configuration Set",
                         `Darwin has been configured successfully! :white_check_mark:\n` +
@@ -94,7 +98,8 @@ module.exports = {
                         [guildId, channelId, channelName, feedUrl, interval, DEFAULT_MARKER_ONE, DEFAULT_MARKER_TWO, adderId, adderUsername]
                     );
                 }
-            } catch (error) {
+            }
+            catch (error) {
                 console.error(`Error configuring Darwin: ${error}`);
                 var embedReply = embedReplyFailureColor(
                     "Darwin Configure: Error",
