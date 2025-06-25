@@ -23,7 +23,7 @@ async function getDestination(url) {
 async function getVideoLocation(href, markerOne, markerTwo) {
     try {
         const response = await fetch(href, {
-            headers: { 'User-Agent': 'darwin' }
+            headers: { "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0" }
         });
         const html = await response.text();
         const start = html.indexOf(markerOne);
