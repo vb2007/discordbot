@@ -34,6 +34,9 @@ const { Client, Collection, Events, GatewayIntentBits, Partials, ActivityType } 
 
 const { runDarwinProcess } = require('./helpers/darwin/darwinProcess');
 
+// Add flag to prevent concurrent execution
+let darwinProcessRunning = false;
+
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -68,16 +71,25 @@ const client = new Client({
 });
 
 
-// Notify hoster on console if the app is ready
+// Notify hoster on console if the app is ready & about the Darwin process's status
 client.once(Events.ClientReady, readyClient => {
 	console.log(`Bot is ready! Logged in as ${readyClient.user.tag}`);
 	console.log('Initializing Darwin video processing system...');
 
-	// Run Darwin process using interval from config
 	setInterval(() => {
-		runDarwinProcess(client).catch(error => {
-			console.error(`Error in Darwin process: ${error}`);
-		});
+		if (darwinProcessRunning) {
+			console.log('Darwin process already running, skipping this execution');
+			return;
+		}
+		
+		darwinProcessRunning = true;
+		runDarwinProcess(client)
+			.catch(error => {
+				console.error(`Error in Darwin process: ${error}`);
+			})
+			.finally(() => {
+				darwinProcessRunning = false;
+			});
 	}, darwinInterval);
 });
 

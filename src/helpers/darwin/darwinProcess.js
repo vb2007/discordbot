@@ -6,7 +6,6 @@ const darwinCache = require('./darwinCache');
 const db = require('../db');
 const config = require('../../../config.json');
 
-// Global Darwin config from config.json
 const darwinConfig = config.darwin || {
     feedUrl: "https://theync.com/most-recent/",
     interval: 30000,
@@ -73,6 +72,20 @@ async function processVideo(video, client, channelId) {
     console.log(`Processing ${title} ${href}`);
     
     try {
+        //double check cache right before processing
+        const isInCache = await darwinCache.isInCache(href);
+        if (isInCache) {
+            console.log(`Video already in cache, skipping: ${href}`);
+            return;
+        }
+        
+        //add to cache BEFORE downloading to prevent multiple uploads / sending of the same videos
+        const addedToCache = await darwinCache.addToCache(href);
+        if (!addedToCache) {
+            console.log(`Failed to add to cache, skipping to prevent duplicates: ${href}`);
+            return;
+        }
+        
         const tempDir = path.join(__dirname, '../../../temp');
         if (!fs.existsSync(tempDir)) {
             fs.mkdirSync(tempDir, { recursive: true });
@@ -82,16 +95,12 @@ async function processVideo(video, client, channelId) {
         
         if (!response.ok) {
             console.error(`${href} ${response.statusText}`);
-            if (response.status === 404) {
-                await darwinCache.addToCache(href);
-            }
             return;
         }
         
         const contentLength = parseInt(response.headers.get('Content-Length'), 10);
         if (contentLength && contentLength > 25 * 1024 * 1024) {
             console.log("Skipping download: File size exceeds limit (25MB)");
-            await darwinCache.addToCache(href);
             
             const message = messageGen(title, href, comments) + 
                 ` - Too big for upload (${(contentLength / 1000000).toFixed(0)} mb)`;
@@ -116,7 +125,6 @@ async function processVideo(video, client, channelId) {
         }
         
         fs.unlinkSync(safeFilename);
-        await darwinCache.addToCache(href);
     }
     catch (error) {
         console.error(`Error processing video ${title}: ${error}`);
@@ -135,8 +143,9 @@ async function processGuild(client, guildConfig) {
         const html = await response.text();
         const $ = cheerio.load(html);
         
-        const videos = [];
         const contentBlock = $(".content-block > div");
+        
+        const videosToProcess = [];
         
         for (const node of contentBlock) {
             try {
@@ -153,20 +162,24 @@ async function processGuild(client, guildConfig) {
                 if (!videoLocation.startsWith(darwinConfig.markerTwo) || videoLocation === "") continue;
                 
                 const isInCache = await darwinCache.isInCache(videoLocation);
-                if (isInCache) continue;
+                if (isInCache) {
+                    console.log(`Skipping cached video: ${title.trim()} (${videoLocation})`);
+                    continue;
+                }
                 
                 console.log(`Discovered "${title.trim()}" at "${videoLocation}"`);
-                videos.push({ title, href: videoLocation, comments: href });
+                videosToProcess.push({ title, href: videoLocation, comments: href });
             }
             catch (error) {
                 console.error(`Error processing item: ${error}`);
             }
         }
         
-        console.log(`Discovered ${videos.length} videos`);
-        for (const video of videos) {
+        console.log(`Discovered ${videosToProcess.length} new videos to process`);
+        
+        for (const video of videosToProcess) {
             await processVideo(video, client, guildConfig.channelId);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 2000));
         }
     }
     catch (error) {
