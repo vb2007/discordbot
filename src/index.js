@@ -18,7 +18,7 @@ try {
 }
 
 // Load config
-const config = require("./config.json");
+const config = require("../config.json");
 const darwinInterval = config.darwin?.interval || 30000; // Default to 30 seconds if not specified
 
 // Verify config.json file's syntax
@@ -159,10 +159,10 @@ client.on(Events.InteractionCreate, async interaction => {
 		console.error(`[ERROR] While executing command ${interaction.commandName}:`, error);
 		const errorMsg = { content: "There was an error while executing this command!", ephemeral: true };
 		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: "There was an error while executing this command!", ephemeral: true });
+			await interaction.followUp(errorMsg);
 		}
 		else {
-			await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
+			await interaction.reply(errorMsg);
 		}
 	}
 });
