@@ -1,11 +1,9 @@
 const cheerio = require('cheerio');
 const fs = require('fs');
 const path = require('path');
-const stream = require('stream');
-const { promisify } = require('util');
+const { pipeline } = require('stream/promises');
 const darwinCache = require('./darwinCache');
 const db = require('../db');
-const pipeline = promisify(stream.pipeline);
 
 async function getDestination(url) {
     try {

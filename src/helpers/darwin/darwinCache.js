@@ -40,18 +40,7 @@ async function isInCache(url) {
     }
 }
 
-/**
- * Mark a video as being processed to prevent duplicates during concurrent processing
- * @param {string} url - The video URL to mark
- * @returns {Promise<boolean>} - Whether the operation was successful
- */
-async function markAsProcessing(url) {
-    return await addToCache(url);
-}
-
 module.exports = {
     addToCache,
-    isInCache,
-    normalizeUrl,
-    // markAsProcessing
+    isInCache
 };

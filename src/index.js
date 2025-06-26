@@ -196,8 +196,12 @@ client.on("ready", setActivity);
 // Re-announce the bot's activity every 20 minutes (in case of an internet outage or something)
 setInterval(setActivity, 20 * 60 * 1000);
 
-// Log in with the given token
-client.login(token).catch(err => {
-	console.error("[FATAL] Failed to login to Discord:", err);
-	process.exit(1);
-});
+// Log in to discord with the set token
+(async () => {
+    try {
+        await client.login(token);
+    } catch (err) {
+        console.error("[FATAL] Failed to login to Discord:", err);
+        process.exit(1);
+    }
+})();
