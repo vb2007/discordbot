@@ -99,8 +99,8 @@ async function processVideo(video, client, channelId) {
         }
         
         const contentLength = parseInt(response.headers.get('Content-Length'), 10);
-        if (contentLength && contentLength > 25 * 1024 * 1024) {
-            console.log("Skipping download: File size exceeds limit (25MB)");
+        if (contentLength && contentLength > 10 * 1024 * 1024) {
+            console.log("Skipping download: File size exceeds limit (10MB)");
             
             const message = messageGen(title, href, comments) + 
                 ` - Too big for upload (${(contentLength / 1000000).toFixed(0)} mb)`;
