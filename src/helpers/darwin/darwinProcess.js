@@ -23,7 +23,8 @@ async function getDestination(url) {
 async function getVideoLocation(href, markerOne, markerTwo) {
     try {
         const response = await fetch(href, {
-            headers: { "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36 Edg/137.0.0.0" }
+            //if it isn't set to "darwin" the scraping fails for some reason
+            headers: { "User-Agent": "darwin" }
         });
         const html = await response.text();
         const start = html.indexOf(markerOne);
@@ -87,7 +88,7 @@ async function processVideo(video, client, channelId) {
             
             const message = messageGen(title, href, comments) + 
                 ` - Too big for upload (${(contentLength / 1000000).toFixed(0)} mb)`;
-
+            
             const channel = await client.channels.fetch(channelId);
             if (channel) await channel.send(message);
             return;
@@ -107,10 +108,9 @@ async function processVideo(video, client, channelId) {
             });
         }
         
-        //cache cleanup
         fs.unlinkSync(safeFilename);
         await darwinCache.addToCache(href);
-    } 
+    }
     catch (error) {
         console.error(`Error processing video ${title}: ${error}`);
     }
@@ -121,7 +121,8 @@ async function processGuild(client, guildConfig) {
         console.log(`Running Darwin process for guild: ${guildConfig.guildId}`);
         
         const response = await fetch(guildConfig.feedUrl, {
-            headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0" }
+            //if it isn't set to "darwin" the scraping fails for some reason
+            headers: { "User-Agent": "darwin" }
         });
         
         const html = await response.text();
@@ -147,8 +148,6 @@ async function processGuild(client, guildConfig) {
                 const isInCache = await darwinCache.isInCache(videoLocation);
                 if (isInCache) continue;
                 
-                await darwinCache.markAsProcessing(videoLocation);
-                
                 console.log(`Discovered "${title.trim()}" at "${videoLocation}"`);
                 videos.push({ title, href: videoLocation, comments: href });
             }
@@ -160,7 +159,6 @@ async function processGuild(client, guildConfig) {
         console.log(`Discovered ${videos.length} videos`);
         for (const video of videos) {
             await processVideo(video, client, guildConfig.channelId);
-            
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }

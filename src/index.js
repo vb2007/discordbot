@@ -70,15 +70,11 @@ client.once(Events.ClientReady, readyClient => {
 	console.log('Initializing Darwin video processing system...');
 
 	// Run Darwin process every 60 seconds
-	const darwinInterval = 60_000;
-	setInterval(async () => {
-		console.log('Running Darwin process check...');
-		try {
-			await runDarwinProcess(client);
-		}
-		catch (error) {
-			console.error('Error in Darwin process:', error);
-		}
+	const darwinInterval = 30_000;
+	setInterval(() => {
+		runDarwinProcess(client).catch(error => {
+			console.error(`Error in Darwin process: ${error}`);
+		});
 	}, darwinInterval);
 });
 
