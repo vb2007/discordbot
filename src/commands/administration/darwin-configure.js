@@ -3,12 +3,6 @@ const { embedReplySuccessColor, embedReplySuccessSecondaryColor, embedReplyFailu
 const { logToFileAndDatabase } = require("../../helpers/logger");
 const db = require("../../helpers/db");
 
-//hardcoded for now, will be configurable later
-const DEFAULT_FEED_URL = "https://theync.com/most-recent/";
-const DEFAULT_INTERVAL = 30000;
-const DEFAULT_MARKER_ONE = "https://theync.com/media/video";
-const DEFAULT_MARKER_TWO = "https://theync.com";
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("darwin-configure")
@@ -34,9 +28,6 @@ module.exports = {
             try {
                 const channel = interaction.options.getChannel("channel");
                 
-                const feedUrl = DEFAULT_FEED_URL;
-                const interval = DEFAULT_INTERVAL;
-                
                 const guildId = interaction.guild.id;
                 const adderId = interaction.user.id;
                 const adderUsername = interaction.user.username;
@@ -57,22 +48,8 @@ module.exports = {
                         );
                         
                         await db.query(
-                            "UPDATE configDarwin SET channelId = ?, channelName = ?, adderId = ?, adderUsername = ?, isEnabled = TRUE WHERE guildId = ?",
+                            "UPDATE configDarwin SET channelId = ?, channelName = ?, adderId = ?, adderUsername = ? WHERE guildId = ?",
                             [channelId, channelName, adderId, adderUsername, guildId]
-                        );
-                    }
-                    else if (!existingConfig.isEnabled) {
-                        var embedReply = embedReplySuccessColor(
-                            "Darwin Configure: Re-enabled",
-                            `Darwin has been re-enabled! :white_check_mark:\n` +
-                            `Videos will be posted to <#${channelId}>.\n` +
-                            `Use \`/darwin-disable\` to disable again.`,
-                            interaction
-                        );
-                        
-                        await db.query(
-                            "UPDATE configDarwin SET isEnabled = TRUE, adderId = ?, adderUsername = ? WHERE guildId = ?",
-                            [adderId, adderUsername, guildId]
                         );
                     }
                     else {
@@ -94,8 +71,8 @@ module.exports = {
                     );
                     
                     await db.query(
-                        "INSERT INTO configDarwin (guildId, channelId, channelName, feedUrl, `interval`, markerOne, markerTwo, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        [guildId, channelId, channelName, feedUrl, interval, DEFAULT_MARKER_ONE, DEFAULT_MARKER_TWO, adderId, adderUsername]
+                        "INSERT INTO configDarwin (guildId, channelId, channelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?)",
+                        [guildId, channelId, channelName, adderId, adderUsername]
                     );
                 }
             }

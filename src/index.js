@@ -17,6 +17,10 @@ try {
 	process.exit(1);
 }
 
+// Load config
+const config = require("./config.json");
+const darwinInterval = config.darwin?.interval || 30000; // Default to 30 seconds if not specified
+
 // Verify config.json file's syntax
 try {
 	require("./scripts/verify-config-syntax");
@@ -69,8 +73,7 @@ client.once(Events.ClientReady, readyClient => {
 	console.log(`Bot is ready! Logged in as ${readyClient.user.tag}`);
 	console.log('Initializing Darwin video processing system...');
 
-	// Run Darwin process every 60 seconds
-	const darwinInterval = 30_000;
+	// Run Darwin process using interval from config
 	setInterval(() => {
 		runDarwinProcess(client).catch(error => {
 			console.error(`Error in Darwin process: ${error}`);

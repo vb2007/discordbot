@@ -4,6 +4,15 @@ const path = require('path');
 const { pipeline } = require('stream/promises');
 const darwinCache = require('./darwinCache');
 const db = require('../db');
+const config = require('../../../config.json');
+
+// Global Darwin config from config.json
+const darwinConfig = config.darwin || {
+    feedUrl: "https://theync.com/most-recent/",
+    interval: 30000,
+    markerOne: "https://theync.com/media/video",
+    markerTwo: "https://theync.com"
+};
 
 async function getDestination(url) {
     try {
@@ -118,7 +127,7 @@ async function processGuild(client, guildConfig) {
     try {
         console.log(`Running Darwin process for guild: ${guildConfig.guildId}`);
         
-        const response = await fetch(guildConfig.feedUrl, {
+        const response = await fetch(darwinConfig.feedUrl, {
             //if it isn't set to "darwin" the scraping fails for some reason
             headers: { "User-Agent": "darwin" }
         });
@@ -138,10 +147,10 @@ async function processGuild(client, guildConfig) {
                 if (!title) continue;
                 
                 const finalUrl = await getDestination(href);
-                if (finalUrl !== href || !finalUrl.startsWith(guildConfig.markerTwo) || finalUrl === "") continue;
+                if (finalUrl !== href || !finalUrl.startsWith(darwinConfig.markerTwo) || finalUrl === "") continue;
                 
-                const videoLocation = await getVideoLocation(href, guildConfig.markerOne, guildConfig.markerTwo);
-                if (!videoLocation.startsWith(guildConfig.markerTwo) || videoLocation === "") continue;
+                const videoLocation = await getVideoLocation(href, darwinConfig.markerOne, darwinConfig.markerTwo);
+                if (!videoLocation.startsWith(darwinConfig.markerTwo) || videoLocation === "") continue;
                 
                 const isInCache = await darwinCache.isInCache(videoLocation);
                 if (isInCache) continue;
@@ -168,11 +177,11 @@ async function processGuild(client, guildConfig) {
 async function runDarwinProcess(client) {
     try {
         const configs = await db.query(
-            "SELECT * FROM configDarwin WHERE isEnabled = TRUE"
+            "SELECT * FROM configDarwin"
         );
         
         if (configs.length === 0) {
-            console.log("No enabled Darwin configurations found");
+            console.log("No Darwin configurations found");
             return;
         }
         

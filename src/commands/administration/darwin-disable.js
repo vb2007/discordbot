@@ -21,27 +21,18 @@ module.exports = {
             try {
                 const guildId = interaction.guild.id;
                 
-                const query = await db.query("SELECT isEnabled FROM configDarwin WHERE guildId = ?", [guildId]);
+                const query = await db.query("SELECT * FROM configDarwin WHERE guildId = ?", [guildId]);
                 const existingConfig = query[0] || null;
                 
                 if (existingConfig) {
-                    if (existingConfig.isEnabled) {
-                        await db.query("UPDATE configDarwin SET isEnabled = FALSE WHERE guildId = ?", [guildId]);
-                        
-                        var embedReply = embedReplySuccessColor(
-                            "Darwin Disable: Success",
-                            "Darwin has been disabled for this server. :white_check_mark:\n" +
-                            "You can re-enable it with `/darwin-configure`.",
-                            interaction
-                        );
-                    }
-                    else {
-                        var embedReply = embedReplyFailureColor(
-                            "Darwin Disable: Error",
-                            "Darwin is already disabled for this server.",
-                            interaction
-                        );
-                    }
+                    await db.query("DELETE FROM configDarwin WHERE guildId = ?", [guildId]);
+                    
+                    var embedReply = embedReplySuccessColor(
+                        "Darwin Disable: Success",
+                        "Darwin has been disabled for this server. :white_check_mark:\n" +
+                        "You can re-enable it with `/darwin-configure`.",
+                        interaction
+                    );
                 }
                 else {
                     var embedReply = embedReplyFailureColor(
