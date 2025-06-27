@@ -31,6 +31,7 @@ async function getVideoLocation(href, markerOne, markerTwo) {
         const response = await fetch(href, {
             //if it isn't set to "darwin" the scraping fails for some reason
             headers: { "User-Agent": "darwin" }
+            // headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0" }
         });
         const html = await response.text();
         const start = html.indexOf(markerOne);
