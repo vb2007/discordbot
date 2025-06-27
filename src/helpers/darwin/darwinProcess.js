@@ -8,7 +8,7 @@ const config = require('../../../config.json');
 
 const darwinConfig = config.darwin || {
     feedUrl: "https://theync.com/most-recent/",
-    interval: 30000,
+    interval: 60000,
     markerOne: "https://theync.com/media/video",
     markerTwo: "https://theync.com"
 };
