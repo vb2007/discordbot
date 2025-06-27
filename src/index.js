@@ -3,16 +3,39 @@ const path = require("node:path");
 
 require('dotenv').config();
 const token = process.env.TOKEN;
+if (!token) {
+	console.error("[FATAL] Discord bot token is missing. Please set TOKEN in your .env file.");
+	process.exit(1);
+}
 
-//checks database connection
+// Check database connection
 const db = require("./helpers/db");
-db.getConnection();
+try {
+	db.getConnection();
+} catch (err) {
+	console.error("[FATAL] Database connection failed:", err);
+	process.exit(1);
+}
 
-//verifies the config.json file's syntax
-require("./scripts/verify-config-syntax");
-// validateConfig();
+// Load config
+const config = require("../config.json");
+const darwinInterval = config.darwin?.interval || 30000; // Default to 30 seconds if not specified
+
+// Verify config.json file's syntax
+try {
+	require("./scripts/verify-config-syntax");
+} catch (err) {
+	console.error("[FATAL] Config verification failed:", err);
+	process.exit(1);
+}
+
 
 const { Client, Collection, Events, GatewayIntentBits, Partials, ActivityType } = require("discord.js");
+
+const { runDarwinProcess } = require('./helpers/darwin/darwinProcess');
+
+// Add flag to prevent concurrent execution
+let darwinProcessRunning = false;
 
 const client = new Client({
 	intents: [
@@ -43,112 +66,157 @@ const client = new Client({
 		Partials.User,
 	],
 	// allowedMentions: {
-	// 	parse: ["everyone", "roles", "users"],
+	//     parse: ["everyone", "roles", "users"],
 	// },
 });
 
-//notifies owner on console if the app is ready
+
+// Notify hoster on console if the app is ready & about the Darwin process's status
 client.once(Events.ClientReady, readyClient => {
 	console.log(`Bot is ready! Logged in as ${readyClient.user.tag}`);
+	console.log('Initializing Darwin video processing system...');
+
+	setInterval(() => {
+		if (darwinProcessRunning) {
+			console.log('Darwin process already running, skipping this execution');
+			return;
+		}
+		
+		darwinProcessRunning = true;
+		runDarwinProcess(client)
+			.catch(error => {
+				console.error(`Error in Darwin process: ${error}`);
+			})
+			.finally(() => {
+				darwinProcessRunning = false;
+			});
+	}, darwinInterval);
 });
 
 client.commands = new Collection();
 
-//gets command from the "/commands" folder's subfolders
+
+// Load commands from the /commands folder's subfolders
 const foldersPath = path.join(__dirname, "commands");
-const commandFolders = fs.readdirSync(foldersPath);
+let commandFolders = [];
+try {
+	commandFolders = fs.readdirSync(foldersPath);
+} catch (err) {
+	console.error(`[FATAL] Could not read commands directory: ${foldersPath}`, err);
+	process.exit(1);
+}
 
 for (const folder of commandFolders) {
 	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
-
+	let commandFiles = [];
+	try {
+		commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
+	} catch (err) {
+		console.warn(`[WARNING] Could not read commands subdirectory: ${commandsPath}`, err);
+		continue;
+	}
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
-
-		//sets command names and data
-		if ("data" in command && "execute" in command) {
-			client.commands.set(command.data.name, command);
-		}
-		//logs if a command doesn't has a critical information
-        else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+		try {
+			const command = require(filePath);
+			if ("data" in command && "execute" in command) {
+				client.commands.set(command.data.name, command);
+			} else {
+				console.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+			}
+		} catch (err) {
+			console.warn(`[WARNING] Failed to load command at ${filePath}:`, err);
 		}
 	}
 }
 
-//gets event listeners from the "/events" folder
+
+// Load event listeners from the /events folder
 const eventsPath = path.join(__dirname, "events");
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith(".js"));
+let eventFiles = [];
+try {
+	eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith(".js"));
+} catch (err) {
+	console.error(`[FATAL] Could not read events directory: ${eventsPath}`, err);
+	process.exit(1);
+}
 
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
-	const event = require(filePath);
-
-	if (event.once) {
-		client.once(event.name, (...args) => event.execute(client, ...args));
-	}
-	else {
-		client.on(event.name, (...args) => event.execute(client, ...args));
+	try {
+		const event = require(filePath);
+		if (event.once) {
+			client.once(event.name, (...args) => event.execute(client, ...args));
+		} else {
+			client.on(event.name, (...args) => event.execute(client, ...args));
+		}
+	} catch (err) {
+		console.warn(`[WARNING] Failed to load event at ${filePath}:`, err);
 	}
 }
 
-//haldes slash commands
+
+// Handle slash commands
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
 	const command = interaction.client.commands.get(interaction.commandName);
-
-	//if there is no such command...
 	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
+		console.error(`[ERROR] No command matching ${interaction.commandName} was found.`);
 		return;
 	}
-
-	//handling interactions
 	try {
 		await command.execute(interaction);
-	}
-	catch (error) {
-		console.error(error);
-
+	} catch (error) {
+		console.error(`[ERROR] While executing command ${interaction.commandName}:`, error);
+		const errorMsg = { content: "There was an error while executing this command!", ephemeral: true };
 		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: "There was an error while executing this command!", ephemeral: true });
+			await interaction.followUp(errorMsg);
 		}
 		else {
-			await interaction.reply({ content: "There was an error while executing this command!", ephemeral: true });
+			await interaction.reply(errorMsg);
 		}
 	}
 });
 
+
 client.on('error', error => {
-	console.error("The WebSocket encountered an error: ", error);
+	console.error("[ERROR] The WebSocket encountered an error:", error);
 });
 
 client.on('shardError', error => {
-    console.error('A WebSocket connection encountered an error:', error);
+	console.error('[ERROR] A WebSocket connection encountered an error:', error);
 });
 
 process.on('unhandledRejection', error => {
-    console.error('Unhandled promise rejection:', error);
+	console.error('[ERROR] Unhandled promise rejection:', error);
 });
 
-//sets the bot's discord activity
+
+// Set the bot's Discord activity
 function setActivity() {
+	if (!client.user) return;
+
 	client.user.setActivity({
 		status: "online",
 		type: ActivityType.Playing,
 		name: "with stolen user data.",
 	});
+
 	// console.log("Re-announced bot's activity.");
 }
 
-client.on("ready", () => {
-	setActivity();
-});
+client.on("ready", setActivity);
 
-//re-announces the bot's activity in every 20 minutes (in case of an internet outage or something)
+// Re-announce the bot's activity every 20 minutes (in case of an internet outage or something)
 setInterval(setActivity, 20 * 60 * 1000);
 
-//logs in with given token
-client.login(token);
+// Log in to discord with the set token
+(async () => {
+    try {
+        await client.login(token);
+    } catch (err) {
+        console.error("[FATAL] Failed to login to Discord:", err);
+        process.exit(1);
+    }
+})();

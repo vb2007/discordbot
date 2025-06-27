@@ -28,4 +28,13 @@
     "roulette" : "10",
     "work" : "1"
   }
+
+  "//" : "Darwin's settings",
+
+  "darwin" : {
+    "feedUrl" : "https://theync.com/most-recent/",
+    "interval" : 60000,
+    "markerOne" : "https://theync.com/media/video",
+    "markerTwo" : "https://theync.com"
+  }
 }

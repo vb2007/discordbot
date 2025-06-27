@@ -1,0 +1,8 @@
+{
+    "feed": "https://theync.com/most-recent/",
+    "interval": 30000,
+    "marker_one" : "https://theync.com/media/video",
+    "marker_two": "https://theync.com",
+    "token" : "your bot token goes here",
+    "id": "your bot id goes here"
+}
