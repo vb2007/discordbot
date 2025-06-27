@@ -29,7 +29,7 @@
     "work" : "1"
   },
 
-  "//" : "Darwin's settings",
+  "//" : "Darwin video scraper configuration",
   "darwin" : {
     "feedUrl" : "https://theync.com/most-recent/",
     "interval" : 60000,
