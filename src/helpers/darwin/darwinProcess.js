@@ -87,7 +87,7 @@ async function processVideo(video, client, channelId) {
             return;
         }
         
-        const targetDir = path.join(__dirname, '/mnt/raid1/cdn/darwin');
+        const targetDir = "/mnt/raid1/cdn/darwin";
         // if (!fs.existsSync(targetDir)) {
         //     fs.mkdirSync(targetDir, { recursive: true });
         // }
