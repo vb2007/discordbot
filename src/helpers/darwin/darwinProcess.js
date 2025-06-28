@@ -111,16 +111,27 @@ async function processVideo(video, client, channelId) {
             return;
         }
 
-        const safeFilename = path.join(targetDir, `${sanitizeFilename(title)}.mp4`);
-        const directStreamLink = `https://cdn.vb2007.hu/darwin/${path.basename(safeFilename)}`;
+        const videoId = darwinCache.extractVideoId ? darwinCache.extractVideoId(href) : href.split('/').pop().replace('.mp4', '');
+        const filename = `${videoId}.mp4`;
+        const filePath = path.join(targetDir, filename);
+        const directStreamLink = `https://cdn.vb2007.hu/darwin/${filename}`;
 
-        console.log("Streaming video to disk");
-        await pipeline(response.body, fs.createWriteStream(safeFilename));
+        console.log(`Streaming video to disk: ${filePath}`);
+        await pipeline(response.body, fs.createWriteStream(filePath));
+        
+        if (fs.existsSync(filePath)) {
+            const stats = fs.statSync(filePath);
+            console.log(`File saved successfully: ${filePath} (${stats.size} bytes)`);
+        } else {
+            console.error(`Error when saving file: ${filePath}`);
+            return;
+        }
         
         console.log("Sending video to channel with direct CDN stream link")
         const message = messageGen(title, href, directStreamLink, comments, true, 0);
         const channel = await client.channels.fetch(channelId);
         if (channel) await channel.send(message);
+
         // console.log("Uploading to Discord");
         // const channel = await client.channels.fetch(channelId);
         // if (channel) {
@@ -129,8 +140,9 @@ async function processVideo(video, client, channelId) {
         //         files: [safeFilename]
         //     });
         // }
-        
-        fs.unlinkSync(safeFilename);
+        // fs.unlinkSync(safeFilename);
+
+        console.log(`Video saved to CDN: ${directStreamLink}`);
     }
     catch (error) {
         console.error(`Error processing video ${title}: ${error}`);
