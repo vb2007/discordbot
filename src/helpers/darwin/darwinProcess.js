@@ -64,8 +64,8 @@ function sanitizeFilename(title) {
     return encodeURIComponent(safeTitle);
 }
 
-function messageGen(title, href, comments) {
-    return `[[ - MP4 - ]](<${href}>)  -  [[ - SOURCE - ]](<${comments}>)  -  ${title}`;
+function messageGen(title, href, directStreamLink, comments, canBeStreamed, fileSize) {
+    return `${(canBeStreamed ? `[[ STREAMING & DOWNLOAD ]](<${directStreamLink}>)` : `[[ ORIGINAL SOURCE'S MP4 ]](<${href}>)`)}  -  [[ VIDEO'S FORUM POST ]](<${comments}>)  -  ${title}${canBeStreamed ? "" : `Too big for direct streaming on Discord (${fileSize}MB)`}`;
 }
 
 async function processVideo(video, client, channelId) {
@@ -87,10 +87,10 @@ async function processVideo(video, client, channelId) {
             return;
         }
         
-        const tempDir = path.join(__dirname, '../../../temp');
-        if (!fs.existsSync(tempDir)) {
-            fs.mkdirSync(tempDir, { recursive: true });
-        }
+        const targetDir = path.join(__dirname, '/mnt/raid1/cdn/darwin');
+        // if (!fs.existsSync(targetDir)) {
+        //     fs.mkdirSync(targetDir, { recursive: true });
+        // }
         
         const response = await fetch(href);
         
@@ -100,30 +100,35 @@ async function processVideo(video, client, channelId) {
         }
         
         const contentLength = parseInt(response.headers.get('Content-Length'), 10);
-        if (contentLength && contentLength > 10 * 1024 * 1024) {
-            console.log("Skipping download: File size exceeds limit (10MB)");
-            
-            const message = messageGen(title, href, comments) + 
-                ` - Too big for upload (${(contentLength / 1000000).toFixed(0)} mb)`;
-            
+        if (contentLength && contentLength > 50 * 1024 * 1024) {
+            console.log("Skipping download: File size exceeds limit (50MB)");
+
+            const fileSize = (contentLength / 1000000).toFixed(0);
+            const message = messageGen(title, href, "", comments, false, fileSize);
+
             const channel = await client.channels.fetch(channelId);
             if (channel) await channel.send(message);
             return;
         }
-        
-        const safeFilename = path.join(tempDir, `${sanitizeFilename(title)}.mp4`);
-        
+
+        const safeFilename = path.join(targetDir, `${sanitizeFilename(title)}.mp4`);
+        const directStreamLink = `https://cdn.vb2007.hu/darwin/${path.basename(safeFilename)}`;
+
         console.log("Streaming video to disk");
         await pipeline(response.body, fs.createWriteStream(safeFilename));
         
-        console.log("Uploading to Discord");
+        console.log("Sending video to channel with direct CDN stream link")
+        const message = messageGen(title, href, directStreamLink, comments, true, 0);
         const channel = await client.channels.fetch(channelId);
-        if (channel) {
-            await channel.send({
-                content: messageGen(title, href, comments),
-                files: [safeFilename]
-            });
-        }
+        if (channel) await channel.send(message);
+        // console.log("Uploading to Discord");
+        // const channel = await client.channels.fetch(channelId);
+        // if (channel) {
+        //     await channel.send({
+        //         content: messageGen(title, href, comments),
+        //         files: [safeFilename]
+        //     });
+        // }
         
         fs.unlinkSync(safeFilename);
     }
