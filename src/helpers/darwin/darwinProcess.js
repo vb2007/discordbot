@@ -128,9 +128,29 @@ async function processVideo(video, client, channelId) {
         }
         
         console.log("Sending video to channel with direct CDN stream link")
-        const message = messageGen(title, href, directStreamLink, comments, true, 0);
         const channel = await client.channels.fetch(channelId);
-        if (channel) await channel.send(message);
+
+        if (channel) {
+           const embed = {
+                title: title,
+                url: comments,
+                color: 0x00ff00,
+                video: {
+                    url: directStreamLink
+                },
+                footer: {
+                    text: "Darwin Video Feed"
+                },
+                timestamp: new Date().toISOString()
+            };
+            
+            await channel.send({ 
+                content: `[[ STREAMING & DOWNLOAD ]](<${directStreamLink}>) - [[ VIDEO'S FORUM POST ]](<${comments}>)`,
+                embeds: [embed] 
+            });
+        }
+
+        console.log(`Video saved to CDN: ${directStreamLink}`);
 
         // console.log("Uploading to Discord");
         // const channel = await client.channels.fetch(channelId);
@@ -141,8 +161,6 @@ async function processVideo(video, client, channelId) {
         //     });
         // }
         // fs.unlinkSync(safeFilename);
-
-        console.log(`Video saved to CDN: ${directStreamLink}`);
     }
     catch (error) {
         console.error(`Error processing video ${title}: ${error}`);
