@@ -65,7 +65,7 @@ function sanitizeFilename(title) {
 }
 
 function messageGen(title, href, directStreamLink, comments, canBeStreamed, fileSize) {
-    return `${(canBeStreamed ? `[[ STREAMING & DOWNLOAD ]](<${directStreamLink}>)` : `[[ ORIGINAL SOURCE'S MP4 ]](<${href}>)`)}  -  [[ VIDEO'S FORUM POST ]](<${comments}>)  -  ${title}${canBeStreamed ? "" : `Too big for direct streaming on Discord (${fileSize}MB)`}`;
+    return `${(canBeStreamed ? `[[ STREAMING & DOWNLOAD ]](${directStreamLink})` : `[[ ORIGINAL SOURCE'S MP4 ]](<${href}>)`)}  -  [[ VIDEO'S FORUM POST ]](<${comments}>)  -  ${title}${canBeStreamed ? "" : `Too big for direct streaming on Discord (${fileSize}MB)`}`;
 }
 
 async function processVideo(video, client, channelId) {
