@@ -126,29 +126,12 @@ async function processVideo(video, client, channelId) {
             console.error(`Error when saving file: ${filePath}`);
             return;
         }
-        
+
         console.log("Sending video to channel with direct CDN stream link")
         const channel = await client.channels.fetch(channelId);
 
-        if (channel) {
-           const embed = {
-                title: title,
-                url: comments,
-                color: 0x00ff00,
-                video: {
-                    url: directStreamLink
-                },
-                footer: {
-                    text: "Darwin Video Feed"
-                },
-                timestamp: new Date().toISOString()
-            };
-            
-            await channel.send({ 
-                content: `[[ STREAMING & DOWNLOAD ]](<${directStreamLink}>) - [[ VIDEO'S FORUM POST ]](<${comments}>)`,
-                embeds: [embed] 
-            });
-        }
+        const message = messageGen(title, href, directStreamLink, comments, true, 0);
+        if (channel) await channel.send(message);
 
         console.log(`Video saved to CDN: ${directStreamLink}`);
 
