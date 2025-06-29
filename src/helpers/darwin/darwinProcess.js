@@ -5,6 +5,7 @@ const { pipeline } = require('stream/promises');
 const darwinCache = require('./darwinCache');
 const db = require('../db');
 const config = require('../../../config.json');
+const { transcodeVideo, getFileSizeMB, cleanupFiles } = require('./darwinTranscode');
 
 const darwinConfig = config.darwin || {
     feedUrl: "https://theync.com/most-recent/",
@@ -88,9 +89,11 @@ async function processVideo(video, client, channelId) {
         }
         
         const targetDir = "/mnt/raid1/cdn/darwin";
-        // if (!fs.existsSync(targetDir)) {
-        //     fs.mkdirSync(targetDir, { recursive: true });
-        // }
+        const tempDir = "/mnt/raid1/cdn/darwin/temp";
+        
+        if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+        }
         
         const response = await fetch(href);
         
@@ -112,38 +115,52 @@ async function processVideo(video, client, channelId) {
         }
 
         const videoId = darwinCache.extractVideoId ? darwinCache.extractVideoId(href) : href.split('/').pop().replace('.mp4', '');
-        const filename = `${videoId}.mp4`;
-        const filePath = path.join(targetDir, filename);
-        const directStreamLink = `https://cdn.vb2007.hu/darwin/${filename}`;
+        const tempFilePath = path.join(tempDir, `${videoId}_original.mp4`);
+        const transcodedFilePath = path.join(tempDir, `${videoId}_transcoded.mp4`);
+        const finalFilePath = path.join(targetDir, `${videoId}.mp4`);
+        const directStreamLink = `https://cdn.vb2007.hu/darwin/${videoId}.mp4`;
 
-        console.log(`Streaming video to disk: ${filePath}`);
-        await pipeline(response.body, fs.createWriteStream(filePath));
+        console.log(`Downloading video to temp location: ${tempFilePath}`);
+        await pipeline(response.body, fs.createWriteStream(tempFilePath));
         
-        if (fs.existsSync(filePath)) {
-            const stats = fs.statSync(filePath);
-            console.log(`File saved successfully: ${filePath} (${stats.size} bytes)`);
-        } else {
-            console.error(`Error when saving file: ${filePath}`);
+        if (!fs.existsSync(tempFilePath)) {
+            console.error(`Error when saving temporary file: ${tempFilePath}`);
             return;
         }
 
-        console.log("Sending video to channel with direct CDN stream link")
-        const channel = await client.channels.fetch(channelId);
+        const originalSize = getFileSizeMB(tempFilePath);
+        console.log(`Original file size: ${originalSize}MB`);
 
-        const message = messageGen(title, href, directStreamLink, comments, true, 0);
-        if (channel) await channel.send(message);
-
-        console.log(`Video saved to CDN: ${directStreamLink}`);
-
-        // console.log("Uploading to Discord");
-        // const channel = await client.channels.fetch(channelId);
-        // if (channel) {
-        //     await channel.send({
-        //         content: messageGen(title, href, comments),
-        //         files: [safeFilename]
-        //     });
-        // }
-        // fs.unlinkSync(safeFilename);
+        try {
+            console.log('Starting video transcoding process...');
+            await transcodeVideo(tempFilePath, transcodedFilePath);
+            
+            const transcodedSize = getFileSizeMB(transcodedFilePath);
+            console.log(`Transcoded file size: ${transcodedSize}MB (${Math.round((transcodedSize/originalSize)*100)}% of original)`);
+            
+            fs.copyFileSync(transcodedFilePath, finalFilePath);
+            console.log(`File moved to final destination: ${finalFilePath}`);
+            
+            cleanupFiles([tempFilePath, transcodedFilePath]);
+            
+            console.log("Sending video to channel with direct CDN stream link");
+            const channel = await client.channels.fetch(channelId);
+            
+            const message = messageGen(title, href, directStreamLink, comments, true, 0);
+            if (channel) await channel.send(message);
+            
+            console.log(`Transcoded video saved to CDN: ${directStreamLink}`);
+        }
+        catch (error) {
+            console.error(`Transcoding failed, attempting to use original file: ${error}`);
+            
+            fs.copyFileSync(tempFilePath, finalFilePath);
+            cleanupFiles([tempFilePath, transcodedFilePath]);
+            
+            const channel = await client.channels.fetch(channelId);
+            const message = messageGen(title, href, directStreamLink, comments, true, 0);
+            if (channel) await channel.send(message);
+        }
     }
     catch (error) {
         console.error(`Error processing video ${title}: ${error}`);
