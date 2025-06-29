@@ -59,25 +59,7 @@ function getFileSizeMB(filePath) {
     }
 }
 
-/**
- * Clean up temporary files
- * @param {string[]} filePaths - Array of file paths to delete
- */
-function cleanupFiles(filePaths) {
-    filePaths.forEach(filePath => {
-        try {
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-                console.log(`Cleaned up temporary file: ${filePath}`);
-            }
-        } catch (error) {
-            console.error(`Failed to cleanup file ${filePath}: ${error}`);
-        }
-    });
-}
-
 module.exports = {
     transcodeVideo,
-    getFileSizeMB,
-    cleanupFiles
+    getFileSizeMB
 };

@@ -5,7 +5,7 @@ const { pipeline } = require('stream/promises');
 const darwinCache = require('./darwinCache');
 const db = require('../db');
 const config = require('../../../config.json');
-const { transcodeVideo, getFileSizeMB, cleanupFiles } = require('./darwinTranscode');
+const { transcodeVideo, getFileSizeMB } = require('./darwinTranscode');
 
 const darwinConfig = config.darwin || {
     feedUrl: "https://theync.com/most-recent/",
@@ -91,10 +91,6 @@ async function processVideo(video, client, channelId) {
         const targetDir = "/mnt/raid1/cdn/darwin";
         const tempDir = "/mnt/raid1/cdn/darwin/temp";
         
-        if (!fs.existsSync(tempDir)) {
-            fs.mkdirSync(tempDir, { recursive: true });
-        }
-        
         const response = await fetch(href);
         
         if (!response.ok) {
@@ -141,7 +137,9 @@ async function processVideo(video, client, channelId) {
             fs.copyFileSync(transcodedFilePath, finalFilePath);
             console.log(`File moved to final destination: ${finalFilePath}`);
             
-            cleanupFiles([tempFilePath, transcodedFilePath]);
+            fs.unlinkSync(tempFilePath);
+            fs.unlinkSync(transcodedFilePath);
+            console.log('Temporary files cleaned up');
             
             console.log("Sending video to channel with direct CDN stream link");
             const channel = await client.channels.fetch(channelId);
@@ -155,7 +153,18 @@ async function processVideo(video, client, channelId) {
             console.error(`Transcoding failed, attempting to use original file: ${error}`);
             
             fs.copyFileSync(tempFilePath, finalFilePath);
-            cleanupFiles([tempFilePath, transcodedFilePath]);
+            console.log(`Original file moved to final destination: ${finalFilePath}`);
+            
+            //delte temporary files
+            if (fs.existsSync(tempFilePath)) {
+                fs.unlinkSync(tempFilePath);
+                console.log('Original temporary file cleaned up');
+            }
+            
+            if (fs.existsSync(transcodedFilePath)) {
+                fs.unlinkSync(transcodedFilePath);
+                console.log('Partial transcoded file cleaned up');
+            }
             
             const channel = await client.channels.fetch(channelId);
             const message = messageGen(title, href, directStreamLink, comments, true, 0);
