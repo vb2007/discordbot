@@ -47,22 +47,22 @@ async function getVideoLocation(href, markerOne, markerTwo) {
     }
 }
 
-function sanitizeFilename(title) {
-    const maxLength = 50;
-    let safeTitle = title.replace(/ /g, '.');
-    safeTitle = safeTitle.replace(/[^a-zA-Z0-9-.]/g, '');
-    safeTitle = safeTitle.substring(0, maxLength);
+// function sanitizeFilename(title) {
+//     const maxLength = 50;
+//     let safeTitle = title.replace(/ /g, '.');
+//     safeTitle = safeTitle.replace(/[^a-zA-Z0-9-.]/g, '');
+//     safeTitle = safeTitle.substring(0, maxLength);
     
-    while (safeTitle.includes('..')) {
-        safeTitle = safeTitle.replace('..', '.');
-    }
+//     while (safeTitle.includes('..')) {
+//         safeTitle = safeTitle.replace('..', '.');
+//     }
     
-    if (safeTitle.endsWith('.')) {
-        safeTitle = safeTitle.slice(0, -1);
-    }
+//     if (safeTitle.endsWith('.')) {
+//         safeTitle = safeTitle.slice(0, -1);
+//     }
     
-    return encodeURIComponent(safeTitle);
-}
+//     return encodeURIComponent(safeTitle);
+// }
 
 function messageGen(title, href, directStreamLink, comments, canBeStreamed, fileSize) {
     return `${(canBeStreamed ? `[[ STREAMING & DOWNLOAD ]](${directStreamLink})` : `[[ ORIGINAL SOURCE'S MP4 ]](${href})`)}  -  [[ VIDEO'S FORUM POST ]](<${comments}>)  -  ${title}${canBeStreamed ? "" : ` - Might be too big for direct streaming on Discord (${fileSize}MB)`}`;
