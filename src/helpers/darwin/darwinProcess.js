@@ -88,8 +88,8 @@ async function processVideo(video, client, channelId) {
             return;
         }
         
-        const targetDir = "/mnt/raid1/cdn/darwin";
-        const tempDir = "/mnt/raid1/cdn/darwin/transcodes";
+        const targetDir = "/mnt/raid1/cdn/darwinTest";
+        const tempDir = "/mnt/raid1/cdn/darwinTest/transcodes";
         
         const response = await fetch(href);
         
