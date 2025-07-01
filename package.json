@@ -1,6 +1,6 @@
 {
   "name": "discordbot",
-  "version": "2.3",
+  "version": "2.3.1",
   "description": "A simple discord bot of mine developed with discord.js (Node.js).",
   "main": "index.js",
   "keywords": [
@@ -40,7 +40,9 @@
     "jest": "^29.7.0",
     "mariadb": "^3.3.0",
     "node-fetch": "^3.3.2",
-    "request-promise": "^4.2.6"
+    "request-promise": "^4.2.6",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2"
   },
   "devDependencies": {
     "jest": "^29.7.0",
