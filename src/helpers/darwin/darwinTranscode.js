@@ -32,41 +32,69 @@ async function getVideoInfo(inputPath) {
 }
 
 /**
- * Determine video format based on dimensions
- * @param {Object} videoInfo - Video metadata
- * @returns {Object} - Format details including type and dimensions
+ * Calculate optimal dimensions for transcoding while preserving aspect ratio
+ * @param {Object} videoInfo - Original video information
+ * @returns {Object} - Calculated dimensions and scaling information
  */
-function determineVideoFormat(videoInfo) {
+function calculateOptimalDimensions(videoInfo) {
     const { width, height, rotation } = videoInfo;
     
     const effectiveWidth = (rotation === 90 || rotation === 270) ? height : width;
     const effectiveHeight = (rotation === 90 || rotation === 270) ? width : height;
     
     const aspectRatio = effectiveWidth / effectiveHeight;
+    const totalPixels = effectiveWidth * effectiveHeight;
     
-    let format = {
-        type: 'unknown',
-        maxWidth: 1280,
-        maxHeight: 720
-    };
+    // Base limits - only apply if video exceeds these dimensions
+    const MAX_WIDTH = 1920;
+    const MAX_HEIGHT = 1280;
+    const MAX_PIXELS = 2073600; // 1080p equivalent (1920×1080)
     
-    if (Math.abs(aspectRatio - 1) < 0.1) {
-        format.type = 'square';
-        format.maxWidth = 1080;
-        format.maxHeight = 1080;
-    } else if (aspectRatio > 1) {
-        format.type = 'landscape';
-        format.maxWidth = 1920;
-        format.maxHeight = 1080;
-    } else {
-        format.type = 'portrait';
-        format.maxWidth = 720;
-        format.maxHeight = 1280;
+    // Initialize with original dimensions - don't change unless needed
+    let targetWidth = effectiveWidth;
+    let targetHeight = effectiveHeight;
+    let needsScaling = false;
+    
+    // Check if we need to scale down
+    if (totalPixels > MAX_PIXELS || effectiveWidth > MAX_WIDTH || effectiveHeight > MAX_HEIGHT) {
+        needsScaling = true;
+        
+        // Scale by the most constraining dimension
+        if (effectiveWidth / MAX_WIDTH > effectiveHeight / MAX_HEIGHT) {
+            // Width is the limiting factor
+            targetWidth = MAX_WIDTH;
+            targetHeight = Math.round(MAX_WIDTH / aspectRatio);
+        } else {
+            // Height is the limiting factor
+            targetHeight = MAX_HEIGHT;
+            targetWidth = Math.round(MAX_HEIGHT * aspectRatio);
+        }
+        
+        // Ensure we don't exceed the pixel count limit
+        if (targetWidth * targetHeight > MAX_PIXELS) {
+            const scale = Math.sqrt(MAX_PIXELS / (targetWidth * targetHeight));
+            targetWidth = Math.round(targetWidth * scale);
+            targetHeight = Math.round(targetHeight * scale);
+        }
     }
     
-    console.log(`Determined video format: ${format.type} (${effectiveWidth}x${effectiveHeight}, ratio: ${aspectRatio.toFixed(2)})`);
+    console.log(`Original dimensions: ${effectiveWidth}x${effectiveHeight}, aspect ratio: ${aspectRatio.toFixed(2)}`);
+    if (needsScaling) {
+        console.log(`Scaling to: ${targetWidth}x${targetHeight}`);
+    } else {
+        console.log(`Keeping original dimensions: ${targetWidth}x${targetHeight}`);
+    }
     
-    return format;
+    return {
+        width: targetWidth,
+        height: targetHeight,
+        aspectRatio,
+        needsScaling,
+        isLandscape: aspectRatio > 1,
+        isPortrait: aspectRatio < 1,
+        isSquare: Math.abs(aspectRatio - 1) < 0.1,
+        totalPixels
+    };
 }
 
 /**
@@ -82,10 +110,8 @@ async function transcodeVideo(inputPath, outputPath) {
         const videoInfo = await getVideoInfo(inputPath);
         console.log(`Original video: ${videoInfo.width}x${videoInfo.height}, rotation: ${videoInfo.rotation}°, codec: ${videoInfo.codec_name}`);
         
-        // Determine video format and optimal dimensions
-        const format = determineVideoFormat(videoInfo);
-        
-        console.log(`Using max dimensions: ${format.maxWidth}x${format.maxHeight} for ${format.type} video`);
+        // Calculate optimal dimensions based on actual video properties
+        const dimensions = calculateOptimalDimensions(videoInfo);
         
         // Check if hardware acceleration is available
         const useHardwareAcceleration = await checkHardwareAcceleration();
@@ -93,7 +119,7 @@ async function transcodeVideo(inputPath, outputPath) {
         if (useHardwareAcceleration) {
             try {
                 console.log('Using Intel QuickSync hardware acceleration');
-                const success = await transcodeWithHardwareAcceleration(inputPath, outputPath, format, videoInfo);
+                const success = await transcodeWithHardwareAcceleration(inputPath, outputPath, dimensions, videoInfo);
                 if (success) return true;
                 
                 // If hardware acceleration failed, fall back to software
@@ -105,13 +131,14 @@ async function transcodeVideo(inputPath, outputPath) {
         }
         
         // Software transcoding as fallback
-        return await transcodeVideoSoftware(inputPath, outputPath, format.maxWidth, format.maxHeight, videoInfo);
+        return await transcodeVideoSoftware(inputPath, outputPath, dimensions, videoInfo);
         
     } catch (error) {
         console.error(`Error in transcodeVideo: ${error.message}`);
-        // Last resort fallback
+        // Last resort fallback with conservative settings
         try {
-            return await transcodeVideoSoftware(inputPath, outputPath, 1280, 720);
+            console.log('Using conservative fallback settings');
+            return await transcodeVideoSoftware(inputPath, outputPath, null, null);
         } catch (finalError) {
             console.error(`Final transcoding attempt failed: ${finalError.message}`);
             throw finalError;
@@ -151,30 +178,37 @@ async function checkHardwareAcceleration() {
  * Transcode video using hardware acceleration
  * @param {string} inputPath - Path to the input video file
  * @param {string} outputPath - Path for the transcoded output file
- * @param {Object} format - Video format information
+ * @param {Object} dimensions - Calculated video dimensions
  * @param {Object} videoInfo - Original video metadata
  * @returns {Promise<boolean>} - Whether transcoding was successful
  */
-async function transcodeWithHardwareAcceleration(inputPath, outputPath, format, videoInfo) {
+async function transcodeWithHardwareAcceleration(inputPath, outputPath, dimensions, videoInfo) {
     return new Promise((resolve, reject) => {
         console.log(`Starting hardware transcoding: ${inputPath} -> ${outputPath}`);
+        
+        // Calculate optimal CRF based on resolution
+        const crf = calculateOptimalCRF(dimensions.totalPixels);
         
         const command = ffmpeg(inputPath)
             .inputOptions(['-hwaccel qsv', '-hwaccel_output_format qsv'])
             .videoCodec('h264_qsv')
             .audioCodec('aac')
             .outputOptions([
-                '-crf 26',
+                `-crf ${crf}`,
                 '-preset:v medium',
                 '-profile:v main',
                 '-level 4.1',
                 '-movflags +faststart',
                 '-b:a 128k',
                 '-map_metadata -1'
-            ])
-            .outputOptions([
-                `-vf scale='min(${format.maxWidth},iw)':min'(${format.maxHeight},ih):force_original_aspect_ratio=decrease'`
-            ])
+            ]);
+        
+        // Apply scaling only if needed
+        if (dimensions.needsScaling) {
+            command.size(`${dimensions.width}x${dimensions.height}`);
+        }
+        
+        command
             .on('progress', (progress) => {
                 if (progress.percent) {
                     console.log(`Hardware transcoding progress: ${Math.round(progress.percent)}%`);
@@ -194,34 +228,40 @@ async function transcodeWithHardwareAcceleration(inputPath, outputPath, format, 
 }
 
 /**
+ * Calculate optimal CRF value based on video resolution
+ * @param {number} totalPixels - Total pixels in the video
+ * @returns {number} - Optimal CRF value
+ */
+function calculateOptimalCRF(totalPixels) {
+    // Higher resolution can use higher CRF (more compression) while still looking good
+    if (totalPixels > 2073600) { // > 1080p
+        return 28;
+    } else if (totalPixels > 921600) { // > 720p
+        return 26;
+    } else if (totalPixels > 409920) { // > 480p
+        return 24;
+    } else { // Lower resolutions need less compression to look good
+        return 23;
+    }
+}
+
+/**
  * Transcode video using software encoding
  * @param {string} inputPath - Path to the input video file
  * @param {string} outputPath - Path for the transcoded output file
- * @param {number} maxWidth - Maximum width for the output video
- * @param {number} maxHeight - Maximum height for the output video
- * @param {Object} [videoInfo] - Original video metadata if available
+ * @param {Object} dimensions - Calculated video dimensions or null for fallback
+ * @param {Object} videoInfo - Original video metadata or null for fallback
  * @returns {Promise<boolean>} - Whether transcoding was successful
  */
-async function transcodeVideoSoftware(inputPath, outputPath, maxWidth = 1280, maxHeight = 720, videoInfo = null) {
+async function transcodeVideoSoftware(inputPath, outputPath, dimensions, videoInfo) {
     return new Promise((resolve, reject) => {
         console.log(`Starting software transcoding: ${inputPath} -> ${outputPath}`);
         
-        // Calculate optimal CRF based on resolution
-        let crf = 26; // Default value
-        
-        if (videoInfo) {
-            const totalPixels = videoInfo.width * videoInfo.height;
-            // Adjust CRF based on resolution - higher resolution can use higher CRF
-            if (totalPixels > 2073600) { // > 1080p
-                crf = 28;
-            } else if (totalPixels < 409920) { // < 480p
-                crf = 23;
-            }
-        }
-        
+        // Use conservative defaults if dimensions aren't available
+        const crf = dimensions ? calculateOptimalCRF(dimensions.totalPixels) : 26;
         console.log(`Using CRF value: ${crf} for quality/size optimization`);
         
-        ffmpeg(inputPath)
+        const command = ffmpeg(inputPath)
             .videoCodec('libx264')
             .audioCodec('aac')
             .outputOptions([
@@ -231,9 +271,20 @@ async function transcodeVideoSoftware(inputPath, outputPath, maxWidth = 1280, ma
                 '-level 3.1',
                 '-movflags +faststart',
                 '-b:a 128k',
-                '-map_metadata -1',
-                `-vf scale='min(${maxWidth},iw)':min'(${maxHeight},ih):force_original_aspect_ratio=decrease'`
-            ])
+                '-map_metadata -1'
+            ]);
+        
+        // Apply scaling only if we have dimensions and scaling is needed
+        if (dimensions && dimensions.needsScaling) {
+            command.size(`${dimensions.width}x${dimensions.height}`);
+        } else if (!dimensions) {
+            // Fallback scaling that ensures video isn't too large
+            command.outputOptions([
+                '-vf scale=\'min(1280,iw):min(720,ih):force_original_aspect_ratio=decrease\'',
+            ]);
+        }
+        
+        command
             .on('progress', (progress) => {
                 if (progress.percent) {
                     console.log(`Software transcoding progress: ${Math.round(progress.percent)}%`);
@@ -269,6 +320,5 @@ function getFileSizeMB(filePath) {
 module.exports = {
     transcodeVideo,
     getFileSizeMB,
-    getVideoInfo,
-    determineVideoFormat
+    getVideoInfo
 };
