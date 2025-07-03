@@ -77,11 +77,9 @@ function messageGen(title, href, directStreamLink, comments, canBeStreamed, file
 /**
  * Process a single video
  * @param {Object} video - Video metadata
- * @param {Object} client - Discord client
- * @param {string} channelId - Target Discord channel ID
- * @returns {Promise<boolean>} - Whether processing was successful
+ * @returns {Promise<Object|null>} - Processed video result or null if failed
  */
-async function processVideo(video, client, channelId) {
+async function processVideo(video) {
     const { title, href, comments } = video;
     console.log(`Processing ${title} ${href}`);
     
@@ -89,14 +87,14 @@ async function processVideo(video, client, channelId) {
         const isInCache = await darwinCache.isInCache(href);
         if (isInCache) {
             console.log(`Video already in cache, skipping: ${href}`);
-            return true;
+            return null;
         }
         
         // Add to cache BEFORE downloading to prevent multiple uploads
         const addedToCache = await darwinCache.addToCache(href);
         if (!addedToCache) {
             console.log(`Failed to add to cache, skipping to prevent duplicates: ${href}`);
-            return false;
+            return null;
         }
         
         const targetDir = "/mnt/raid1/cdn/darwinTest";
@@ -106,7 +104,7 @@ async function processVideo(video, client, channelId) {
         
         if (!response.ok) {
             console.error(`${href} ${response.statusText}`);
-            return false;
+            return null;
         }
         
         const contentLength = parseInt(response.headers.get('Content-Length'), 10);
@@ -114,11 +112,16 @@ async function processVideo(video, client, channelId) {
             console.log("Skipping download: File size exceeds limit (50MB)");
 
             const fileSize = (contentLength / 1000000).toFixed(0);
-            const message = messageGen(title, href, "", comments, false, fileSize);
-
-            const channel = await client.channels.fetch(channelId);
-            if (channel) await channel.send(message);
-            return true;
+            // Return info for too large videos
+            return {
+                title,
+                href,
+                comments,
+                canBeStreamed: false,
+                directStreamLink: "",
+                fileSize,
+                tooBig: true
+            };
         }
 
         const videoId = href.split('/').pop().replace('.mp4', '');
@@ -132,7 +135,7 @@ async function processVideo(video, client, channelId) {
         
         if (!fs.existsSync(tempFilePath)) {
             console.error(`Error when saving temporary file: ${tempFilePath}`);
-            return false;
+            return null;
         }
 
         const originalSize = getFileSizeMB(tempFilePath);
@@ -153,22 +156,23 @@ async function processVideo(video, client, channelId) {
             }
             
             // Clean up temp files
-            // if (fs.existsSync(tempFilePath)) {
-            //     fs.unlinkSync(tempFilePath);
-            // }
-            // if (fs.existsSync(transcodedFilePath)) {
-            //     fs.unlinkSync(transcodedFilePath);
-            // }
+            if (fs.existsSync(tempFilePath)) {
+                fs.unlinkSync(tempFilePath);
+            }
+            if (fs.existsSync(transcodedFilePath)) {
+                fs.unlinkSync(transcodedFilePath);
+            }
             console.log('Temporary files cleaned up');
             
-            console.log("Sending video to channel with direct CDN stream link");
-            const channel = await client.channels.fetch(channelId);
-            
-            const message = messageGen(title, href, directStreamLink, comments, true, 0);
-            if (channel) await channel.send(message);
-            
-            console.log(`Transcoded video saved to CDN: ${directStreamLink}`);
-            return true;
+            // Return success result
+            return {
+                title,
+                href,
+                comments,
+                directStreamLink,
+                canBeStreamed: true,
+                fileSize: 0
+            };
         }
         catch (error) {
             console.error(`Transcoding failed, attempting to use original file: ${error}`);
@@ -189,39 +193,65 @@ async function processVideo(video, client, channelId) {
                     console.log('Partial transcoded file cleaned up');
                 }
                 
-                // Check if the file is small enough for Discord streaming
                 const finalSize = getFileSizeMB(finalFilePath);
-                const canStream = finalSize < 50; // Discord's approximate limit
+                const canStream = finalSize < 50; // I will run out of storage & network bandwidth quick if that's higher
                 
-                const channel = await client.channels.fetch(channelId);
-                const message = messageGen(title, href, directStreamLink, comments, canStream, finalSize);
-                if (channel) await channel.send(message);
-                
-                return true;
+                return {
+                    title,
+                    href,
+                    comments,
+                    directStreamLink,
+                    canBeStreamed: canStream,
+                    fileSize: finalSize
+                };
             } catch (fallbackError) {
                 console.error(`Failed to use original file as fallback: ${fallbackError}`);
-                return false;
+                return null;
             }
         }
     }
     catch (error) {
         console.error(`Error processing video ${title}: ${error}`);
-        return false;
+        return null;
     }
 }
 
 /**
- * Process videos for a guild
+ * Distribute a processed video to all configured channels
  * @param {Object} client - Discord client
- * @param {Object} guildConfig - Guild configuration
+ * @param {Array} guildConfigs - Array of guild configurations
+ * @param {Object} processedVideo - Processed video result
  * @returns {Promise<void>}
  */
-async function processGuild(client, guildConfig) {
+async function distributeVideo(client, guildConfigs, processedVideo) {
+    const { title, href, comments, directStreamLink, canBeStreamed, fileSize } = processedVideo;
+    
+    const message = messageGen(title, href, directStreamLink, comments, canBeStreamed, fileSize);
+    
+    for (const config of guildConfigs) {
+        try {
+            console.log(`Sending video to guild ${config.guildId}, channel ${config.channelId}`);
+            const channel = await client.channels.fetch(config.channelId);
+            
+            if (channel) {
+                await channel.send(message);
+                console.log(`Successfully sent video to channel ${config.channelName} (${config.channelId})`);
+            } else {
+                console.error(`Failed to fetch channel ${config.channelId}`);
+            }
+        } catch (error) {
+            console.error(`Error sending to channel ${config.channelId}: ${error}`);
+        }
+    }
+}
+
+/**
+ * Fetch videos from feed
+ * @returns {Promise<Array>} - Array of video objects
+ */
+async function fetchVideosFromFeed() {
     try {
-        console.log(`Running Darwin process for guild: ${guildConfig.guildId}`);
-        
         const response = await fetch(darwinConfig.feedUrl, {
-            //if it isn't set to "darwin" the scraping fails for some reason
             headers: { "User-Agent": "darwin" }
         });
         
@@ -260,39 +290,10 @@ async function processGuild(client, guildConfig) {
             }
         }
         
-        console.log(`Discovered ${videosToProcess.length} new videos to process`);
-        
-        const concurrencyLimit = 2; // Process max 2 videos at a time
-        let activeTasks = 0;
-        let videoIndex = 0;
-
-        async function processNextVideos() {
-            while (activeTasks < concurrencyLimit && videoIndex < videosToProcess.length) {
-                const video = videosToProcess[videoIndex++];
-                activeTasks++;
-                
-                processVideo(video, client, guildConfig.channelId)
-                    .finally(() => {
-                        activeTasks--;
-                        if (videoIndex < videosToProcess.length) {
-                            processNextVideos();
-                        }
-                    });
-                
-                if (videoIndex < videosToProcess.length) {
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                }
-            }
-        }
-        
-        await processNextVideos();
-        
-        while (activeTasks > 0) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-    }
-    catch (error) {
-        console.error(`Error in Darwin process: ${error}`);
+        return videosToProcess;
+    } catch (error) {
+        console.error(`Error fetching videos from feed: ${error}`);
+        return [];
     }
 }
 
@@ -303,20 +304,76 @@ async function processGuild(client, guildConfig) {
  */
 async function runDarwinProcess(client) {
     try {
-        const configs = await db.query(
-            "SELECT * FROM configDarwin"
-        );
+        // Get all guild configurations
+        const guildConfigs = await db.query("SELECT * FROM configDarwin");
         
-        if (configs.length === 0) {
+        if (guildConfigs.length === 0) {
             console.log("No Darwin configurations found");
             return;
         }
         
-        console.log(`Processing ${configs.length} Darwin configurations`);
+        console.log(`Found ${guildConfigs.length} Darwin configurations`);
         
-        for (const config of configs) {
-            await processGuild(client, config);
+        // Fetch videos from feed once
+        const videosToProcess = await fetchVideosFromFeed();
+        console.log(`Discovered ${videosToProcess.length} new videos to process`);
+        
+        if (videosToProcess.length === 0) {
+            console.log("No new videos to process");
+            return;
         }
+        
+        // Process videos one at a time, with concurrency limit
+        const concurrencyLimit = 2; 
+        let activeTasks = 0;
+        let videoIndex = 0;
+        const processedVideos = [];
+
+        async function processNextVideos() {
+            while (activeTasks < concurrencyLimit && videoIndex < videosToProcess.length) {
+                const video = videosToProcess[videoIndex++];
+                activeTasks++;
+                
+                try {
+                    const result = await processVideo(video);
+                    if (result) {
+                        processedVideos.push(result);
+                        
+                        // If it's a "too big" video, distribute immediately
+                        if (result.tooBig) {
+                            await distributeVideo(client, guildConfigs, result);
+                        }
+                    }
+                } finally {
+                    activeTasks--;
+                    if (videoIndex < videosToProcess.length) {
+                        processNextVideos();
+                    }
+                }
+                
+                if (videoIndex < videosToProcess.length) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+        }
+        
+        await processNextVideos();
+        
+        // Wait for all processing to complete
+        while (activeTasks > 0) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+        // Filter out "too big" videos that were already distributed
+        const videosToDistribute = processedVideos.filter(video => !video.tooBig);
+        console.log(`Successfully processed ${videosToDistribute.length} videos, distributing to ${guildConfigs.length} channels`);
+        
+        // Distribute each processed video to all configured channels
+        for (const video of videosToDistribute) {
+            await distributeVideo(client, guildConfigs, video);
+        }
+        
+        console.log("Darwin process completed successfully");
     }
     catch (error) {
         console.error(`Error running Darwin process: ${error}`);
