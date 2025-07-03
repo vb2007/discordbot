@@ -97,8 +97,8 @@ async function processVideo(video) {
             return null;
         }
         
-        const targetDir = "/mnt/raid1/cdn/darwinTest";
-        const tempDir = "/mnt/raid1/cdn/darwinTest/transcodes";
+        const targetDir = "/mnt/raid1/cdn/darwin";
+        const tempDir = "/mnt/raid1/cdn/darwin/transcodes";
         
         const response = await fetch(href);
         
