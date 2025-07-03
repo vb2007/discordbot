@@ -32,6 +32,24 @@ async function getVideoInfo(inputPath) {
 }
 
 /**
+ * Calculate optimal CRF value based on video resolution
+ * @param {number} totalPixels - Total pixels in the video
+ * @returns {number} - Optimal CRF value
+ */
+function calculateOptimalCRF(totalPixels) {
+    // Higher resolution can use higher CRF (more compression) while still looking good
+    if (totalPixels > 2073600) { // > 1080p
+        return 28;
+    } else if (totalPixels > 921600) { // > 720p
+        return 26;
+    } else if (totalPixels > 409920) { // > 480p
+        return 24;
+    } else { // Lower resolutions need less compression to look good
+        return 23;
+    }
+}
+
+/**
  * Calculate optimal dimensions for transcoding while preserving aspect ratio
  * @param {Object} videoInfo - Original video information
  * @returns {Object} - Calculated dimensions and scaling information
@@ -112,136 +130,19 @@ async function transcodeVideo(inputPath, outputPath) {
         
         // Calculate optimal dimensions based on actual video properties
         const dimensions = calculateOptimalDimensions(videoInfo);
-        
-        // Check if hardware acceleration is available
-        const useHardwareAcceleration = await checkHardwareAcceleration();
-        
-        if (useHardwareAcceleration) {
-            try {
-                console.log('Using Intel QuickSync hardware acceleration');
-                const success = await transcodeWithHardwareAcceleration(inputPath, outputPath, dimensions, videoInfo);
-                if (success) return true;
-                
-                // If hardware acceleration failed, fall back to software
-                console.log('Hardware acceleration failed or was unavailable, falling back to software encoding');
-            } catch (error) {
-                console.error(`Hardware acceleration error: ${error.message}`);
-                console.log('Falling back to software encoding');
-            }
-        }
-        
-        // Software transcoding as fallback
-        return await transcodeVideoSoftware(inputPath, outputPath, dimensions, videoInfo);
+
+        return await transcodeVideo(inputPath, outputPath, dimensions, videoInfo);
         
     } catch (error) {
         console.error(`Error in transcodeVideo: ${error.message}`);
         // Last resort fallback with conservative settings
         try {
             console.log('Using conservative fallback settings');
-            return await transcodeVideoSoftware(inputPath, outputPath, null, null);
+            return await transcodeVideo(inputPath, outputPath, null, null);
         } catch (finalError) {
             console.error(`Final transcoding attempt failed: ${finalError.message}`);
             throw finalError;
         }
-    }
-}
-
-/**
- * Check if hardware acceleration is available
- * @returns {Promise<boolean>} - Whether hardware acceleration is available
- */
-async function checkHardwareAcceleration() {
-    return new Promise((resolve) => {
-        // Run a quick test to see if qsv is available
-        const proc = require('child_process').spawn('ffmpeg', ['-hwaccels']);
-        let output = '';
-        
-        proc.stdout.on('data', (data) => {
-            output += data.toString();
-        });
-        
-        proc.on('close', (code) => {
-            const hasQSV = output.toLowerCase().includes('qsv');
-            console.log(`Hardware acceleration check: QSV ${hasQSV ? 'available' : 'not available'}`);
-            resolve(hasQSV);
-        });
-        
-        // If it takes too long, assume it's not available
-        setTimeout(() => {
-            console.log('Hardware acceleration check timed out, assuming not available');
-            resolve(false);
-        }, 2000);
-    });
-}
-
-/**
- * Transcode video using hardware acceleration
- * @param {string} inputPath - Path to the input video file
- * @param {string} outputPath - Path for the transcoded output file
- * @param {Object} dimensions - Calculated video dimensions
- * @param {Object} videoInfo - Original video metadata
- * @returns {Promise<boolean>} - Whether transcoding was successful
- */
-async function transcodeWithHardwareAcceleration(inputPath, outputPath, dimensions, videoInfo) {
-    return new Promise((resolve, reject) => {
-        console.log(`Starting hardware transcoding: ${inputPath} -> ${outputPath}`);
-        
-        // Calculate optimal CRF based on resolution
-        const crf = calculateOptimalCRF(dimensions.totalPixels);
-        
-        const command = ffmpeg(inputPath)
-            .inputOptions(['-hwaccel qsv', '-hwaccel_output_format qsv'])
-            .videoCodec('h264_qsv')
-            .audioCodec('aac')
-            .outputOptions([
-                `-crf ${crf}`,
-                '-preset:v medium',
-                '-profile:v main',
-                '-level 4.1',
-                '-movflags +faststart',
-                '-b:a 128k',
-                '-map_metadata -1'
-            ]);
-        
-        // Apply scaling only if needed
-        if (dimensions.needsScaling) {
-            command.size(`${dimensions.width}x${dimensions.height}`);
-        }
-        
-        command
-            .on('progress', (progress) => {
-                if (progress.percent) {
-                    console.log(`Hardware transcoding progress: ${Math.round(progress.percent)}%`);
-                }
-            })
-            .on('end', () => {
-                console.log(`Hardware transcoding completed: ${outputPath}`);
-                resolve(true);
-            })
-            .on('error', (err) => {
-                console.error(`Hardware transcoding failed: ${err.message}`);
-                resolve(false); // Resolve false to try software encoding instead of rejecting
-            });
-        
-        command.save(outputPath);
-    });
-}
-
-/**
- * Calculate optimal CRF value based on video resolution
- * @param {number} totalPixels - Total pixels in the video
- * @returns {number} - Optimal CRF value
- */
-function calculateOptimalCRF(totalPixels) {
-    // Higher resolution can use higher CRF (more compression) while still looking good
-    if (totalPixels > 2073600) { // > 1080p
-        return 28;
-    } else if (totalPixels > 921600) { // > 720p
-        return 26;
-    } else if (totalPixels > 409920) { // > 480p
-        return 24;
-    } else { // Lower resolutions need less compression to look good
-        return 23;
     }
 }
 
@@ -253,7 +154,7 @@ function calculateOptimalCRF(totalPixels) {
  * @param {Object} videoInfo - Original video metadata or null for fallback
  * @returns {Promise<boolean>} - Whether transcoding was successful
  */
-async function transcodeVideoSoftware(inputPath, outputPath, dimensions, videoInfo) {
+async function transcodeVideo(inputPath, outputPath, dimensions, videoInfo) {
     return new Promise((resolve, reject) => {
         console.log(`Starting software transcoding: ${inputPath} -> ${outputPath}`);
         
