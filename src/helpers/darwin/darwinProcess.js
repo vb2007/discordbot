@@ -6,6 +6,7 @@ const darwinCache = require('./darwinCache');
 const db = require('../db');
 const config = require('../../../config.json');
 const { transcodeVideo, getFileSizeMB } = require('./darwinTranscode');
+const { embedMessageDarwin } = require("../embeds/embed-darwin");
 
 const darwinConfig = config.darwin || {
     feedUrl: "https://theync.com/most-recent/",
@@ -97,8 +98,8 @@ async function processVideo(video) {
             return null;
         }
         
-        const targetDir = "/mnt/raid1/cdn/darwin";
-        const tempDir = "/mnt/raid1/cdn/darwin/transcodes";
+        const targetDir = "/mnt/raid1/cdn/darwinTest";
+        const tempDir = "/mnt/raid1/cdn/darwinTest/transcodes";
         
         const response = await fetch(href);
         
@@ -128,7 +129,7 @@ async function processVideo(video) {
         const tempFilePath = path.join(tempDir, `${videoId}_original.mp4`);
         const transcodedFilePath = path.join(tempDir, `${videoId}_transcoded.mp4`);
         const finalFilePath = path.join(targetDir, `${videoId}.mp4`);
-        const directStreamLink = `https://cdn.vb2007.hu/darwin/${videoId}.mp4`;
+        const directStreamLink = `https://cdn.vb2007.hu/darwinTest/${videoId}.mp4`;
 
         console.log(`Downloading video to temp location: ${tempFilePath}`);
         await pipeline(response.body, fs.createWriteStream(tempFilePath));
@@ -226,7 +227,7 @@ async function processVideo(video) {
 async function distributeVideo(client, guildConfigs, processedVideo) {
     const { title, href, comments, directStreamLink, canBeStreamed, fileSize } = processedVideo;
     
-    const message = messageGen(title, href, directStreamLink, comments, canBeStreamed, fileSize);
+    const message = embedMessageDarwin(title, href, directStreamLink, comments, canBeStreamed, fileSize);
     
     for (const config of guildConfigs) {
         try {
@@ -234,7 +235,7 @@ async function distributeVideo(client, guildConfigs, processedVideo) {
             const channel = await client.channels.fetch(config.channelId);
             
             if (channel) {
-                await channel.send(message);
+                await channel.send({ embeds: [message] });
                 console.log(`Successfully sent video to channel ${config.channelName} (${config.channelId})`);
             } else {
                 console.error(`Failed to fetch channel ${config.channelId}`);
