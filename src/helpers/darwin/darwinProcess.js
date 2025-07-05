@@ -6,7 +6,6 @@ const darwinCache = require('./darwinCache');
 const db = require('../db');
 const config = require('../../../config.json');
 const { transcodeVideo, getFileSizeMB } = require('./darwinTranscode');
-const { embedMessageDarwin } = require("../embeds/embed-darwin");
 
 const darwinConfig = config.darwin || {
     feedUrl: "https://theync.com/most-recent/",
@@ -227,7 +226,7 @@ async function processVideo(video) {
 async function distributeVideo(client, guildConfigs, processedVideo) {
     const { title, href, comments, directStreamLink, canBeStreamed, fileSize } = processedVideo;
     
-    const message = embedMessageDarwin(title, href, directStreamLink, comments, canBeStreamed, fileSize);
+    const message = messageGen(title, href, directStreamLink, comments, canBeStreamed, fileSize);
     
     for (const config of guildConfigs) {
         try {
@@ -235,7 +234,7 @@ async function distributeVideo(client, guildConfigs, processedVideo) {
             const channel = await client.channels.fetch(config.channelId);
             
             if (channel) {
-                await channel.send({ embeds: [message] });
+                await channel.send(message);
                 console.log(`Successfully sent video to channel ${config.channelName} (${config.channelId})`);
             } else {
                 console.error(`Failed to fetch channel ${config.channelId}`);
