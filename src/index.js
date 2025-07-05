@@ -19,7 +19,6 @@ try {
 
 // Load config
 const config = require("../config.json");
-const darwinInterval = config.darwin?.interval || 30000; // Default to 30 seconds if not specified
 
 // Verify config.json file's syntax
 try {
@@ -29,13 +28,7 @@ try {
 	process.exit(1);
 }
 
-
 const { Client, Collection, Events, GatewayIntentBits, Partials, ActivityType } = require("discord.js");
-
-const { runDarwinProcess } = require('./helpers/darwin/darwinProcess');
-
-// Add flag to prevent concurrent execution
-let darwinProcessRunning = false;
 
 const client = new Client({
 	intents: [
@@ -70,6 +63,9 @@ const client = new Client({
 	// },
 });
 
+const { runDarwinProcess } = require('./helpers/darwin/darwinProcess');
+const darwinInterval = config.darwin?.interval || 120000; // Default to 120 seconds if not specified
+let darwinProcessRunning = false;
 
 // Notify hoster on console if the app is ready & about the Darwin process's status
 client.once(Events.ClientReady, readyClient => {
