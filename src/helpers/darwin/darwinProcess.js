@@ -5,14 +5,8 @@ const { pipeline } = require('stream/promises');
 const darwinCache = require('./darwinCache');
 const db = require('../db');
 const config = require('../../../config.json');
+const darwinConfig = config.darwin;
 const { transcodeVideo, getFileSizeMB } = require('./darwinTranscode');
-
-const darwinConfig = config.darwin || {
-    feedUrl: "https://theync.com/most-recent/",
-    interval: 60000,
-    markerOne: "https://theync.com/media/video",
-    markerTwo: "https://theync.com"
-};
 
 /**
  * Get the final destination of a URL (follow redirects)
@@ -97,9 +91,6 @@ async function processVideo(video) {
             return null;
         }
         
-        const targetDir = "/mnt/raid1/cdn/darwin";
-        const tempDir = "/mnt/raid1/cdn/darwin/transcodes";
-        
         const response = await fetch(href);
         
         if (!response.ok) {
@@ -125,10 +116,10 @@ async function processVideo(video) {
         }
 
         const videoId = href.split('/').pop().replace('.mp4', '');
-        const tempFilePath = path.join(tempDir, `${videoId}_original.mp4`);
-        const transcodedFilePath = path.join(tempDir, `${videoId}_transcoded.mp4`);
-        const finalFilePath = path.join(targetDir, `${videoId}.mp4`);
-        const directStreamLink = `https://cdn.vb2007.hu/darwinTest/${videoId}.mp4`;
+        const tempFilePath = path.join(darwinConfig.tempDir, `${videoId}_original.mp4`);
+        const transcodedFilePath = path.join(darwinConfig.tempDir, `${videoId}_transcoded.mp4`);
+        const finalFilePath = path.join(darwinConfig.targetDir, `${videoId}.mp4`);
+        const directStreamLink = `${darwinConfig.cdnUrl}/${videoId}.mp4`;
 
         console.log(`Downloading video to temp location: ${tempFilePath}`);
         await pipeline(response.body, fs.createWriteStream(tempFilePath));
