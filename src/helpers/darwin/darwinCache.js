@@ -91,6 +91,5 @@ async function isInCache(url) {
 
 module.exports = {
     addToCache,
-    isInCache,
-    extractVideoId
+    isInCache
 };
