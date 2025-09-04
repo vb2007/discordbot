@@ -9,6 +9,16 @@ module.exports = {
         .setDescription("Sets up bridging between a source channel on another server and a destination channel.") //...on the current one. [discord character limit]
         .addStringOption(option =>
             option
+                .setName("action")
+                .setDescription("Configure or disable the bridging feature?")
+                .addChoices(
+                    { name: "configure", value: "configure" },
+                    { name: "disable", value: "disable" }
+                )
+                .setRequired(true)
+        )
+        .addStringOption(option =>
+            option
                 .setName("source-channel-id")
                 .setDescription("The ID of the source channel on another server.")
                 .setRequired(true)

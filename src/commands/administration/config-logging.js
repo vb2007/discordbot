@@ -7,6 +7,16 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("config-logging")
         .setDescription("Sets up logging with various options for the current server.")
+        .addStringOption(option =>
+            option
+                .setName("action")
+                .setDescription("Configure or disable the logging feature?")
+                .addChoices(
+                    { name: "configure", value: "configure" },
+                    { name: "disable", value: "disable" }
+                )
+                .setRequired(true)
+        )
         .addChannelOption(option =>
             option
                 .setName("target-channel")

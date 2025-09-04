@@ -7,6 +7,16 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("config-autorole")
         .setDescription("Sets a role to be automatically assigned to new members on join.")
+        .addStringOption(option =>
+            option
+                .setName("action")
+                .setDescription("Configure or disable the autorole feature?")
+                .addChoices(
+                    { name: "configure", value: "configure" },
+                    { name: "disable", value: "disable" }
+                )
+                .setRequired(true)
+        )
         .addRoleOption(option =>
             option
                 .setName("role")

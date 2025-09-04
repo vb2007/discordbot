@@ -7,6 +7,16 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("config-goodbye")
         .setDescription("Sets a goodbye message that will be displayed for the members who've left the server.")
+        .addStringOption(option =>
+            option
+                .setName("action")
+                .setDescription("Configure or disable the goodbye feature?")
+                .addChoices(
+                    { name: "configure", value: "configure" },
+                    { name: "disable", value: "disable" }
+                )
+                .setRequired(true)
+        )
         .addChannelOption(option =>
             option
                 .setName("channel")

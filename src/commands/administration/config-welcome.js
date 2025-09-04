@@ -7,6 +7,16 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("config-welcome")
         .setDescription("Sets a welcome message that will be displayed for the new members in a specified channel.")
+        .addStringOption(option =>
+            option
+                .setName("action")
+                .setDescription("Configure or disable the welcome feature?")
+                .addChoices(
+                    { name: "configure", value: "configure" },
+                    { name: "disable", value: "disable" }
+                )
+                .setRequired(true)
+        )
         .addChannelOption(option =>
             option
                 .setName("channel")

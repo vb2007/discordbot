@@ -7,6 +7,16 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("config-darwin")
         .setDescription("Sets up automatic video posting from a feed to a channel.")
+        .addStringOption(option =>
+            option
+                .setName("action")
+                .setDescription("Configure or disable the Darwin feature?")
+                .addChoices(
+                    { name: "configure", value: "configure" },
+                    { name: "disable", value: "disable" }
+                )
+                .setRequired(true)
+        )
         .addChannelOption(option =>
             option
                 .setName("channel")
