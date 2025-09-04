@@ -1,11 +1,14 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const { embedReplySuccessColor, embedReplyFailureColor, embedReplySuccessSecondaryColor } = require("../../helpers/embeds/embed-reply");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
+const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
+
+const commandName = "config-bridge";
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("config-bridge")
+        .setName(commandName)
         .setDescription("Sets up bridging between a source channel on another server and a destination channel.") //...on the current one. [discord character limit]
         .addStringOption(option =>
             option
@@ -33,14 +36,23 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .setDMPermission(false),
     async execute(interaction) {
-        if (!interaction.inGuild()) {
-            var embedReply = embedReplyFailureColor(
-                "Bridge Configure: Error",
-                "You can only set up bridging in a server.",
-                interaction
-            );
+        let title;
+        let description;
+
+        const action = interaction.options.getString("action");
+
+        const guildCheck = checkIfNotInGuild(commandName, interaction);
+        if (guildCheck) {
+            return await replyAndLog(interaction, guildCheck);
         }
-        else {
+
+        if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administrator)) {
+            title = "AutoRole Configure: Error";
+            description = "This feature requires **administrator** *(8)* privileges witch the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges.";
+            return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
+        }
+
+        if (action === "configure") {
             try {
                 const sourceChannelId = interaction.options.getString("source-channel-id");
                 const destinationChannel = interaction.options.getChannel("destination-channel");
@@ -128,6 +140,7 @@ module.exports = {
                 );  
             }
         }
+        
 
         await interaction.reply({ embeds: [embedReply] });
         await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
