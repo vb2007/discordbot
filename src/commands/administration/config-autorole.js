@@ -30,7 +30,7 @@ module.exports = {
     async execute(interaction) {
         let title;
         let description;
-        
+
         const action = interaction.options.getString("action");
 
         if (action === "configure") {
@@ -80,6 +80,30 @@ module.exports = {
                 catch (error) {
                     console.error(error);
                 }
+            }
+        }
+
+        if (action === "disable") {
+            try {
+                const currentGuildId = interaction.guild.id;
+                const query = await db.query("SELECT guildId FROM configAutorole WHERE guildId = ?", [currentGuildId]);
+                const autoroleGuildId = query[0]?.guildId || null;
+
+                if (autoroleGuildId) {
+                    await db.query("DELETE FROM configAutorole WHERE guildId = ?", [autoroleGuildId]);
+
+                    title = "AutoRole Disable: Success";
+                    description = "The autorole feature has been disabled succesfully. :white_check_mark:";
+                    return await replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
+                }
+                else {
+                    title = "AutoRole Disable: Warning";
+                    description = "Autorole has not been configured for this server. :x:\nTherefore, you can't disable it.";
+                    return await replyAndLog(interaction, embedReplyWarningColor(title, description, interaction));
+                }
+            }
+            catch (error) {
+                console.error(error);
             }
         }
     }
