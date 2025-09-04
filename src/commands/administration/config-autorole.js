@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const { embedReplyFailureColor, embedReplySuccessColor, embedReplySuccessSecondaryColor } = require("../../helpers/embeds/embed-reply");
+const { embedReplyFailureColor, embedReplySuccessColor, embedReplySuccessSecondaryColor, embedReplyWarningColor } = require("../../helpers/embeds/embed-reply");
 const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
 const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
@@ -24,7 +24,7 @@ module.exports = {
             option
                 .setName("role")
                 .setDescription("Choose a role that will get assigned to the new server members.")
-                .setRequired(true))
+                .setRequired(false))
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
         .setDMPermission(false),
     async execute(interaction) {
@@ -48,6 +48,13 @@ module.exports = {
             else {
                 try {
                     const targetRole = interaction.options.get("role").value;
+
+                    if (!targetRole) {
+                        title = "AutoRole Configure: Error";
+                        description = "You must specify a role when configuring the autorole feature. :x:";
+                        return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
+                    }
+
                     const adderUsername = interaction.user.username;
                     const adderId = interaction.user.id;
                     const guildId = interaction.guild.id;
