@@ -101,11 +101,10 @@ module.exports = {
                     description = "The autorole feature has been disabled succesfully. :white_check_mark:";
                     return await replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
                 }
-                else {
-                    title = "AutoRole Disable: Warning";
-                    description = "Autorole has not been configured for this server. :x:\nTherefore, you can't disable it.";
-                    return await replyAndLog(interaction, embedReplyWarningColor(title, description, interaction));
-                }
+
+                title = "AutoRole Disable: Warning";
+                description = "Autorole has not been configured for this server. :x:\nTherefore, you can't disable it.";
+                return await replyAndLog(interaction, embedReplyWarningColor(title, description, interaction));
             }
             catch (error) {
                 console.error(error);
