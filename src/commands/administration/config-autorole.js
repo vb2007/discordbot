@@ -45,48 +45,46 @@ module.exports = {
                 return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
             }
 
-            else {
-                try {
-                    const targetRole = interaction.options.get("role").value;
+            try {
+                const targetRole = interaction.options.get("role").value;
 
-                    if (!targetRole) {
-                        title = "AutoRole Configure: Error";
-                        description = "You must specify a role when configuring the autorole feature. :x:";
-                        return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
-                    }
+                if (!targetRole) {
+                    title = "AutoRole Configure: Error";
+                    description = "You must specify a role when configuring the autorole feature. :x:";
+                    return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
+                }
 
-                    const adderUsername = interaction.user.username;
-                    const adderId = interaction.user.id;
-                    const guildId = interaction.guild.id;
+                const adderUsername = interaction.user.username;
+                const adderId = interaction.user.id;
+                const guildId = interaction.guild.id;
 
-                    const query = await db.query("SELECT guildId, roleId FROM configAutorole WHERE guildId = ?", [guildId]);
-                    const autoRoleGuildId = query[0]?.guildId || null;
-                    const autoRoleRoleId = query[0]?.roleId || null;
+                const query = await db.query("SELECT guildId, roleId FROM configAutorole WHERE guildId = ?", [guildId]);
+                const autoRoleGuildId = query[0]?.guildId || null;
+                const autoRoleRoleId = query[0]?.roleId || null;
 
-                    //if autorole has already been configured for this server...
-                    if (autoRoleRoleId == targetRole) {
-                        title = "AutoRole Configure: Error";
-                        description = "Autorole has already been configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.";
-                        return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
+                //if autorole has already been configured for this server...
+                if (autoRoleRoleId == targetRole) {
+                    title = "AutoRole Configure: Error";
+                    description = "Autorole has already been configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.";
+                    return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
+                }
+                else {
+                    await db.query("INSERT INTO configAutorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, targetRole, adderId, adderUsername, targetRole, adderId, adderUsername]);
+
+                    if (autoRoleGuildId == guildId) {
+                        title = "AutoRole Configure: Configuration Modified";
+                        description = `The role that will get assigned to new members has been **modified** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.`;
+                        return await replyAndLog(interaction, embedReplySuccessSecondaryColor(title, description, interaction));
                     }
                     else {
-                        await db.query("INSERT INTO configAutorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, targetRole, adderId, adderUsername, targetRole, adderId, adderUsername]);
-
-                        if (autoRoleGuildId == guildId) {
-                            title = "AutoRole Configure: Configuration Modified";
-                            description = `The role that will get assigned to new members has been **modified** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.`;
-                            return await replyAndLog(interaction, embedReplySuccessSecondaryColor(title, description, interaction));
-                        }
-                        else {
-                            title = "AutoRole Configure: Configuration Set";
-                            description = `The role that will get assigned to new members has been **set** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.`;
-                            return await replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
-                        }
+                        title = "AutoRole Configure: Configuration Set";
+                        description = `The role that will get assigned to new members has been **set** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.`;
+                        return await replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
                     }
                 }
-                catch (error) {
-                    console.error(error);
-                }
+            }
+            catch (error) {
+                console.error(error);
             }
         }
 
