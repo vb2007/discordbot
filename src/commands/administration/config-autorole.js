@@ -1,11 +1,14 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const { embedReplyFailureColor, embedReplySuccessColor, embedReplySuccessSecondaryColor } = require("../../helpers/embeds/embed-reply");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
+const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
+
+const commandName = "config-autorole";
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("config-autorole")
+        .setName(commandName)
         .setDescription("Sets a role to be automatically assigned to new members on join.")
         .addStringOption(option =>
             option
@@ -25,23 +28,23 @@ module.exports = {
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
         .setDMPermission(false),
     async execute(interaction) {
+        let title;
+        let description;
+        
         const action = interaction.options.getString("action");
 
         if (action === "configure") {
-            if (!interaction.inGuild()) {
-                var embedReply = embedReplyFailureColor(
-                    "AutoRole Configure: Error",
-                    "You can only set up autorole in a server.",
-                    interaction
-                );
+            const guildCheck = checkIfNotInGuild(commandName, interaction);
+            if (guildCheck) {
+                return await replyAndLog(interaction, guildCheck);
             }
-            else if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administrator)) {
-                var embedReply = embedReplyFailureColor(
-                    "AutoRole Configure: Error",
-                    "This feature requires **administrator** *(8)* privileges witch the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges.",
-                    interaction
-                );
+
+            if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administrator)) {
+                title = "AutoRole Configure: Error";
+                description = "This feature requires **administrator** *(8)* privileges witch the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges.";
+                return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
             }
+
             else {
                 try {
                     const targetRole = interaction.options.get("role").value;
@@ -55,30 +58,23 @@ module.exports = {
 
                     //if autorole has already been configured for this server...
                     if (autoRoleRoleId == targetRole) {
-                        var embedReply = embedReplyFailureColor(
-                            "AutoRole Configure: Error",
-                            "Autorole has already been configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.\nRun `/autorole-disable` to disable this feature completely.",
-                            interaction
-                        );
+                        title = "AutoRole Configure: Error";
+                        description = "Autorole has already been configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.";
+                        return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
                     }
                     else {
+                        await db.query("INSERT INTO configAutorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, targetRole, adderId, adderUsername, targetRole, adderId, adderUsername]);
+
                         if (autoRoleGuildId == guildId) {
-                            //if the target role is already the role that's in the database, then we don't need to insert data
-                            var embedReply = embedReplySuccessSecondaryColor(
-                                "AutoRole Configure: Configuration Modified",
-                                `The role that will get assigned to new members has been **modified** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.\nRun \`/autorole-disable\` to disable this feature.`,
-                                interaction
-                            );
+                            title = "AutoRole Configure: Configuration Modified";
+                            description = `The role that will get assigned to new members has been **modified** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.`;
+                            return await replyAndLog(interaction, embedReplySuccessSecondaryColor(title, description, interaction));
                         }
                         else {
-                            var embedReply = embedReplySuccessColor(
-                                "AutoRole Configure: Configuration Set",
-                                `The role that will get assigned to new members has been **set** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.\nRun \`/autorole-disable\` to disable this feature.`,
-                                interaction
-                            );
+                            title = "AutoRole Configure: Configuration Set";
+                            description = `The role that will get assigned to new members has been **set** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.`;
+                            return await replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
                         }
-
-                        await db.query("INSERT INTO configAutorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, targetRole, adderId, adderUsername, targetRole, adderId, adderUsername]);
                     }
                 }
                 catch (error) {
@@ -86,8 +82,5 @@ module.exports = {
                 }
             }
         }
-
-        await interaction.reply({ embeds: [embedReply] });
-        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
     }
 }

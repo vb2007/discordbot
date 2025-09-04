@@ -3,7 +3,7 @@ const { capitalizeFirstLetter } = require("../format");
 
 function checkIfNotInGuild(commandName, interaction) {
     if (!interaction.inGuild()) {
-        var embedReply = embedReplyFailureColor(
+        const embedReply = embedReplyFailureColor(
             `${capitalizeFirstLetter(commandName)} - Not in a server`,
             `You can only use the \`/${commandName}\` command in a server.`,
             interaction
