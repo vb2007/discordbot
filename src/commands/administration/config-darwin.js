@@ -5,7 +5,7 @@ const db = require("../../helpers/db");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("darwin-configure")
+        .setName("config-darwin")
         .setDescription("Sets up automatic video posting from a feed to a channel.")
         .addChannelOption(option =>
             option

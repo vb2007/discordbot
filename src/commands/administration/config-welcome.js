@@ -5,7 +5,7 @@ const db = require("../../helpers/db");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("welcome-configure")
+        .setName("config-welcome")
         .setDescription("Sets a welcome message that will be displayed for the new members in a specified channel.")
         .addChannelOption(option =>
             option

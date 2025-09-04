@@ -5,7 +5,7 @@ const db = require("../../helpers/db");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("autorole-configure")
+        .setName("config-autorole")
         .setDescription("Sets a role to be automatically assigned to new members on join.")
         .addRoleOption(option =>
             option

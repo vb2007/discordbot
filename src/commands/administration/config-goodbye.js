@@ -5,7 +5,7 @@ const db = require("../../helpers/db");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("goodbye-configure")
+        .setName("config-goodbye")
         .setDescription("Sets a goodbye message that will be displayed for the members who've left the server.")
         .addChannelOption(option =>
             option

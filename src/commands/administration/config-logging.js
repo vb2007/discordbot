@@ -5,7 +5,7 @@ const db = require("../../helpers/db");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("logging-configure")
+        .setName("config-logging")
         .setDescription("Sets up logging with various options for the current server.")
         .addChannelOption(option =>
             option
