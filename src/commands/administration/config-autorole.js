@@ -68,20 +68,18 @@ module.exports = {
                     description = "Autorole has already been configured for this server with this role. :x:\nRun the command with another role to overwrite the current role.";
                     return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
                 }
-                else {
-                    await db.query("INSERT INTO configAutorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, targetRole, adderId, adderUsername, targetRole, adderId, adderUsername]);
 
-                    if (autoRoleGuildId == guildId) {
-                        title = "AutoRole Configure: Configuration Modified";
-                        description = `The role that will get assigned to new members has been **modified** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.`;
-                        return await replyAndLog(interaction, embedReplySuccessSecondaryColor(title, description, interaction));
-                    }
-                    else {
-                        title = "AutoRole Configure: Configuration Set";
-                        description = `The role that will get assigned to new members has been **set** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.`;
-                        return await replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
-                    }
+                await db.query("INSERT INTO configAutorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?", [guildId, targetRole, adderId, adderUsername, targetRole, adderId, adderUsername]);
+
+                if (autoRoleGuildId == guildId) {
+                    title = "AutoRole Configure: Configuration Modified";
+                    description = `The role that will get assigned to new members has been **modified** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.`;
+                    return await replyAndLog(interaction, embedReplySuccessSecondaryColor(title, description, interaction));
                 }
+                
+                title = "AutoRole Configure: Configuration Set";
+                description = `The role that will get assigned to new members has been **set** to <@&${targetRole}>. :white_check_mark:\nRun this command again to modify the role.`;
+                return await replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
             }
             catch (error) {
                 console.error(error);
