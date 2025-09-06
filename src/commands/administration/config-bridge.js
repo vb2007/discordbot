@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const { embedReplySuccessColor, embedReplyFailureColor, embedReplySuccessSecondaryColor } = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
+const { checkIfNotInGuild, checkAdminPermissions } = require("../../helpers/command-validation/general");
 const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
 
@@ -46,10 +46,9 @@ module.exports = {
             return await replyAndLog(interaction, guildCheck);
         }
 
-        if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administrator)) {
-            title = "AutoRole Configure: Error";
-            description = "This feature requires **administrator** *(8)* privileges witch the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges.";
-            return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
+        const permissionCheck = checkAdminPermissions(commandName, interaction);
+        if (permissionCheck) {
+            return await replyAndLog(interaction, permissionCheck);
         }
 
         if (action === "configure") {
