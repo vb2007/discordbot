@@ -15,4 +15,18 @@ function checkIfNotInGuild(commandName, interaction) {
     return null;
 }
 
-module.exports = { checkIfNotInGuild }
+function checkAdminPermissions(commandName, interaction) {
+    if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administrator)) {
+        const embedReply = embedReplyFailureColor(
+            `${capitalizeFirstLetter(commandName)} - Insufficient Permissions`,
+            `This feature requires **administrator** *(8)* privileges which the bot currently lacks.\nIf you want this feature to work, please re-invite the bot with accurate privileges.`,
+            interaction
+        );
+
+        return embedReply;
+    }
+
+    return null;
+}
+
+module.exports = { checkIfNotInGuild, checkAdminPermissions }
