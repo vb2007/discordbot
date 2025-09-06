@@ -24,14 +24,14 @@ module.exports = {
             option
                 .setName("source-channel-id")
                 .setDescription("The ID of the source channel on another server.")
-                .setRequired(true)
+                .setRequired(false)
         )
         .addChannelOption(option =>
             option
                 .setName("destination-channel")
                 .setDescription("A channel where the bot will send the bridged messages.")
                 .addChannelTypes(0)
-                .setRequired(true)
+                .setRequired(false)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .setDMPermission(false),
