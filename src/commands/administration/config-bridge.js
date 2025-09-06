@@ -133,5 +133,35 @@ module.exports = {
                 return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
             }
         }
+
+        if (action === "disable") {
+            try {
+                const sourceChannelId = interaction.options.getString("source-channel-id");
+                const guildId = interaction.guild.id;
+
+                const query = await db.query("SELECT sourceChannelId, destinationGuildId FROM configBridging WHERE sourceChannelId = ? AND destinationGuildId = ?", [sourceChannelId, guildId]);
+                const existingGuildId = query[0]?.destinationGuildId || null;
+                const existingSourceChannelId = query[0]?.sourceChannelId || null;
+
+                if (existingSourceChannelId && existingGuildId) {
+                    await db.query("DELETE FROM configBridging WHERE sourceChannelId = ? AND destinationGuildId = ?", [sourceChannelId, guildId]);
+                    
+                    title = "Bridge Disable: Success";
+                    description = `Bridging has been disabled for the channel <#${sourceChannelId}> (\`${sourceChannelId}\`). :white_check_mark:`;
+                    return replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
+                }
+
+                title = "Bridge Disable: Error";
+                description = `Bridging has not been configured for the channel <#${sourceChannelId}> (\`${sourceChannelId}\`). :x:\nTherefore, you can't disable it.`;
+                return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
+            }
+            catch (error) {
+                console.error(`Error while disabling bridging: ${error}`);
+
+                title = "Bridge Disable: Error";
+                description = "An error occurred while disabling the bridging feature. :x:\nPlease try again.";
+                return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction))
+            }
+        }
     }
 }
