@@ -1,7 +1,10 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const { embedReplySuccessColor, embedReplySuccessSecondaryColor, embedReplyFailureColor } = require("../../helpers/embeds/embed-reply");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+const { checkIfNotInGuild, checkAdminPermissions } = require("../../helpers/command-validation/general");
+const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
+
+const commandName = "config-darwin";
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,19 +25,27 @@ module.exports = {
                 .setName("channel")
                 .setDescription("The channel where videos will be posted.")
                 .addChannelTypes(0)
-                .setRequired(true)
+                .setRequired(false)
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .setDMPermission(false),
     async execute(interaction) {
-        if (!interaction.inGuild()) {
-            var embedReply = embedReplyFailureColor(
-                "Darwin Configure: Error",
-                "You can only set up Darwin in a server.",
-                interaction
-            );
+        let title;
+        let description;
+
+        const action = interaction.options.getString("action");
+
+        const guildCheck = checkIfNotInGuild(commandName, interaction);
+        if (guildCheck) {
+            return await replyAndLog(interaction, guildCheck);
         }
-        else {
+
+        const permissionCheck = checkAdminPermissions(commandName, interaction);
+        if (permissionCheck) {
+            return await replyAndLog(interaction, permissionCheck);
+        }
+
+        if (action === "configure") {
             try {
                 const channel = interaction.options.getChannel("channel");
                 
@@ -49,54 +60,38 @@ module.exports = {
                 
                 if (existingConfig) {
                     if (channelId !== existingConfig.channelId) {
-                        var embedReply = embedReplySuccessSecondaryColor(
-                            "Darwin Configure: Channel Updated",
-                            `Successfully changed Darwin channel to <#${channelId}>. :white_check_mark:\n` +
-                            `Videos will now be posted to <#${channelId}>.\n` +
-                            `Use \`/darwin-disable\` to disable the service.`,
-                            interaction
-                        );
-                        
                         await db.query(
                             "UPDATE configDarwin SET channelId = ?, channelName = ?, adderId = ?, adderUsername = ? WHERE guildId = ?",
                             [channelId, channelName, adderId, adderUsername, guildId]
                         );
+
+                        title = "Darwin Configure: Channel Updated";
+                        description = `Successfully changed Darwin channel to <#${channelId}>. :white_check_mark:\n Videos will get posted there from now on.`;
+                        return replyAndLog(interaction, embedReplySuccessSecondaryColor(title, description, interaction));
                     }
-                    else {
-                        var embedReply = embedReplyFailureColor(
-                            "Darwin Configure: No Change",
-                            `Darwin is already configured to post videos to <#${channelId}>.\n` + 
-                            `No changes were made.`,
-                            interaction
-                        );
-                    }
+
+
+                    title = "Darwin Configure: No Change";
+                    description = `Darwin is already configured to post videos to <#${channelId}>.\n No changes were made.`;
+                    return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
                 }
-                else {
-                    var embedReply = embedReplySuccessColor(
-                        "Darwin Configure: Configuration Set",
-                        `Darwin has been configured successfully! :white_check_mark:\n` +
-                        `Videos will be posted to <#${channelId}>.\n` +
-                        `Use \`/darwin-disable\` to disable.`,
-                        interaction
-                    );
-                    
-                    await db.query(
-                        "INSERT INTO configDarwin (guildId, channelId, channelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?)",
-                        [guildId, channelId, channelName, adderId, adderUsername]
-                    );
-                }
+
+                await db.query(
+                    "INSERT INTO configDarwin (guildId, channelId, channelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?)",
+                    [guildId, channelId, channelName, adderId, adderUsername]
+                );
+
+                title = "Darwin Configure: Configuration Set";
+                description = "Darwin has been configured successfully! :white_check_mark:\n Videos will be posted to <#${channelId}>.";
+                return replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
             }
             catch (error) {
                 console.error(`Error configuring Darwin: ${error}`);
-                var embedReply = embedReplyFailureColor(
-                    "Darwin Configure: Error",
-                    "An error occurred while configuring Darwin. Please try again.",
-                    interaction
-                );
+
+                title = "Darwin Configure: Error";
+                description = "An error occurred while configuring Darwin. Please try again."
+                return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
             }
         }
-        
-        await interaction.reply({ embeds: [embedReply] });
-        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
     }
 };
