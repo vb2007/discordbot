@@ -69,18 +69,12 @@ module.exports = {
                 const existingDestinationChannelId = query[0]?.destinationChannelId || null;
 
                 if (existingSourceChannelId == sourceChannelId && existingDestinationChannelId == destinationChannelId && destinationGuildId == guildId) {
-                    var embedReply = embedReplyFailureColor(
-                        "Bridge Configure: Error",
-                        `Bridging has already been configured for the channel <#${sourceChannelId}> (\`${sourceChannelId}\`). :x:\n`,
-                        interaction
-                    );
+                    title = "Bridge Configure: Error";
+                    description = `Bridging has already been configured for the channel <#${sourceChannelId}> (\`${sourceChannelId}\`). :x:\n`;
+                    return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
                 }
-                else if (existingSourceChannelId == sourceChannelId && destinationGuildId == guildId) {
-                    var embedReply = embedReplySuccessSecondaryColor(
-                        "Bridge Configure: Configuration Modified",
-                        `The destination channel for <#${sourceChannelId}> (\`${sourceChannelId}\`) has been updated to <#${destinationChannelId}>. :white_check_mark:\nRun this command again to modify the channel.`,
-                    );
 
+                if (existingSourceChannelId == sourceChannelId && destinationGuildId == guildId) {
                     await db.query("UPDATE configBridging SET destinationChannelId = ?, destinationChannelName = ?, adderId = ?, adderUsername = ? WHERE sourceChannelId = ? AND destinationChannelId = ?",
                         [
                             destinationChannelId,
@@ -91,13 +85,13 @@ module.exports = {
                             destinationChannelId
                         ]
                     );
-                }
-                else if (existingSourceChannelId != sourceChannelId && destinationGuildId == guildId) {
-                    var embedReply = embedReplySuccessColor(
-                        "Bridge Configure: Success",
-                        `Another channel has been added to bridging successfully. :white_check_mark:\nMessages from <#${sourceChannelId}> (\`${sourceChannelId}\`) will now get bridged to <#${destinationChannelId}>.`,
-                    );
 
+                    title = "Bridge Configure: Configuration Modified";
+                    description = `The destination channel for <#${sourceChannelId}> (\`${sourceChannelId}\`) has been updated to <#${destinationChannelId}>. :white_check_mark:\nRun this command again to modify the channel.`;
+                    return await replyAndLog(interaction, embedReplySuccessSecondaryColor(title, description, interaction));
+                }
+
+                if (existingSourceChannelId != sourceChannelId && destinationGuildId == guildId) {
                     await db.query("INSERT INTO configBridging (sourceChannelId, destinationGuildId, destinationGuildName, destinationChannelId, destinationChannelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?)",
                         [
                             sourceChannelId,
@@ -109,39 +103,35 @@ module.exports = {
                             interactionUsername
                         ]
                     );
-                }
-                else {
-                    var embedReply = embedReplySuccessColor(
-                        "Bridge Configure: Success",
-                        `Bridging has been successfully configured. :white_check_mark:\nMessages from <#${sourceChannelId}> (\`${sourceChannelId}\`) will now get bridged to <#${destinationChannelId}>.`,
-                        interaction
-                    );
 
-                    await db.query("INSERT INTO configBridging (sourceChannelId, destinationGuildId, destinationGuildName, destinationChannelId, destinationChannelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                        [
-                            sourceChannelId,
-                            guildId,
-                            guildName,
-                            destinationChannelId,
-                            destinationChannelName,
-                            interactionUserId,
-                            interactionUsername
-                        ]
-                    );
+                    title = "Bridge Configure: Success";
+                    description = `Another channel has been added to bridging successfully. :white_check_mark:\nMessages from <#${sourceChannelId}> (\`${sourceChannelId}\`) will now get bridged to <#${destinationChannelId}>.`;
+                    return await replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
                 }
+
+                await db.query("INSERT INTO configBridging (sourceChannelId, destinationGuildId, destinationGuildName, destinationChannelId, destinationChannelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    [
+                        sourceChannelId,
+                        guildId,
+                        guildName,
+                        destinationChannelId,
+                        destinationChannelName,
+                        interactionUserId,
+                        interactionUsername
+                    ]
+                );
+
+                title = "Bridge Configure: Success";
+                description = `Bridging has been successfully configured. :white_check_mark:\nMessages from <#${sourceChannelId}> (\`${sourceChannelId}\`) will now get bridged to <#${destinationChannelId}>.`;
+                return await replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
             }
             catch (error) {
                 console.error(`Failed to configure bridging: ${error.message}\n${error.stack}`);
-                var embedReply = embedReplyFailureColor(
-                    "Bridge Configure: Error",
-                    "Failed to configure bridging. Please try again.",
-                    interaction
-                );  
+
+                title = "Bridge Configure: Error";
+                description = "An error occurred while configuring the bridging feature. :x:\nPlease try again.";
+                return await replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
             }
         }
-        
-
-        await interaction.reply({ embeds: [embedReply] });
-        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
     }
 }
