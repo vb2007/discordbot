@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { embedReplyPrimaryColorWithFields } = require("../../helpers/embeds/embed-reply");
+const { embedReplyPrimaryColorWithFields, embedReplyPrimaryColor } = require("../../helpers/embeds/embed-reply");
 const replyAndLog = require("../../helpers/reply");
 
 const commandName = "911-countdown";
