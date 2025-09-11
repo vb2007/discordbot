@@ -1,10 +1,12 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { embedReplyPrimaryColorWithFields } = require("../../helpers/embeds/embed-reply");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+const replyAndLog = require("../../helpers/reply");
+
+const commandName = "911-countdown";
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("911-countdown")
+        .setName(commandName)
         .setDescription("Displays how much time is left until 9/11.")
         .addStringOption(option =>
             option
@@ -55,6 +57,9 @@ module.exports = {
                 .setRequired(false))
         .setDMPermission(true),
     async execute(interaction) {
+        let title;
+        let description;
+        
         const now = new Date();
         const utcOffset = parseFloat(interaction.options.getString("utc-offset") || "0");
         const offsetMilliseconds = utcOffset * 60 * 60 * 1000;
@@ -64,57 +69,54 @@ module.exports = {
         const targetDate = new Date(Date.UTC(currentYear, 8, 11)); //8, because months are 0-indexed
 
         if (adjustedNow.getUTCMonth() === 8 && adjustedNow.getUTCDate() === 11) {
-            var embedReply = embedReplyPrimaryColor(
-                "9/11 Countdown",
-                "Today is the day! :tada:\nHappy 9/11 everyone! :partying_face:",
+            title = "9/11 Countdown";
+            description = "Today is the day! :tada:\nHappy 9/11 everyone! :partying_face:";
+            return await replyAndLog(interaction, embedReplyPrimaryColor(title, description, interaction));
+        }
+        
+        if (adjustedNow > targetDate) {
+            targetDate.setUTCFullYear(currentYear + 1);
+        }
+
+        const timeDiffernce = targetDate - adjustedNow;
+
+        const days = Math.floor(timeDiffernce / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDiffernce % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiffernce % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDiffernce % (1000 * 60)) / 1000);
+
+        if (utcOffset === 0) {
+            var embedReply = embedReplyPrimaryColorWithFields(
+                "911 Countdown",
+                "",
+                [
+                    {
+                        name: "Time left until 9/11",
+                        value: `**${days}** days **${hours}** hours **${minutes}** minutes **${seconds}** seconds`
+                    }
+                ],
+                interaction
             );
-        }
-        else {
-            //if 9/11 has already passed this year
-            if (adjustedNow > targetDate) {
-                targetDate.setUTCFullYear(currentYear + 1);
-            }
 
-            const timeDiffernce = targetDate - adjustedNow;
-
-            const days = Math.floor(timeDiffernce / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeDiffernce % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiffernce % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeDiffernce % (1000 * 60)) / 1000);
-
-            if (utcOffset === 0) {
-                var embedReply = embedReplyPrimaryColorWithFields(
-                    "911 Countdown",
-                    "",
-                    [
-                        {
-                            name: "Time left until 9/11",
-                            value: `**${days}** days **${hours}** hours **${minutes}** minutes **${seconds}** seconds`
-                        }
-                    ],
-                    interaction
-                );
-            }
-            else {
-                var embedReply = embedReplyPrimaryColorWithFields(
-                    "911 Countdown",
-                    "",
-                    [
-                        {
-                            name: "Time left until 9/11",
-                            value: `**${days}** days **${hours}** hours **${minutes}** minutes **${seconds}** seconds`
-                        },
-                        {
-                            name: "UTC Offset",
-                            value: `UTC${utcOffset >= 0 ? "+" : ""}${utcOffset}`
-                        }
-                    ],
-                    interaction
-                );
-            }
+            return await replyAndLog(interaction, embedReply);
         }
 
-        await interaction.reply({ embeds: [embedReply] });
-        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
+        var embedReply = embedReplyPrimaryColorWithFields(
+            "911 Countdown",
+            "",
+            [
+                {
+                    name: "Time left until 9/11",
+                    value: `**${days}** days **${hours}** hours **${minutes}** minutes **${seconds}** seconds`
+                },
+                {
+                    name: "UTC Offset",
+                    value: `UTC${utcOffset >= 0 ? "+" : ""}${utcOffset}`
+                }
+            ],
+            interaction
+        );
+
+        return await replyAndLog(interaction, embedReply);
     }
 }
