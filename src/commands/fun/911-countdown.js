@@ -70,7 +70,7 @@ module.exports = {
 
         if (adjustedNow.getUTCMonth() === 8 && adjustedNow.getUTCDate() === 11) {
             title = "9/11 Countdown";
-            description = "Today is the day! :tada:\nHappy 9/11 everyone! :partying_face:";
+            description = "Today is the day! :tada:\nHappy 9/11! Never forget those dancing jews. :partying_face:";
             return await replyAndLog(interaction, embedReplyPrimaryColor(title, description, interaction));
         }
         
