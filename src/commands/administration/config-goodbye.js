@@ -12,9 +12,11 @@ const {
 const replyAndLog = require("../../helpers/reply");
 const db = require("../../helpers/db");
 
+const commandName = "config-goodbye";
+
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("config-goodbye")
+    .setName(commandName)
     .setDescription(
       "Sets a goodbye message that will be displayed for the members who've left the server.",
     )
@@ -35,14 +37,14 @@ module.exports = {
           "A channel where the goodbye message will be displayed.",
         )
         .addChannelTypes(0) //= GUILD_TEXT aka. text channels
-        .setRequired(true),
+        .setRequired(false),
     )
     .addStringOption((option) =>
       option
         .setName("message")
         //the description length is limited to 100 characters ¯\_(ツ)_/¯
         .setDescription("A message that the new members will see.") //You can use the following placeholders: {user} - the new member's username, {server} - the server's name, {memberCount} - the server's member count.
-        .setRequired(true),
+        .setRequired(false),
     )
     .addBooleanOption((option) =>
       option
