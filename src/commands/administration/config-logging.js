@@ -130,6 +130,46 @@ module.exports = {
     }
 
     if (action === "disable") {
+      try {
+        const currentGuildId = interaction.guild.id;
+        const query = await db.query(
+          "SELECT guildId FROM configLogging WHERE guildId = ?",
+          [currentGuildId],
+        );
+        const existingGuildId = query[0]?.guildId || null;
+
+        if (existingGuildId) {
+          await db.query("DELETE FROM configLogging WHERE guildId = ?", [
+            currentGuildId,
+          ]);
+
+          title = "Logging Disable: Success";
+          description =
+            "The logging feature has been disabled successfully. :white_check_mark:";
+          return replyAndLog(
+            interaction,
+            embedReplySuccessColor(title, description, interaction),
+          );
+        }
+
+        title = "Logging Disable: Error";
+        description =
+          "Logging has not been configured for this server. :x:\nTherefore, you can't disable it.";
+        return replyAndLog(
+          interaction,
+          embedReplyFailureColor(title, description, interaction),
+        );
+      } catch (error) {
+        console.error(`Error while running ${commandName}: ${error}`);
+
+        title = "Logging Disable: Error";
+        description =
+          "There was an error while trying to disable logging.\nPlease try again later.";
+        return replyAndLog(
+          interaction,
+          embedReplyFailureColor(title, description, interaction),
+        );
+      }
     }
   },
 };
