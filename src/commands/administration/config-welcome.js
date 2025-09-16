@@ -101,6 +101,25 @@ module.exports = {
 
         //if welcome messages haven't been configured for the current server
         if (!existingChannelId) {
+          await db.query(
+            "INSERT INTO configWelcome (guildId, channelId, message, isEmbed, embedColor, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [
+              guildId,
+              channelId,
+              welcomeMessage,
+              isEmbed,
+              embedColor,
+              adderId,
+              adderUsername,
+              channelId,
+              welcomeMessage,
+              adderId,
+              adderUsername,
+              isEmbed,
+              embedColor,
+            ],
+          );
+
           title = "Welcome Configure: Configuration Set";
           description =
             "The **welcome message** has been successfully **set**. :white_check_mark:\nRun this command again later if you want to modify or disable the current configuration.";
@@ -136,6 +155,19 @@ module.exports = {
           );
         }
 
+        await db.query(
+          "UPDATE configWelcome SET channelId = ?, message = ?, adderId = ?, adderUsername = ?, isEmbed = ?, embedColor = ? WHERE guildId = ?",
+          [
+            channelId,
+            welcomeMessage,
+            adderId,
+            adderUsername,
+            isEmbed,
+            embedColor,
+            guildId,
+          ],
+        );
+
         //if the welcome configuration has been modified
         let modificationsMessage;
         if (modifications.length === 1) {
@@ -152,25 +184,6 @@ module.exports = {
         return replyAndLog(
           interaction,
           embedReplySuccessSecondaryColor(title, description, interaction),
-        );
-
-        await db.query(
-          "INSERT INTO configWelcome (guildId, channelId, message, isEmbed, embedColor, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE channelId = ?, message = ?, adderId = ?, adderUsername = ?, isEmbed = ?, embedColor = ?",
-          [
-            guildId,
-            channelId,
-            welcomeMessage,
-            isEmbed,
-            embedColor,
-            adderId,
-            adderUsername,
-            channelId,
-            welcomeMessage,
-            adderId,
-            adderUsername,
-            isEmbed,
-            embedColor,
-          ],
         );
       } catch (error) {
         console.error(`Error while running ${commandName}: ${error}`);
