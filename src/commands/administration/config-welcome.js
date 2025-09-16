@@ -9,8 +9,8 @@ const {
   checkIfNotInGuild,
   checkAdminPermissions,
 } = require("../../helpers/command-validation/general");
-const db = require("../../helpers/db");
 const replyAndLog = require("../../helpers/reply");
+const db = require("../../helpers/db");
 
 module.exports = {
   data: new SlashCommandBuilder()
