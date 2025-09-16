@@ -197,5 +197,48 @@ module.exports = {
         );
       }
     }
+
+    if (action === "disable") {
+      try {
+        const currentGuildId = interaction.guild.id;
+        const query = await db.query(
+          "SELECT guildId FROM configWelcome WHERE guildId = ?",
+          [currentGuildId],
+        );
+        const welcomeGuildId = query[0]?.guildId || null;
+
+        if (welcomeGuildId) {
+          await db.query("DELETE FROM configWelcome WHERE guildId = ?", [
+            welcomeGuildId,
+          ]);
+
+          title = "Welcome Disable: Success";
+          description =
+            "The welcome messages have been disabled successfully for this server.\nYou can re-enable them by running the `/welcome-configure` command again.";
+          return replyAndLog(
+            interaction,
+            embedReplySuccessColor(title, description, interaction),
+          );
+        }
+
+        title = "Welcome Disable: Warning";
+        description =
+          "Welcome messages have not been configured for this server.\nTherefore, you can't disable them.";
+        return replyAndLog(
+          interaction,
+          embedReplyWarningColor(title, description, interaction),
+        );
+      } catch (error) {
+        console.error(`Error while running ${commandName}: ${error}`);
+
+        title = "Welcome Disable: Error";
+        description =
+          "There was an error while trying to disable the welcome messages.";
+        return replyAndLog(
+          interaction,
+          embedReplyFailureColor(title, description, interaction),
+        );
+      }
+    }
   },
 };
