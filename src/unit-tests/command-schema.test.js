@@ -9,6 +9,14 @@ jest.mock(
   { virtual: true },
 );
 
+jest.mock("cheerio", () => ({
+  load: jest.fn(() => ({
+    $: jest.fn(),
+  })),
+}));
+jest.mock("request-promise", () => jest.fn());
+jest.mock("google-translate-api-x", () => jest.fn());
+
 const fs = require("fs");
 const path = require("path");
 
