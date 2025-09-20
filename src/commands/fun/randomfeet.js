@@ -5,7 +5,6 @@ const {
 } = require("../../helpers/embeds/embed-reply");
 const fs = require("fs");
 const path = require("path");
-const linksFile = "./data/links.json";
 const cheerio = require("cheerio");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
@@ -46,10 +45,11 @@ async function scrapeLinks(url) {
 }
 
 async function loadLinks() {
+  const linksFile = "./src/data/links.json";
   let links = [];
 
   try {
-    const dataDir = "./data";
+    const dataDir = "./src/data/";
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir);
     }
