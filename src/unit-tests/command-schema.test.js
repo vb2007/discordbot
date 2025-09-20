@@ -3,27 +3,7 @@ const path = require("path");
 const { parse } = require("@babel/parser");
 const traverse = require("@babel/traverse").default;
 
-describe("Command structure validation", () => {
-  const foldersPath = path.join(__dirname, "..", "commands");
-  const commandFiles = getAllCommandFiles(foldersPath);
-
-  test("all commands should have valid structure", () => {
-    const invalidCommands = [];
-
-    commandFiles.forEach((filePath) => {
-      const fileName = path.basename(filePath);
-      const issues = validateCommand(filePath);
-
-      if (issues.length > 0) {
-        invalidCommands.push(`❌ ${fileName}: ${issues.join(", ")}`);
-      }
-    });
-
-    expect(invalidCommands).toEqual([]);
-  });
-});
-
-function getAllCommandFiles(foldersPath) {
+const getAllCommandFiles = (foldersPath) => {
   const commandFiles = [];
   const commandFolders = fs.readdirSync(foldersPath);
 
@@ -38,9 +18,9 @@ function getAllCommandFiles(foldersPath) {
   });
 
   return commandFiles;
-}
+};
 
-function validateCommand(filePath) {
+const validateCommand = (filePath) => {
   const issues = [];
   const fileContent = fs.readFileSync(filePath, "utf8");
 
@@ -67,9 +47,9 @@ function validateCommand(filePath) {
   if (!validation.hasSetDescription) issues.push("missing setDescription()");
 
   return issues;
-}
+};
 
-function validateCommandStructure(ast) {
+const validateCommandStructure = (ast) => {
   let hasData = false;
   let hasExecute = false;
   let hasModuleExports = false;
@@ -118,9 +98,9 @@ function validateCommandStructure(ast) {
     hasSetName,
     hasSetDescription,
   };
-}
+};
 
-function checkSlashCommandBuilderChain(node) {
+const checkSlashCommandBuilderChain = (node) => {
   let hasSlashCommandBuilder = false;
   let hasSetName = false;
   let hasSetDescription = false;
@@ -154,4 +134,24 @@ function checkSlashCommandBuilderChain(node) {
   traverseChain(node);
 
   return { hasSlashCommandBuilder, hasSetName, hasSetDescription };
-}
+};
+
+describe("Command structure validation", () => {
+  const foldersPath = path.join(__dirname, "..", "commands");
+  const commandFiles = getAllCommandFiles(foldersPath);
+
+  test("all commands should have valid structure", () => {
+    const invalidCommands = [];
+
+    commandFiles.forEach((filePath) => {
+      const fileName = path.basename(filePath);
+      const issues = validateCommand(filePath);
+
+      if (issues.length > 0) {
+        invalidCommands.push(`❌ ${fileName}: ${issues.join(", ")}`);
+      }
+    });
+
+    expect(invalidCommands).toEqual([]);
+  });
+});
