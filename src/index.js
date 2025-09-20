@@ -225,7 +225,7 @@ function setActivity() {
   // console.log("Re-announced bot's activity.");
 }
 
-client.on("ready", setActivity);
+client.on("clientReady", setActivity);
 
 // Re-announce the bot's activity every 20 minutes (in case of an internet outage or something)
 setInterval(setActivity, 20 * 60 * 1000);
