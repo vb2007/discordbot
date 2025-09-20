@@ -3,150 +3,23 @@ const path = require("path");
 const { parse } = require("@babel/parser");
 const traverse = require("@babel/traverse").default;
 
-expect.extend({
-  toHaveModuleExports(fileName, validationResult) {
-    const pass = validationResult.hasModuleExports;
-    return {
-      pass,
-      message: () =>
-        `❌ ${fileName}: Missing module.exports assignment. Expected: module.exports = { data: ..., execute: ... }`,
-    };
-  },
-
-  toHaveDataProperty(fileName, validationResult) {
-    const pass = validationResult.hasData;
-    return {
-      pass,
-      message: () =>
-        `❌ ${fileName}: Missing "data" property in module.exports. Discord commands require a data property.`,
-    };
-  },
-
-  toHaveExecuteMethod(fileName, validationResult) {
-    const pass = validationResult.hasExecute;
-    return {
-      pass,
-      message: () =>
-        `❌ ${fileName}: Missing "execute" property in module.exports. Discord commands require an execute function.`,
-    };
-  },
-
-  toUseSlashCommandBuilder(fileName, validationResult) {
-    const pass = validationResult.hasSlashCommandBuilder;
-    return {
-      pass,
-      message: () =>
-        `❌ ${fileName}: data property must use "new SlashCommandBuilder()". Found different structure.`,
-    };
-  },
-
-  toHaveSetNameMethod(fileName, validationResult) {
-    const pass = validationResult.hasSetName;
-    return {
-      pass,
-      message: () =>
-        `❌ ${fileName}: SlashCommandBuilder chain missing ".setName()". Discord requires all commands to have a name.`,
-    };
-  },
-
-  toHaveSetDescriptionMethod(fileName, validationResult) {
-    const pass = validationResult.hasSetDescription;
-    return {
-      pass,
-      message: () =>
-        `❌ ${fileName}: SlashCommandBuilder chain missing ".setDescription()". Discord requires all commands to have a description.`,
-    };
-  },
-});
-
 describe("Command structure validation", () => {
   const foldersPath = path.join(__dirname, "..", "commands");
   const commandFiles = getAllCommandFiles(foldersPath);
 
-  describe("Basic structure requirements", () => {
-    test.each(commandFiles)(
-      "should have module.exports structure - %s",
-      (filePath) => {
-        const fileName = path.basename(filePath);
-        const validationResult = getValidationResult(filePath);
+  test("all commands should have valid structure", () => {
+    const invalidCommands = [];
 
-        expect(fileName).toHaveModuleExports(validationResult);
-      },
-    );
-
-    test.each(commandFiles)("should have data property - %s", (filePath) => {
+    commandFiles.forEach((filePath) => {
       const fileName = path.basename(filePath);
-      const validationResult = getValidationResult(filePath);
+      const issues = validateCommand(filePath);
 
-      expect(fileName).toHaveDataProperty(validationResult);
+      if (issues.length > 0) {
+        invalidCommands.push(`❌ ${fileName}: ${issues.join(", ")}`);
+      }
     });
 
-    test.each(commandFiles)("should have execute method - %s", (filePath) => {
-      const fileName = path.basename(filePath);
-      const validationResult = getValidationResult(filePath);
-
-      expect(fileName).toHaveExecuteMethod(validationResult);
-    });
-  });
-
-  describe("Discord.js SlashCommandBuilder requirements", () => {
-    test.each(commandFiles)(
-      "should use SlashCommandBuilder constructor - %s",
-      (filePath) => {
-        const fileName = path.basename(filePath);
-        const validationResult = getValidationResult(filePath);
-
-        expect(fileName).toUseSlashCommandBuilder(validationResult);
-      },
-    );
-
-    test.each(commandFiles)(
-      "should have setName() method call - %s",
-      (filePath) => {
-        const fileName = path.basename(filePath);
-        const validationResult = getValidationResult(filePath);
-
-        expect(fileName).toHaveSetNameMethod(validationResult);
-      },
-    );
-
-    test.each(commandFiles)(
-      "should have setDescription() method call - %s",
-      (filePath) => {
-        const fileName = path.basename(filePath);
-        const validationResult = getValidationResult(filePath);
-
-        expect(fileName).toHaveSetDescriptionMethod(validationResult);
-      },
-    );
-  });
-
-  describe("Complete command validation", () => {
-    test("all commands should have complete structure", () => {
-      const invalidCommands = [];
-
-      commandFiles.forEach((filePath) => {
-        const fileName = path.basename(filePath);
-        const validationResult = getValidationResult(filePath);
-
-        const issues = [];
-        if (!validationResult.hasModuleExports)
-          issues.push("missing module.exports");
-        if (!validationResult.hasData) issues.push("missing data property");
-        if (!validationResult.hasExecute) issues.push("missing execute method");
-        if (!validationResult.hasSlashCommandBuilder)
-          issues.push("missing SlashCommandBuilder");
-        if (!validationResult.hasSetName) issues.push("missing setName()");
-        if (!validationResult.hasSetDescription)
-          issues.push("missing setDescription()");
-
-        if (issues.length > 0) {
-          invalidCommands.push(`${fileName}: ${issues.join(", ")}`);
-        }
-      });
-
-      expect(invalidCommands).toEqual([]);
-    });
+    expect(invalidCommands).toEqual([]);
   });
 });
 
@@ -167,7 +40,8 @@ function getAllCommandFiles(foldersPath) {
   return commandFiles;
 }
 
-function getValidationResult(filePath) {
+function validateCommand(filePath) {
+  const issues = [];
   const fileContent = fs.readFileSync(filePath, "utf8");
 
   let ast;
@@ -179,10 +53,20 @@ function getValidationResult(filePath) {
       plugins: ["objectRestSpread", "decorators-legacy"],
     });
   } catch (parseError) {
-    throw new Error(`Failed to parse ${filePath}: ${parseError.message}`);
+    return [`failed to parse: ${parseError.message}`];
   }
 
-  return validateCommandStructure(ast);
+  const validation = validateCommandStructure(ast);
+
+  if (!validation.hasModuleExports) issues.push("missing module.exports");
+  if (!validation.hasData) issues.push("missing data property");
+  if (!validation.hasExecute) issues.push("missing execute method");
+  if (!validation.hasSlashCommandBuilder)
+    issues.push("missing SlashCommandBuilder");
+  if (!validation.hasSetName) issues.push("missing setName()");
+  if (!validation.hasSetDescription) issues.push("missing setDescription()");
+
+  return issues;
 }
 
 function validateCommandStructure(ast) {
@@ -204,29 +88,22 @@ function validateCommandStructure(ast) {
         hasModuleExports = true;
 
         path.node.right.properties.forEach((prop) => {
-          if (
-            prop.type === "ObjectProperty" ||
-            prop.type === "Property" ||
-            prop.type === "ObjectMethod"
-          ) {
-            const key = prop.key.name || prop.key.value;
+          const key = prop.key.name || prop.key.value;
 
-            if (key === "data") {
-              hasData = true;
-              if (prop.value && prop.value.type === "CallExpression") {
-                const builderValidation = checkSlashCommandBuilderChain(
-                  prop.value,
-                );
-                hasSlashCommandBuilder =
-                  builderValidation.hasSlashCommandBuilder;
-                hasSetName = builderValidation.hasSetName;
-                hasSetDescription = builderValidation.hasSetDescription;
-              }
+          if (key === "data") {
+            hasData = true;
+            if (prop.value && prop.value.type === "CallExpression") {
+              const builderValidation = checkSlashCommandBuilderChain(
+                prop.value,
+              );
+              hasSlashCommandBuilder = builderValidation.hasSlashCommandBuilder;
+              hasSetName = builderValidation.hasSetName;
+              hasSetDescription = builderValidation.hasSetDescription;
             }
+          }
 
-            if (key === "execute") {
-              hasExecute = true;
-            }
+          if (key === "execute") {
+            hasExecute = true;
           }
         });
       }
@@ -257,12 +134,8 @@ function checkSlashCommandBuilderChain(node) {
         const methodName =
           currentNode.callee.property && currentNode.callee.property.name;
 
-        if (methodName === "setName") {
-          hasSetName = true;
-        }
-        if (methodName === "setDescription") {
-          hasSetDescription = true;
-        }
+        if (methodName === "setName") hasSetName = true;
+        if (methodName === "setDescription") hasSetDescription = true;
 
         if (currentNode.callee.object) {
           traverseChain(currentNode.callee.object);
@@ -280,9 +153,5 @@ function checkSlashCommandBuilderChain(node) {
 
   traverseChain(node);
 
-  return {
-    hasSlashCommandBuilder,
-    hasSetName,
-    hasSetDescription,
-  };
+  return { hasSlashCommandBuilder, hasSetName, hasSetDescription };
 }
