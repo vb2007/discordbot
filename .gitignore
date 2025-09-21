@@ -2,5 +2,6 @@
 config.json
 /node_modules
 /src/command-logs
-/src/data/links.json
+/src/data/cigpics.json
+/src/data/pics.json
 /src/data/commands.md
