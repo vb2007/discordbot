@@ -44,9 +44,9 @@ Response: ${response}\n\n`;
         channelId = parseInt(interaction.channel.id);
       } else {
         isInServer = 0;
-        guildName = "Not in a server.";
+        guildName = null;
         guildId = null;
-        channelName = "Not in a server.";
+        channelName = null;
         channelId = null;
       }
 
