@@ -3,7 +3,7 @@ const {
   embedReplyPrimaryColorImg,
   embedReplyImg,
 } = require("../../helpers/embeds/embed-reply");
-const loadLinks = require("../../helpers/scraping");
+const { loadLinks } = require("../../helpers/scraping");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {

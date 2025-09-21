@@ -3,6 +3,7 @@ const {
   embedReplyPrimaryColorImg,
   embedReplyFailureColor,
 } = require("../../helpers/embeds/embed-reply");
+const { loadLinks } = require("../../helpers/scraping");
 const replyAndLog = require("../../helpers/reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
