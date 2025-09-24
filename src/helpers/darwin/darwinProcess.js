@@ -182,7 +182,7 @@ async function processVideo(video) {
         comments,
         directStreamLink,
         canBeStreamed: true,
-        fileSize: 0,
+        fileSize: transcodedSize,
       };
     } catch (error) {
       console.error(
