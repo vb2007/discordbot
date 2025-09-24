@@ -4,6 +4,9 @@ If you're using any Linux server, you can follow this guide to run the applicati
 
 ## Setup steps
 
+> [!WARN]
+> Before running the application, make sure you're using a supported Node.js version (see [nvm-setup.md](nvm-setup.md)).
+
 Make a new service called `discordbot.service` in the `/etc/systemd/system` folder based on [THIS](../systemd/discordbot.service) example file:
 
 ```shell
@@ -11,6 +14,9 @@ sudo nano /etc/systemd/system/discordbot.sevice
 ```
 
 Edit the relevant lines in the file (you can leave the rest as-is), then save the changes:
+
+> [!TIP]
+> You can find out your node path with `which node` command.
 
 ```service
 ...
