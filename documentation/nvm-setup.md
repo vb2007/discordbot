@@ -2,7 +2,7 @@
 
 To ensure your Discord bot runs on the correct version of Node.js, you can use Node Version Manager (nvm). Follow these steps to set up nvm and switch to the required Node.js version.
 
-> [!WARN]
+> [!WARNING]
 > Currently, only `v24.8.0` is officially supported. Using other versions can work, but may lead to unexpected issues.
 
 ## Installing & activating nvm

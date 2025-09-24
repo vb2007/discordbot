@@ -29,7 +29,7 @@ Do the following for setting up the application from sratch:
 
 ### Setting up nvm & the correct Node.js version
 
-> [!WARN]
+> [!WARNING]
 > Currently, only one specific Node.js version - **v24.8.0** - is supported officially. Issues might occur when running the bot on different versions.
 
 If you're usure about your Node.js version, please refer to [THIS](documentation/nvm-setup.md) documentation.
