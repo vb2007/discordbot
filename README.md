@@ -2,11 +2,11 @@
 
 <div align="center">
 
-A simple discord bot of mine developed with **Node.js**'s [discord.js](https://www.npmjs.com/package/discord.js?activeTab=readme) package.
-
 [![Unit tests](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml/badge.svg?branch=dev)](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml) [![Update Wiki Commands](https://github.com/vb2007/discordbot/actions/workflows/wiki-update.yml/badge.svg)](https://github.com/vb2007/discordbot/actions/workflows/wiki-update.yml) [![CodeQL](https://github.com/vb2007/discordbot/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/vb2007/discordbot/actions/workflows/github-code-scanning/codeql)
 
 </div>
+
+A simple discord bot of mine developed with **Node.js**'s [discord.js](https://www.npmjs.com/package/discord.js?activeTab=readme) package.
 
 ## Invite the bot
 
