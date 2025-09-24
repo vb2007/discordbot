@@ -6,21 +6,25 @@ Wants=network-online.target
 After=local-fs.target network-online.target nss-lookup.target
 
 [Service]
-ExecStartPre=/bin/mkdir -p /home/vb2007/prod/discordbot/temp
-ExecStartPre=/bin/chmod -R 777 /home/vb2007/prod/discordbot/temp
+Environment="PATH=/home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment=NODE_ENV=production
 
-ExecStart=/usr/bin/npm run app
-WorkingDirectory=/home/vb2007/prod/discordbot
-# StandardOutput=syslog # For logging to syslog
-# StandardError=syslog # For logging to syslog
-# Restart=always # For automatically restarting the service on failure
-# RestartSec=10 # For automatically restarting the service on failure
-Restart=always
-RestartSec=10
-SyslogIdentifier=discordbot
 User=vb2007
 Group=vb2007
-Environment=NODE_ENV=production
+SyslogIdentifier=discordbot
+WorkingDirectory=/home/vb2007/prod/discordbot
+
+ExecStartPre=/bin/mkdir -p /home/vb2007/prod/discordbot/temp
+ExecStartPre=/bin/chmod -R 777 /home/vb2007/prod/discordbot/temp
+ExecStartPre=/usr/bin/env node --version
+ExecStart=npm run app
+
+# StandardOutput=syslog # For logging to syslog
+# StandardError=syslog # For logging to syslog
+
+# Restart=always # For automatically restarting the service on failure
+# RestartSec=10 # For automatically restarting the service on failure
+
 # Type=simple
 # PrivateTmp=true
 # TimeoutStopSec=1800
