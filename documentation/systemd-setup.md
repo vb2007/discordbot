@@ -20,10 +20,13 @@ Edit the relevant lines in the file (you can leave the rest as-is), then save th
 
 ```service
 ...
-WorkingDirectory=/path/to/the/projects/folder
+Environment="PATH=/home/your-user/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 ...
 User=your-user
 Group=your-group
+WorkingDirectory=/path/to/the/projects/folder
+ExecStartPre=/bin/mkdir -p /path/to/the/projects/folder/temp
+ExecStartPre=/bin/chmod -R 777 /path/to/the/projects/folder/temp
 ...
 ```
 
