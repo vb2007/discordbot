@@ -27,6 +27,13 @@ Do the following for setting up the application from sratch:
 3. Create a `config.json` file, or rename the existing [config.json.example](./src/config.json.example) file, and fill it out with the required configuration settings.
 4. Like you would with any other node.js app, install dependencies with with the `npm i` command.
 
+### Setting up nvm & the correct Node.js version
+
+> [!WARN]
+> Currently, only one specific Node.js version - **v24.8.0** - is supported officially. Issues might occur when running the bot on different versions.
+
+If you're usure about your Node.js version, please refer to [THIS](documentation/nvm-setup.md) documentation.
+
 ### Setting up a database for the bot
 
 Some of the bot's features **require a MariaDB database**.
