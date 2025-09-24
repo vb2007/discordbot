@@ -72,7 +72,7 @@ function messageGen(
   canBeStreamed,
   fileSize,
 ) {
-  return `${canBeStreamed ? `[[ STREAMING & DOWNLOAD ]](${directStreamLink})` : `[[ ORIGINAL MP4 ]](${href})`}  -  [[ FORUM POST ]](<${comments}>)  -  ${title}${canBeStreamed ? ` - Size: ${fileSize}MB` : ` - Size (might won't load): ${fileSize}MB`}`;
+  return `${canBeStreamed ? `[[ STREAMING & DOWNLOAD ]](${directStreamLink})` : `[[ ORIGINAL MP4 ]](${href})`}  -  [[ FORUM POST ]](<${comments}>)\n${title}${canBeStreamed ? `\nSize: ${fileSize}MB` : `\nSize (might won't load): ${fileSize}MB`}`;
 }
 
 /**
@@ -154,8 +154,8 @@ async function processVideo(video) {
         transcodedFilePath,
       );
 
+      const transcodedSize = getFileSizeMB(transcodedFilePath);
       if (transcodingSuccess) {
-        const transcodedSize = getFileSizeMB(transcodedFilePath);
         console.log(
           `Transcoded file size: ${transcodedSize}MB (${Math.round((transcodedSize / originalSize) * 100)}% of original)`,
         );
