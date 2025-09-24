@@ -2,11 +2,11 @@
 
 <div align="center">
 
-A simple discord bot of mine developed with **Node.js**'s [discord.js](https://www.npmjs.com/package/discord.js?activeTab=readme) package.
-
-[![Unit tests](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml/badge.svg?branch=dev)](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml)
+[![Unit tests](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml/badge.svg?branch=dev)](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml) [![Update Wiki Commands](https://github.com/vb2007/discordbot/actions/workflows/wiki-update.yml/badge.svg)](https://github.com/vb2007/discordbot/actions/workflows/wiki-update.yml) [![CodeQL](https://github.com/vb2007/discordbot/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/vb2007/discordbot/actions/workflows/github-code-scanning/codeql)
 
 </div>
+
+A simple discord bot of mine developed with **Node.js**'s [discord.js](https://www.npmjs.com/package/discord.js?activeTab=readme) package.
 
 ## Invite the bot
 
@@ -27,6 +27,13 @@ Do the following for setting up the application from sratch:
 3. Create a `config.json` file, or rename the existing [config.json.example](./src/config.json.example) file, and fill it out with the required configuration settings.
 4. Like you would with any other node.js app, install dependencies with with the `npm i` command.
 
+### Setting up nvm & the correct Node.js version
+
+> [!WARNING]
+> Currently, only one specific Node.js version - **v24.8.0** - is supported officially. Issues might occur when running the bot on different versions.
+
+If you're usure about your Node.js version, please refer to [THIS](documentation/nvm-setup.md) documentation.
+
 ### Setting up a database for the bot
 
 Some of the bot's features **require a MariaDB database**.
@@ -40,7 +47,8 @@ Otherwise, please refer to [THIS](documentation/mariadb-setup.md) documentation 
 If everything above checks out, you can prepare for the first run:
 
 1. Deploy the slash (/) commands with `npm run deploy`. You might want to do this again if you modify / add commands.
-2. Finally, run the bot with `npm run app`.
+2. If you would like to verify your `config.json` file's syntax, you can run `npm run verify-config`.
+3. Finally, run the bot with `npm run app`.
 
 #### Running it in the background
 
