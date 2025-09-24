@@ -72,7 +72,7 @@ function messageGen(
   canBeStreamed,
   fileSize,
 ) {
-  return `${canBeStreamed ? `[[ STREAMING & DOWNLOAD ]](${directStreamLink})` : `[[ ORIGINAL MP4 ]](${href})`}  -  [[ FORUM POST ]](<${comments}>)  -  ${title}${canBeStreamed ? `Size: ${fileSize}MB` : ` - Size (might won't load): ${fileSize}MB`}`;
+  return `${canBeStreamed ? `[[ STREAMING & DOWNLOAD ]](${directStreamLink})` : `[[ ORIGINAL MP4 ]](${href})`}  -  [[ FORUM POST ]](<${comments}>)  -  ${title}${canBeStreamed ? ` - Size: ${fileSize}MB` : ` - Size (might won't load): ${fileSize}MB`}`;
 }
 
 /**
