@@ -47,7 +47,8 @@ Otherwise, please refer to [THIS](documentation/mariadb-setup.md) documentation 
 If everything above checks out, you can prepare for the first run:
 
 1. Deploy the slash (/) commands with `npm run deploy`. You might want to do this again if you modify / add commands.
-2. Finally, run the bot with `npm run app`.
+2. If you would like to verify your `config.json` file's syntax, you can run `npm run verify-config`.
+3. Finally, run the bot with `npm run app`.
 
 #### Running it in the background
 
