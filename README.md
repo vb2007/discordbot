@@ -4,7 +4,7 @@
 
 A simple discord bot of mine developed with **Node.js**'s [discord.js](https://www.npmjs.com/package/discord.js?activeTab=readme) package.
 
-[![Unit tests](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml/badge.svg?branch=dev)](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml)
+[![Unit tests](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml/badge.svg?branch=dev)](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml) [![Update Wiki Commands](https://github.com/vb2007/discordbot/actions/workflows/wiki-update.yml/badge.svg)](https://github.com/vb2007/discordbot/actions/workflows/wiki-update.yml)
 
 </div>
 
