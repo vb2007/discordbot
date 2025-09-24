@@ -16,7 +16,7 @@ WorkingDirectory=/home/vb2007/prod/discordbot
 
 ExecStartPre=/bin/mkdir -p /home/vb2007/prod/discordbot/temp
 ExecStartPre=/bin/chmod -R 777 /home/vb2007/prod/discordbot/temp
-ExecStartPre=/usr/bin/env node --version
+# ExecStartPre=/usr/bin/env node --version
 ExecStart=npm run app
 
 # StandardOutput=syslog # For logging to syslog
