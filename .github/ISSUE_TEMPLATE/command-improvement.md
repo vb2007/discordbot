@@ -6,6 +6,6 @@ labels: command improvement
 assignees: vb2007
 ---
 
-## Imrpovement's description
+## Description
 
 - e.g.: The `/help` command should return a list of available commands in an embed instead of a simple message.

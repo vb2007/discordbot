@@ -6,6 +6,7 @@ labels: feature
 assignees: vb2007
 ---
 
-## Feature's description
+## Description
 
 - e.g: The bot should have a web dashboard to manage settings and view statistics.
+- The dashboard should work with discord OAuth2.
