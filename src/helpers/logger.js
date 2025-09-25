@@ -1,17 +1,22 @@
-const fs = require("fs");
-const path = require("path");
-const db = require("./db");
-const { logToFile, logToDatabase } = require("../../config.json");
-
-const logDirectory = path.join(__dirname, "../command-logs");
-
-if (!fs.existsSync(logDirectory)) {
-  fs.mkdirSync(logDirectory, { recursive: true });
-}
+import fs from "fs";
+import path from "path";
+import db from "./db";
+import { logToFile, logToDatabase } from "../../config.json";
 
 const logToFileAndDatabase = async (interaction, response) => {
+  const targetUser = interaction.options.getUser("user");
+  if (targetUser.bot) {
+    return;
+  }
+
   //logging to file
-  if (logFilePath == "True") {
+  if (logToFile == "True") {
+    const logDirectory = path.join(__dirname, "../command-logs");
+
+    if (!fs.existsSync(logDirectory)) {
+      fs.mkdirSync(logDirectory, { recursive: true });
+    }
+
     const logMessage = `Command: ${interaction.commandName}
 Executor: ${interaction.user.tag} (ID: ${interaction.user.id})
 Server: ${interaction.inGuild() ? `${interaction.guild.name} (ID: ${interaction.guild.id})` : "Not in a server."}
