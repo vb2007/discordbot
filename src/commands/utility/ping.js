@@ -1,7 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const {
-  embedReplyPrimaryColorWithFields,
-} = require("../../helpers/embeds/embed-reply");
+const { embedReplyPrimaryColorWithFields } = require("../../helpers/embeds/embed-reply");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
@@ -20,13 +18,10 @@ module.exports = {
           inline: true,
         },
       ],
-      interaction,
+      interaction
     );
 
     await interaction.reply({ embeds: [embedReply] });
-    await logToFileAndDatabase(
-      interaction,
-      JSON.stringify(embedReply.toJSON()),
-    );
+    await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
   },
 };

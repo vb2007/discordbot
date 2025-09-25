@@ -1,8 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const {
-  embedReplyPrimaryColorImg,
-  embedReplyImg,
-} = require("../../helpers/embeds/embed-reply");
+const { embedReplyPrimaryColorImg, embedReplyImg } = require("../../helpers/embeds/embed-reply");
 const { loadLinks } = require("../../helpers/scraping");
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
@@ -15,10 +12,7 @@ module.exports = {
     //waits (and edits it's reply later) if the host is too slow
     await interaction.deferReply();
 
-    const links = await loadLinks(
-      "pics.json",
-      "https://cdn.vb2007.hu/autoindex/feetpics/",
-    );
+    const links = await loadLinks("pics.json", "https://cdn.vb2007.hu/autoindex/feetpics/");
 
     //picks a random image from the array
     const randomFeet = links[Math.floor(Math.random() * links.length)];
@@ -36,14 +30,11 @@ module.exports = {
       "Randomfeet.",
       "Here is a random feetpic:",
       randomFeet,
-      interaction,
+      interaction
     );
     //}
 
     await interaction.editReply({ embeds: [embedReply] });
-    await logToFileAndDatabase(
-      interaction,
-      JSON.stringify(embedReply.toJSON()),
-    );
+    await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
   },
 };

@@ -12,16 +12,14 @@ module.exports = {
 
       const query = await db.query(
         "SELECT guildId, logChannelId FROM configLogging WHERE guildId = ?",
-        [guildId],
+        [guildId]
       );
       const logChannelId = query[0]?.logChannelId;
 
       const doesGuildExist = logChannelId ? true : false;
       return { doesGuildExist, logChannelId };
     } catch (error) {
-      console.error(
-        `Failed to get logging config data from the database: ${error}`,
-      );
+      console.error(`Failed to get logging config data from the database: ${error}`);
       return { doesGuildExist, logChannelId };
     }
   },

@@ -9,10 +9,7 @@ module.exports = {
     .setName("user")
     .setDescription("Provides information about a specified user.")
     .addUserOption((option) =>
-      option
-        .setName("user")
-        .setDescription("Choose a user.")
-        .setRequired(false),
+      option.setName("user").setDescription("Choose a user.").setRequired(false)
     )
     .setDMPermission(false),
   async execute(interaction) {
@@ -58,10 +55,7 @@ module.exports = {
           name: "Custom presence",
           value:
             targetMember.presence?.activities
-              ?.map(
-                (activity) =>
-                  `${activity.type === 4 ? activity.state : activity.name}`,
-              )
+              ?.map((activity) => `${activity.type === 4 ? activity.state : activity.name}`)
               .join(", ") || "No presence",
         },
         {
@@ -71,13 +65,10 @@ module.exports = {
         },
       ],
       targetMember.displayAvatarURL({ dynamic: true }),
-      interaction,
+      interaction
     );
 
     await interaction.reply({ embeds: [embedReply] });
-    await logToFileAndDatabase(
-      interaction,
-      JSON.stringify(embedReply.toJSON()),
-    );
+    await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
   },
 };

@@ -24,10 +24,7 @@ Channel: ${interaction.inGuild() ? `${interaction.channel.name} (ID ${interactio
 Time: ${new Date().toLocaleString()}
 Response: ${response}\n\n`;
 
-    const logFilePath = path.join(
-      logDirectory,
-      `${interaction.commandName}.log`,
-    );
+    const logFilePath = path.join(logDirectory, `${interaction.commandName}.log`);
 
     fs.appendFile(logFilePath, logMessage, (error) => {
       if (error) {
@@ -69,7 +66,7 @@ Response: ${response}\n\n`;
           channelId,
           new Date().toISOString().slice(0, 19).replace("T", " "),
           response,
-        ],
+        ]
       );
     } catch (error) {
       console.error("Error while writing logs to database: ", error);

@@ -16,7 +16,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("config-welcome")
     .setDescription(
-      "Sets a welcome message that will be displayed for the new members in a specified channel.",
+      "Sets a welcome message that will be displayed for the new members in a specified channel."
     )
     .addStringOption((option) =>
       option
@@ -24,41 +24,37 @@ module.exports = {
         .setDescription("Configure or disable the welcome feature?")
         .addChoices(
           { name: "configure", value: "configure" },
-          { name: "disable", value: "disable" },
+          { name: "disable", value: "disable" }
         )
-        .setRequired(true),
+        .setRequired(true)
     )
     .addChannelOption((option) =>
       option
         .setName("channel")
-        .setDescription(
-          "A channel where the welcome message will be displayed.",
-        )
+        .setDescription("A channel where the welcome message will be displayed.")
         .addChannelTypes(0) //= GUILD_TEXT aka. text channels
-        .setRequired(true),
+        .setRequired(true)
     )
     .addStringOption((option) =>
       option
         .setName("message")
         //the description length is limited to 100 characters ¯\_(ツ)_/¯
         .setDescription("A message that the new members will see.") //You can use the following placeholders: {user} - the new member's username, {server} - the server's name, {memberCount} - the server's member count.
-        .setRequired(true),
+        .setRequired(true)
     )
     .addBooleanOption((option) =>
       option
         .setName("embed")
         .setDescription(
-          "Whether the message should be sent as an embed (doesn't supports pinging users).",
+          "Whether the message should be sent as an embed (doesn't supports pinging users)."
         )
-        .setRequired(false),
+        .setRequired(false)
     )
     .addIntegerOption((option) =>
       option
         .setName("embed-color")
-        .setDescription(
-          "The HEX color of the embed message. Leave empty for default color.",
-        )
-        .setRequired(false),
+        .setDescription("The HEX color of the embed message. Leave empty for default color.")
+        .setRequired(false)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .setDMPermission(false),
@@ -83,8 +79,7 @@ module.exports = {
         const channelId = interaction.options.getChannel("channel").id;
         const welcomeMessage = interaction.options.getString("message");
         const isEmbed = interaction.options.getBoolean("embed") || 0;
-        const embedColor =
-          interaction.options.getInteger("embed-color") || null;
+        const embedColor = interaction.options.getInteger("embed-color") || null;
 
         const guildId = interaction.guild.id;
         const adderId = interaction.user.id;
@@ -92,7 +87,7 @@ module.exports = {
 
         const query = await db.query(
           "SELECT channelId, message, isEmbed, embedColor FROM configWelcome WHERE guildId = ?",
-          [guildId],
+          [guildId]
         );
         const existingChannelId = query[0]?.channelId || null;
         const existingWelcomeMessage = query[0]?.message || null;
@@ -117,16 +112,13 @@ module.exports = {
               adderUsername,
               isEmbed,
               embedColor,
-            ],
+            ]
           );
 
           title = "Welcome Configure: Configuration Set";
           description =
             "The **welcome message** has been successfully **set**. :white_check_mark:\nRun this command again later if you want to modify or disable the current configuration.";
-          return replyAndLog(
-            interaction,
-            embedReplySuccessColor(title, description, interaction),
-          );
+          return replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
         }
 
         //checks if anything has been modified in the the command
@@ -149,23 +141,12 @@ module.exports = {
           title = "Welcome Configure: Warning";
           description =
             "The exact same welcome configuration has been set for this server already. :x:\nRun the command again with different options to overwrite or disable the current configuration";
-          return replyAndLog(
-            interaction,
-            embedReplyWarningColor(title, description, interaction),
-          );
+          return replyAndLog(interaction, embedReplyWarningColor(title, description, interaction));
         }
 
         await db.query(
           "UPDATE configWelcome SET channelId = ?, message = ?, adderId = ?, adderUsername = ?, isEmbed = ?, embedColor = ? WHERE guildId = ?",
-          [
-            channelId,
-            welcomeMessage,
-            adderId,
-            adderUsername,
-            isEmbed,
-            embedColor,
-            guildId,
-          ],
+          [channelId, welcomeMessage, adderId, adderUsername, isEmbed, embedColor, guildId]
         );
 
         //if the welcome configuration has been modified
@@ -183,61 +164,44 @@ module.exports = {
         description = `Successfully modified ${modificationsMessage}. :white_check_mark:\nRun the command again with different options to overwrite or disable the current configuration.`;
         return replyAndLog(
           interaction,
-          embedReplySuccessSecondaryColor(title, description, interaction),
+          embedReplySuccessSecondaryColor(title, description, interaction)
         );
       } catch (error) {
         console.error(`Error while running ${commandName}: ${error}`);
 
         title = "Welcome Configure: Error";
-        description =
-          "There was an error while trying to configure the welcome messages.";
-        return replyAndLog(
-          interaction,
-          embedReplyFailureColor(title, description, interaction),
-        );
+        description = "There was an error while trying to configure the welcome messages.";
+        return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
       }
     }
 
     if (action === "disable") {
       try {
         const currentGuildId = interaction.guild.id;
-        const query = await db.query(
-          "SELECT guildId FROM configWelcome WHERE guildId = ?",
-          [currentGuildId],
-        );
+        const query = await db.query("SELECT guildId FROM configWelcome WHERE guildId = ?", [
+          currentGuildId,
+        ]);
         const welcomeGuildId = query[0]?.guildId || null;
 
         if (welcomeGuildId) {
-          await db.query("DELETE FROM configWelcome WHERE guildId = ?", [
-            welcomeGuildId,
-          ]);
+          await db.query("DELETE FROM configWelcome WHERE guildId = ?", [welcomeGuildId]);
 
           title = "Welcome Disable: Success";
           description =
             "The welcome messages have been disabled successfully for this server.\nYou can re-enable them by running the `/welcome-configure` command again.";
-          return replyAndLog(
-            interaction,
-            embedReplySuccessColor(title, description, interaction),
-          );
+          return replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
         }
 
         title = "Welcome Disable: Warning";
         description =
           "Welcome messages have not been configured for this server.\nTherefore, you can't disable them.";
-        return replyAndLog(
-          interaction,
-          embedReplyWarningColor(title, description, interaction),
-        );
+        return replyAndLog(interaction, embedReplyWarningColor(title, description, interaction));
       } catch (error) {
         console.error(`Error while running ${commandName}: ${error}`);
 
         title = "Welcome Disable: Error";
-        description =
-          "There was an error while trying to disable the welcome messages.";
-        return replyAndLog(
-          interaction,
-          embedReplyFailureColor(title, description, interaction),
-        );
+        description = "There was an error while trying to disable the welcome messages.";
+        return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
       }
     }
   },

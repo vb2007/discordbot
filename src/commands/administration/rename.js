@@ -5,9 +5,7 @@ const {
   embedReplyWarningColor,
   moderationDmEmbedReplyWarningColor,
 } = require("../../helpers/embeds/embed-reply");
-const {
-  checkIfNotInGuild,
-} = require("../../helpers/command-validation/general");
+const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
 const replyAndLog = require("../../helpers/reply");
 
 const commandName = "rename";
@@ -20,7 +18,7 @@ module.exports = {
       option
         .setName("target")
         .setDescription("The person you would like to rename.")
-        .setRequired(true),
+        .setRequired(true)
     )
     .addStringOption((option) =>
       option
@@ -28,7 +26,7 @@ module.exports = {
         .setDescription("The new name your target user will have.")
         .setRequired(true)
         .setMinLength(2)
-        .setMaxLength(32),
+        .setMaxLength(32)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.ChangeNickname)
     .setDMPermission(false),
@@ -43,31 +41,20 @@ module.exports = {
 
     const targetUser = interaction.options.getMember("target");
     const targetUserId = interaction.options.getMember("target").id;
-    const targetUserUsername =
-      interaction.options.getMember("target").user.globalName;
+    const targetUserUsername = interaction.options.getMember("target").user.globalName;
     const targetNickname = interaction.options.getString("nickname");
 
-    if (
-      !interaction.guild.members.me.permissions.has(
-        PermissionFlagsBits.ChangeNickname,
-      )
-    ) {
+    if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ChangeNickname)) {
       title = "Rename: Error";
       description =
         "Bot **lacks the manage nicknames / rename permission**, cannot rename the user.";
-      return replyAndLog(
-        interaction,
-        embedReplyFailureColor(title, description, interaction),
-      );
+      return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
     }
 
     if (targetNickname.length > 32 || targetNickname.length < 2) {
       title = "Rename: Error";
       description = `The username length you've provided is invalid!\nMinimum length: **2 characters**.\nMaximum length: **32 characters**.`;
-      return replyAndLog(
-        interaction,
-        embedReplyFailureColor(title, description, interaction),
-      );
+      return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
     }
 
     try {
@@ -77,44 +64,32 @@ module.exports = {
         var embedDmReply = moderationDmEmbedReplyWarningColor(
           "Rename: Action regarding your account",
           `You have been renamed in **${interaction.guild.name}** to \`${targetNickname}\`.`,
-          interaction,
+          interaction
         );
 
         await targetUser.send({ embeds: [embedDmReply] });
 
         title = "Rename: Success";
         description = `Successfully renamed **${targetUserUsername}** (<@${targetUserId}>) to \`${targetNickname}\`. They were notified about the action in their DMs.`;
-        return replyAndLog(
-          interaction,
-          embedReplySuccessColor(title, description, interaction),
-        );
+        return replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
       } catch (error) {
         title = "Rename: Partial Success";
         description = `Successfully renamed **${targetUserUsername}** (<@${targetUserId}>) to \`${targetNickname}\`.\nHowever, there was an error while trying to DM the user.`;
-        return replyAndLog(
-          interaction,
-          embedReplyWarningColor(title, description, interaction),
-        );
+        return replyAndLog(interaction, embedReplyWarningColor(title, description, interaction));
       }
     } catch (error) {
       if (error.code === 50013) {
         //currently "50013" corresponds to the "Missing Permissions" error
         title = "Rename: Error";
         description = `Bot **lacks the manage nicknames / rename permission**, or **the bot's role is lower in the role hierarchy, than the target user's highest role**.\nFailed to rename <@${targetUserId}> to \`${targetNickname}\`.`;
-        return replyAndLog(
-          interaction,
-          embedReplyFailureColor(title, description, interaction),
-        );
+        return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
       }
 
       console.error(`Error while running ${commandName}: ${error}`);
 
       title = "Rename: Error";
       description = `An error occurred while trying to rename <@${targetUserId}> to \`${targetNickname}\`.`;
-      return replyAndLog(
-        interaction,
-        embedReplyFailureColor(title, description, interaction),
-      );
+      return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
     }
   },
 };

@@ -18,7 +18,7 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription(
-      "Sets a goodbye message that will be displayed for the members who've left the server.",
+      "Sets a goodbye message that will be displayed for the members who've left the server."
     )
     .addStringOption((option) =>
       option
@@ -26,41 +26,37 @@ module.exports = {
         .setDescription("Configure or disable the goodbye feature?")
         .addChoices(
           { name: "configure", value: "configure" },
-          { name: "disable", value: "disable" },
+          { name: "disable", value: "disable" }
         )
-        .setRequired(true),
+        .setRequired(true)
     )
     .addChannelOption((option) =>
       option
         .setName("channel")
-        .setDescription(
-          "A channel where the goodbye message will be displayed.",
-        )
+        .setDescription("A channel where the goodbye message will be displayed.")
         .addChannelTypes(0) //= GUILD_TEXT aka. text channels
-        .setRequired(false),
+        .setRequired(false)
     )
     .addStringOption((option) =>
       option
         .setName("message")
         //the description length is limited to 100 characters ¯\_(ツ)_/¯
         .setDescription("A message that the new members will see.") //You can use the following placeholders: {user} - the new member's username, {server} - the server's name, {memberCount} - the server's member count.
-        .setRequired(false),
+        .setRequired(false)
     )
     .addBooleanOption((option) =>
       option
         .setName("embed")
         .setDescription(
-          "Whether the message should be sent as an embed (doesn't supports pinging users).",
+          "Whether the message should be sent as an embed (doesn't supports pinging users)."
         )
-        .setRequired(false),
+        .setRequired(false)
     )
     .addIntegerOption((option) =>
       option
         .setName("embed-color")
-        .setDescription(
-          "The HEX color of the embed message. Leave empty for default color.",
-        )
-        .setRequired(false),
+        .setDescription("The HEX color of the embed message. Leave empty for default color.")
+        .setRequired(false)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .setDMPermission(false),
@@ -85,8 +81,7 @@ module.exports = {
         const channelId = interaction.options.getChannel("channel").id;
         const goodbyeMessage = interaction.options.getString("message");
         const isEmbed = interaction.options.getBoolean("embed") || 0;
-        const embedColor =
-          interaction.options.getInteger("embed-color") || null;
+        const embedColor = interaction.options.getInteger("embed-color") || null;
 
         const guildId = interaction.guild.id;
         const adderId = interaction.user.id;
@@ -94,7 +89,7 @@ module.exports = {
 
         const query = await db.query(
           "SELECT channelId, message, isEmbed, embedColor FROM configGoodbye WHERE guildId = ?",
-          [guildId],
+          [guildId]
         );
         const existingChannelId = query[0]?.channelId || null;
         const existingGoodbyeMessage = query[0]?.message || null;
@@ -117,7 +112,7 @@ module.exports = {
             adderUsername,
             isEmbed,
             embedColor,
-          ],
+          ]
         );
 
         //if goodbye messages haven't been configured for the current server
@@ -125,10 +120,7 @@ module.exports = {
           title = "Goodbye Configure: Configuration Set";
           description =
             "The **goodbye message** has been successfully **set**. :white_check_mark:\nRun this command again later if you want to modify or disable the current configuration.";
-          return replyAndLog(
-            interaction,
-            embedReplySuccessColor(title, description, interaction),
-          );
+          return replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
         }
 
         //checks if anything has been modified in the the command
@@ -151,10 +143,7 @@ module.exports = {
           title = "Goodbye Configure: Warning";
           description =
             "The exact same goodbye configuration has been set for this server already. :x:\nRun the command again with different options to overwrite or disable the current configuration.";
-          return replyAndLog(
-            interaction,
-            embedReplyWarningColor(title, description, interaction),
-          );
+          return replyAndLog(interaction, embedReplyWarningColor(title, description, interaction));
         }
 
         let modificationsMessage;
@@ -171,7 +160,7 @@ module.exports = {
         description = `Successfully modified ${modificationsMessage}. :white_check_mark:\nRun the command again with different options to overwrite or disable the current configuration.`;
         return replyAndLog(
           interaction,
-          embedReplySuccessSecondaryColor(title, description, interaction),
+          embedReplySuccessSecondaryColor(title, description, interaction)
         );
       } catch (error) {
         console.error(`Error while running ${commandName}: ${error}`);
@@ -179,53 +168,36 @@ module.exports = {
         title = "Goodbye Configure: Error";
         description =
           "There was an error while trying to configure the goodbye messages.\nPlease try again later.";
-        return replyAndLog(
-          interaction,
-          embedReplyFailureColor(title, description, interaction),
-        );
+        return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
       }
     }
 
     if (action === "disable") {
       try {
         const currentGuildId = interaction.guild.id;
-        const query = await db.query(
-          "SELECT guildId FROM configGoodbye WHERE guildId = ?",
-          [currentGuildId],
-        );
+        const query = await db.query("SELECT guildId FROM configGoodbye WHERE guildId = ?", [
+          currentGuildId,
+        ]);
         const goodbyeGuildId = query[0]?.guildId || null;
 
         if (goodbyeGuildId) {
-          await db.query("DELETE FROM configGoodbye WHERE guildId = ?", [
-            goodbyeGuildId,
-          ]);
+          await db.query("DELETE FROM configGoodbye WHERE guildId = ?", [goodbyeGuildId]);
 
           title = "Goodbye Disable: Success";
-          description =
-            "The goodbye messages have been disabled successfully for this server.";
-          return replyAndLog(
-            interaction,
-            embedReplySuccessColor(title, description, interaction),
-          );
+          description = "The goodbye messages have been disabled successfully for this server.";
+          return replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
         }
 
         title = "Goodbye Disable: Warning";
         description =
           "Goodbye messages have not been configured for this server.\nTherefore, you can't disable them.";
-        return replyAndLog(
-          interaction,
-          embedReplyWarningColor(title, description, interaction),
-        );
+        return replyAndLog(interaction, embedReplyWarningColor(title, description, interaction));
       } catch (error) {
         console.error(`Error while running ${commandName}: ${error}`);
 
         title = "Goodbye Disable: Error";
-        description =
-          "There was an error while trying to disable the goodbye messages.";
-        return replyAndLog(
-          interaction,
-          embedReplyFailureColor(title, description, interaction),
-        );
+        description = "There was an error while trying to disable the goodbye messages.";
+        return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
       }
     }
   },

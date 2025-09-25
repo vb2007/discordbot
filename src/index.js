@@ -4,9 +4,7 @@ const path = require("node:path");
 require("dotenv").config();
 const token = process.env.TOKEN;
 if (!token) {
-  console.error(
-    "[FATAL] Discord bot token is missing. Please set TOKEN in your .env file.",
-  );
+  console.error("[FATAL] Discord bot token is missing. Please set TOKEN in your .env file.");
   process.exit(1);
 }
 
@@ -106,10 +104,7 @@ let commandFolders = [];
 try {
   commandFolders = fs.readdirSync(foldersPath);
 } catch (err) {
-  console.error(
-    `[FATAL] Could not read commands directory: ${foldersPath}`,
-    err,
-  );
+  console.error(`[FATAL] Could not read commands directory: ${foldersPath}`, err);
   process.exit(1);
 }
 
@@ -117,14 +112,9 @@ for (const folder of commandFolders) {
   const commandsPath = path.join(foldersPath, folder);
   let commandFiles = [];
   try {
-    commandFiles = fs
-      .readdirSync(commandsPath)
-      .filter((file) => file.endsWith(".js"));
+    commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".js"));
   } catch (err) {
-    console.warn(
-      `[WARNING] Could not read commands subdirectory: ${commandsPath}`,
-      err,
-    );
+    console.warn(`[WARNING] Could not read commands subdirectory: ${commandsPath}`, err);
     continue;
   }
   for (const file of commandFiles) {
@@ -135,7 +125,7 @@ for (const folder of commandFolders) {
         client.commands.set(command.data.name, command);
       } else {
         console.warn(
-          `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
+          `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
         );
       }
     } catch (err) {
@@ -148,9 +138,7 @@ for (const folder of commandFolders) {
 const eventsPath = path.join(__dirname, "events");
 let eventFiles = [];
 try {
-  eventFiles = fs
-    .readdirSync(eventsPath)
-    .filter((file) => file.endsWith(".js"));
+  eventFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith(".js"));
 } catch (err) {
   console.error(`[FATAL] Could not read events directory: ${eventsPath}`, err);
   process.exit(1);
@@ -176,18 +164,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
   const command = interaction.client.commands.get(interaction.commandName);
   if (!command) {
-    console.error(
-      `[ERROR] No command matching ${interaction.commandName} was found.`,
-    );
+    console.error(`[ERROR] No command matching ${interaction.commandName} was found.`);
     return;
   }
   try {
     await command.execute(interaction);
   } catch (error) {
-    console.error(
-      `[ERROR] While executing command ${interaction.commandName}:`,
-      error,
-    );
+    console.error(`[ERROR] While executing command ${interaction.commandName}: `, error);
     const errorMsg = {
       content: "There was an error while executing this command!",
       ephemeral: true,
