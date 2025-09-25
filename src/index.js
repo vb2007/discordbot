@@ -15,7 +15,7 @@ const db = require("./helpers/db");
 try {
   db.getConnection();
 } catch (err) {
-  console.error("[FATAL] Database connection failed:", err);
+  console.error("[FATAL] Database connection failed: ", err);
   process.exit(1);
 }
 
