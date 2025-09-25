@@ -52,6 +52,7 @@
     "deploy": "node ./src/deploy-commands.js",
     "create-tables": "node ./src/create-tables.js",
     "verify-config": "node ./src/scripts/verify-config-syntax.js",
-    "test": "jest"
+    "test": "jest",
+    "format": "prettier --write ."
   }
 }
