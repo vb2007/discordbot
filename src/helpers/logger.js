@@ -1,7 +1,7 @@
-import fs from "fs";
-import path from "path";
-import db from "./db";
-import { logToFile, logToDatabase } from "../../config.json";
+const fs = require("fs");
+const path = require("path");
+const db = require("./db");
+const { logToFile, logToDatabase } = require("../../config.json");
 
 const logToFileAndDatabase = async (interaction, response) => {
   const targetUser = interaction.options.getUser("user");

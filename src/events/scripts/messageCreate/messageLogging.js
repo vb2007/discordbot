@@ -3,16 +3,18 @@ const { logMessagesToLocalDatabase } = require("../../../../config.json");
 
 module.exports = {
   async logMessagesToLocalDatabase(message) {
-    if (logMessagesToLocalDatabase == "True") {
-      const messageContent = message.content;
-      const senderUserName = message.author.username;
-      const senderUserId = message.author.id;
-      const serverName = message.guild.name;
-      const serverId = message.guild.id;
-      const channelName = message.channel.name;
-      const channelId = message.channel.id;
+    try {
+      if (logMessagesToLocalDatabase == "True") {
+        if (message.author?.bot) return;
 
-      try {
+        const messageContent = message.content;
+        const senderUserName = message.author.username;
+        const senderUserId = message.author.id;
+        const serverName = message.guild.name;
+        const serverId = message.guild.id;
+        const channelName = message.channel.name;
+        const channelId = message.channel.id;
+
         if (messageContent !== "") {
           await db.query(
             "INSERT INTO messageLog (messageContent, senderUserName, senderUserId, serverName, serverId, channelName, channelId) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -31,9 +33,9 @@ module.exports = {
             `Logged message "${message.content}" to database from ${senderUserName} in ${serverName}.`
           );
         }
-      } catch (error) {
-        console.error(`Failed to log message: ${error}`);
       }
+    } catch (error) {
+      console.error(`Failed to log message: ${error}`);
     }
   },
 };
