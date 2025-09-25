@@ -1,6 +1,8 @@
 node_modules
+dist
+.env
+config.json
 package-lock.json
 *.min.js
 *.example
 *.md
-dist
