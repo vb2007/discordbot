@@ -4,11 +4,6 @@ const db = require("./db");
 const { logToFile, logToDatabase } = require("../../config.json");
 
 const logToFileAndDatabase = async (interaction, response) => {
-  const targetUser = interaction.options.getUser("user");
-  if (targetUser.bot) {
-    return;
-  }
-
   //logging to file
   if (logToFile == "True") {
     const logDirectory = path.join(__dirname, "../command-logs");
