@@ -4,6 +4,7 @@ const { embedMessageFailureColorWithFields } = require("../../../helpers/embeds/
 module.exports = {
   async sendLogInfo(client, message) {
     try {
+      //console.log(message);
       const guild = await client.guilds.fetch(message.guildId);
       const { doesGuildExist, logChannelId } = await getGuildFromDB(message.guildId);
 
@@ -54,27 +55,60 @@ module.exports = {
             ]
           );
         } else {
-          logEmbed = embedMessageFailureColorWithFields(
-            "Message deleted",
-            "A message was deleted.",
-            [
-              { name: "Content", value: message.content || "No content available" },
-              {
-                name: "Author",
-                value: message.author ? `<@${message.author.id}>` : "Unknown",
-                inline: true,
-              },
-              {
-                name: "Author Username",
-                value: message.author?.username || "Unknown",
-                inline: true,
-              },
-              { name: "Channel", value: `<#${message.channelId}>` },
-              { name: "Message Id", value: message.id || "Unknown", inline: true },
-              { name: "Channel Id", value: message.channelId || "Unknown", inline: true },
-              { name: "Author Id", value: message.author?.id || "Unknown", inline: true },
-            ]
-          );
+          let attachments = [];
+          if (message.attachments) {
+            message.attachments.forEach((url) => {
+              attachments.push(url.url);
+            });
+
+            logEmbed = embedMessageFailureColorWithFields(
+              "Message deleted",
+              "A message was deleted.",
+              [
+                { name: "Content", value: message.content || "No content available" },
+                {
+                  name: "Attachment(s): available for max. 48 hours",
+                  value: attachments.join(", "),
+                },
+                {
+                  name: "Author",
+                  value: message.author ? `<@${message.author.id}>` : "Unknown",
+                  inline: true,
+                },
+                {
+                  name: "Author Username",
+                  value: message.author?.username || "Unknown",
+                  inline: true,
+                },
+                { name: "Channel", value: `<#${message.channelId}>` },
+                { name: "Message Id", value: message.id || "Unknown", inline: true },
+                { name: "Channel Id", value: message.channelId || "Unknown", inline: true },
+                { name: "Author Id", value: message.author?.id || "Unknown", inline: true },
+              ]
+            );
+          } else {
+            logEmbed = embedMessageFailureColorWithFields(
+              "Message deleted",
+              "A message was deleted.",
+              [
+                { name: "Content", value: message.content || "No content available" },
+                {
+                  name: "Author",
+                  value: message.author ? `<@${message.author.id}>` : "Unknown",
+                  inline: true,
+                },
+                {
+                  name: "Author Username",
+                  value: message.author?.username || "Unknown",
+                  inline: true,
+                },
+                { name: "Channel", value: `<#${message.channelId}>` },
+                { name: "Message Id", value: message.id || "Unknown", inline: true },
+                { name: "Channel Id", value: message.channelId || "Unknown", inline: true },
+                { name: "Author Id", value: message.author?.id || "Unknown", inline: true },
+              ]
+            );
+          }
         }
 
         await logChannel.send({ embeds: [logEmbed] });
