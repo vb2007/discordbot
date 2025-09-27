@@ -98,7 +98,6 @@ module.exports = {
       }
 
       const logEmbed = embedMessageFailureColorWithFields("Message deleted", description, fields);
-
       await logChannel.send({ embeds: [logEmbed] });
     } catch (error) {
       console.error(`Failed to send log info to target channel: ${error.stack}`);

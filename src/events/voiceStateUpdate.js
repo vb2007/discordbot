@@ -1,4 +1,4 @@
-const logEventToChannel = require("./scripts/channelUpdate/logEventToChannel");
+const logEventToChannel = require("./scripts/voiceStateUpdate/logEventToChannel");
 
 module.exports = {
   name: "voiceStateUpdate",

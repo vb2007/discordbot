@@ -5,9 +5,9 @@ const {
 } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
-  async sendLogInfo(oldState, newState) {
+  async sendLogInfo(client, oldState, newState) {
     try {
-      const { doesGuildExist, logChannelId } = await getGuildFromDB(oldState);
+      const { doesGuildExist, logChannelId } = await getGuildFromDB(oldState.guild.id);
 
       if (doesGuildExist) {
         const logChannel = oldState.guild.channels.cache.get(logChannelId);
@@ -18,8 +18,16 @@ module.exports = {
             `A member has switched channels.`,
             [
               { name: "Member", value: `<@${oldState.member.id}>` },
-              { name: "From", value: `<#${oldState.channel.id}>`, inline: true },
-              { name: "To", value: `<#${newState.channel.id}>`, inline: true },
+              {
+                name: "From",
+                value: oldState.channel ? `<#${oldState.channel.id}>` : "None",
+                inline: true,
+              },
+              {
+                name: "To",
+                value: newState.channel ? `<#${newState.channel.id}>` : "None",
+                inline: true,
+              },
             ]
           );
 
@@ -29,7 +37,7 @@ module.exports = {
         if (oldState.selfMute !== newState.selfMute) {
           const logEmbed = embedMessageFailureColor(
             "Voice state updated",
-            `<@${oldState.member.id}> has muted themselves in <#${newState.channel.id}>.`
+            `<@${oldState.member.id}> has **muted** themselves in <#${newState.channel.id}>"".`
           );
 
           await logChannel.send({ embeds: [logEmbed] });
@@ -38,7 +46,7 @@ module.exports = {
         if (oldState.selfDeaf !== newState.selfDeaf) {
           const logEmbed = embedMessageFailureColor(
             "Voice state updated",
-            `<@${oldState.member.id}> has deafened themselves in <#${newState.channel.id}>.`
+            `<@${oldState.member.id}> has **deafened** themselves in <#${newState.channel.id}>.`
           );
 
           await logChannel.send({ embeds: [logEmbed] });
