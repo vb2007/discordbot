@@ -10,12 +10,17 @@ module.exports = {
       if (doesGuildExist) {
         const logChannel = guild.channels.cache.get(logChannelId);
 
-        const isBotMessage = message.author?.id === client.user.id;
+        const isBotMessage = message.author?.bot;
+        const isThisBotsMessage = message.author?.id === client.user.id;
         const isBotsLogDeleted =
-          isBotMessage &&
+          isThisBotsMessage &&
           message.embeds.length > 0 &&
           message.embeds[0]?.title === "Message deleted";
         let logEmbed;
+
+        if (isBotMessage && !isThisBotsMessage) {
+          return;
+        }
 
         if (isBotsLogDeleted) {
           const originalEmbed = message.embeds[0];
