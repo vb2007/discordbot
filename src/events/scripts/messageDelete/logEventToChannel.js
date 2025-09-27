@@ -18,7 +18,7 @@ module.exports = {
           message.embeds[0]?.title === "Message deleted";
         let logEmbed;
 
-        if (isBotMessage && !isThisBotsMessage) {
+        if (isBotMessage && !isBotsLogDeleted) {
           return;
         }
 
