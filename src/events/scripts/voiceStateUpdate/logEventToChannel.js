@@ -12,6 +12,24 @@ module.exports = {
       if (doesGuildExist) {
         const logChannel = oldState.guild.channels.cache.get(logChannelId);
 
+        if (oldState.channel === null) {
+          const logEmbed = embedMessageFailureColor(
+            "Voice state updated",
+            `<@${oldState.member.id}> has **joined** to <#${newState.channel.id}>.`
+          );
+
+          await logChannel.send({ embeds: [logEmbed] });
+        }
+
+        if (newState.channel === null) {
+          const logEmbed = embedMessageFailureColor(
+            "Voice state updated",
+            `<@${oldState.member.id}> has **left** from <#${oldState.channel.id}>.`
+          );
+
+          await logChannel.send({ embeds: [logEmbed] });
+        }
+
         if (oldState.voiceChannel !== newState.voiceChannel) {
           const logEmbed = embedMessageFailureColorWithFields(
             "Voice state updated",
@@ -37,7 +55,7 @@ module.exports = {
         if (oldState.selfMute !== newState.selfMute) {
           const logEmbed = embedMessageFailureColor(
             "Voice state updated",
-            `<@${oldState.member.id}> has **muted** themselves in <#${newState.channel.id}>"".`
+            `<@${oldState.member?.id || newState.member?.id}> has ${newState.selfMute ? "**muted**" : "**unmuted**"} themselves ${newState.channel ? `in <#${newState.channel.id}>` : ""}.`
           );
 
           await logChannel.send({ embeds: [logEmbed] });
@@ -46,7 +64,7 @@ module.exports = {
         if (oldState.selfDeaf !== newState.selfDeaf) {
           const logEmbed = embedMessageFailureColor(
             "Voice state updated",
-            `<@${oldState.member.id}> has **deafened** themselves in <#${newState.channel.id}>.`
+            `<@${oldState.member?.id || newState.member?.id}> has ${newState.selfDeaf ? "**deafened**" : "**undeafened**"} themselves ${newState.channel ? `in <#${newState.channel.id}>` : ""}.`
           );
 
           await logChannel.send({ embeds: [logEmbed] });
