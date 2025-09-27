@@ -4,7 +4,7 @@ const { embedMessageWarningColorWithFields } = require("../../../helpers/embeds/
 module.exports = {
   async sendLogInfo(client, oldMessage, newMessage) {
     try {
-      if (message.author?.bot) return;
+      if (oldMessage.author?.bot) return;
 
       const guild = await client.guilds.fetch(oldMessage.guildId);
       const { doesGuildExist, logChannelId } = await getGuildFromDB(oldMessage.guildId);
