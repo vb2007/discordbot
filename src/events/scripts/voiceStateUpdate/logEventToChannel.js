@@ -1,7 +1,9 @@
 const { getGuildFromDB } = require("../../../helpers/log-data-query");
 const {
   embedMessageFailureColor,
-  embedMessageFailureColorWithFields,
+  embedMessageSuccessColor,
+  embedMessageSuccessSecondaryColor,
+  embedMessageSuccessSecondaryColorWithFields,
 } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
@@ -13,12 +15,12 @@ module.exports = {
         const logChannel = oldState.guild.channels.cache.get(logChannelId);
 
         if (oldState.channel === null) {
-          const logEmbed = embedMessageFailureColor(
+          const logEmbed = embedMessageSuccessColor(
             "Voice state updated",
             `<@${oldState.member.id}> has **joined** to <#${newState.channel.id}>.`
           );
 
-          await logChannel.send({ embeds: [logEmbed] });
+          return await logChannel.send({ embeds: [logEmbed] });
         }
 
         if (newState.channel === null) {
@@ -27,11 +29,11 @@ module.exports = {
             `<@${oldState.member.id}> has **left** from <#${oldState.channel.id}>.`
           );
 
-          await logChannel.send({ embeds: [logEmbed] });
+          return await logChannel.send({ embeds: [logEmbed] });
         }
 
-        if (oldState.voiceChannel !== newState.voiceChannel) {
-          const logEmbed = embedMessageFailureColorWithFields(
+        if (oldState.channel.id !== newState.channel.id) {
+          const logEmbed = embedMessageSuccessSecondaryColorWithFields(
             "Voice state updated",
             `A member has switched channels.`,
             [
@@ -49,11 +51,11 @@ module.exports = {
             ]
           );
 
-          await logChannel.send({ embeds: [logEmbed] });
+          return await logChannel.send({ embeds: [logEmbed] });
         }
 
         if (oldState.selfMute !== newState.selfMute) {
-          const logEmbed = embedMessageFailureColor(
+          const logEmbed = embedMessageSuccessSecondaryColor(
             "Voice state updated",
             `<@${oldState.member?.id || newState.member?.id}> has ${newState.selfMute ? "**muted**" : "**unmuted**"} themselves ${newState.channel ? `in <#${newState.channel.id}>` : ""}.`
           );
@@ -62,7 +64,7 @@ module.exports = {
         }
 
         if (oldState.selfDeaf !== newState.selfDeaf) {
-          const logEmbed = embedMessageFailureColor(
+          const logEmbed = embedMessageSuccessSecondaryColor(
             "Voice state updated",
             `<@${oldState.member?.id || newState.member?.id}> has ${newState.selfDeaf ? "**deafened**" : "**undeafened**"} themselves ${newState.channel ? `in <#${newState.channel.id}>` : ""}.`
           );
@@ -71,7 +73,7 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.error(`Failed to send log info to target channel: ${error}`);
+      console.error(`Failed to send log info to target channel: ${error.stack}`);
     }
   },
 };
