@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { pipeline } from "stream/promises";
 
-import { query } from "../db";
+import { query } from "../db.js";
 import { transcodeVideo, getFileSizeMB } from "./darwinTranscode.js";
 import darwinCache from "./darwinCache.js";
 

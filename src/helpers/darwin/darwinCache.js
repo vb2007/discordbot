@@ -1,4 +1,4 @@
-import { query } from "../db";
+import { query } from "../db.js";
 
 /**
  * Extract a unique video ID from a URL
