@@ -36,7 +36,7 @@ export const getVideoInfo = async (inputPath) => {
  * @param {string} filePath - Path to the video file
  * @returns {number} - File size in MB
  */
-const getFileSizeMB = (filePath) => {
+export const getFileSizeMB = (filePath) => {
   try {
     const stats = fs.statSync(filePath);
     return (stats.size / (1024 * 1024)).toFixed(2);

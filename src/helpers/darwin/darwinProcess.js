@@ -1,11 +1,11 @@
-import cheerio from "cheerio";
+import { load } from "cheerio";
 import fs from "fs";
 import path from "path";
 import { pipeline } from "stream/promises";
 
 import { query } from "../db.js";
 import { transcodeVideo, getFileSizeMB } from "./darwinTranscode.js";
-import darwinCache from "./darwinCache.js";
+import { isInCache, addToCache } from "./darwinCache.js";
 
 import config from "../../../config.json" with { type: "json" };
 const darwinConfig = config.darwin;
@@ -80,14 +80,14 @@ const processVideo = async (video) => {
   console.log(`Processing ${title} ${href}`);
 
   try {
-    const isInCache = await darwinCache.isInCache(href);
-    if (isInCache) {
+    const isVideoInCache = await isInCache(href);
+    if (isVideoInCache) {
       console.log(`Video already in cache, skipping: ${href}`);
       return null;
     }
 
     // Add to cache BEFORE downloading to prevent multiple uploads
-    const addedToCache = await darwinCache.addToCache(href);
+    const addedToCache = await addToCache(href);
     if (!addedToCache) {
       console.log(`Failed to add to cache, skipping to prevent duplicates: ${href}`);
       return null;
@@ -251,7 +251,7 @@ const fetchVideosFromFeed = async () => {
     });
 
     const html = await response.text();
-    const $ = cheerio.load(html);
+    const $ = load(html);
 
     const contentBlock = $(".content-block > div");
 
@@ -276,8 +276,8 @@ const fetchVideosFromFeed = async () => {
         );
         if (!videoLocation.startsWith(darwinConfig.markerTwo) || videoLocation === "") continue;
 
-        const isInCache = await darwinCache.isInCache(videoLocation);
-        if (isInCache) {
+        const isVideoInCache = await isInCache(videoLocation);
+        if (isVideoInCache) {
           console.log(`Skipping cached video: ${title.trim()} (${videoLocation})`);
           continue;
         }
