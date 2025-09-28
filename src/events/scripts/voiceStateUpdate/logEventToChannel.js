@@ -17,7 +17,7 @@ module.exports = {
         if (oldState.channel === null) {
           const logEmbed = embedMessageSuccessColor(
             "Voice state updated",
-            `<@${oldState.member.id}> has **joined** to <#${newState.channel.id}>.`
+            `<@${oldState.member?.id || newState.member?.id}}> has **joined** to <#${oldState.channel?.id}}>.`
           );
 
           return await logChannel.send({ embeds: [logEmbed] });
@@ -26,7 +26,7 @@ module.exports = {
         if (newState.channel === null) {
           const logEmbed = embedMessageFailureColor(
             "Voice state updated",
-            `<@${oldState.member.id}> has **left** from <#${oldState.channel.id}>.`
+            `<@${oldState.member?.id || newState.member?.id}}> has **left** from <#${oldState.channel?.id}>.`
           );
 
           return await logChannel.send({ embeds: [logEmbed] });
