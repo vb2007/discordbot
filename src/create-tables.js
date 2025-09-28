@@ -1,10 +1,10 @@
-const fs = require("fs");
-const path = require("path");
-const db = require("./helpers/db");
-db.getConnection();
+import fs from "fs";
+import path from "path";
+import { query, getConnection } from "./helpers/db";
+getConnection();
 
 //reads the SQL queries from a folder's subfolder
-function readSQLFiles(dir) {
+const readSQLFiles = (dir) => {
   const sqlFiles = fs.readdirSync(dir).filter((file) => file.endsWith(".sql"));
   const sqlQueries = [];
 
@@ -18,9 +18,9 @@ function readSQLFiles(dir) {
   }
 
   return sqlQueries;
-}
+};
 
-async function updateCommandData() {
+const updateCommandData = async () => {
   try {
     const csvPath = path.join(__dirname, "data", "commandData.csv");
     const csvContent = fs.readFileSync(csvPath, "utf8");
@@ -51,14 +51,14 @@ async function updateCommandData() {
       console.log(`Processing command: ${cmd.name}`);
 
       const query = `
-                INSERT INTO commandData (name, category, description) 
+                INSERT INTO commandData (name, category, description)
                 VALUES (?, ?, ?)
-                ON DUPLICATE KEY UPDATE 
+                ON DUPLICATE KEY UPDATE
                     category = VALUES(category),
                     description = VALUES(description)
             `;
 
-      await db.query(query, [cmd.name, cmd.category, cmd.description]);
+      await query(query, [cmd.name, cmd.category, cmd.description]);
     }
 
     console.log("Command data has been updated successfully.");
@@ -66,15 +66,15 @@ async function updateCommandData() {
     console.error("Error updating command data:", error);
     console.error("Error details:", error.stack);
   }
-}
+};
 
-async function createTables() {
+const createTables = async () => {
   try {
     // // Would create a database if it didn't existed already, but let's just stick to the tables for now
-    // await db.query(`CREATE DATABASE IF NOT EXISTS ${databaseName}`);
+    // await query(`CREATE DATABASE IF NOT EXISTS ${databaseName}`);
     // console.log(`Database ${databaseName} created or already exists.`);
 
-    // await db.query(`USE ${databaseName}`);
+    // await query(`USE ${databaseName}`);
 
     //reads the SQL queries using the already existing function
     const sqlDir = path.join(__dirname, "sql");
@@ -92,7 +92,7 @@ async function createTables() {
     //executes the table creation (and other) queries
     for (const query of sqlQueries) {
       try {
-        await db.query(query);
+        await query(query);
         console.log("Query executed successfully.");
       } catch (error) {
         console.error("Error executing query: ", error);
@@ -103,11 +103,11 @@ async function createTables() {
   } catch (error) {
     console.error("Error executing queries & creating tables: ", error);
   }
-}
+};
 
-async function init() {
+const init = async () => {
   await createTables();
   await updateCommandData();
-}
+};
 
 init();
