@@ -2,18 +2,20 @@ import cheerio from "cheerio";
 import fs from "fs";
 import path from "path";
 import { pipeline } from "stream/promises";
-import darwinCache from "./darwinCache";
+
 import { query } from "../db";
+import { transcodeVideo, getFileSizeMB } from "./darwinTranscode.js";
+import darwinCache from "./darwinCache.js";
+
 import config from "../../../config.json" with { type: "json" };
 const darwinConfig = config.darwin;
-import { transcodeVideo, getFileSizeMB } from "./darwinTranscode";
 
 /**
  * Get the final destination of a URL (follow redirects)
  * @param {string} url - Initial URL
  * @returns {Promise<string>} - Final URL after redirects
  */
-async function getDestination(url) {
+const getDestination = async (url) => {
   try {
     const response = await fetch(url, {
       method: "HEAD",
@@ -24,7 +26,7 @@ async function getDestination(url) {
     console.error(`Failed to resolve URL destination: ${error}`);
     return url;
   }
-}
+};
 
 /**
  * Extract video location from a page
@@ -33,7 +35,7 @@ async function getDestination(url) {
  * @param {string} markerTwo - Second marker to identify video
  * @returns {Promise<string>} - Direct video URL
  */
-async function getVideoLocation(href, markerOne, markerTwo) {
+const getVideoLocation = async (href, markerOne, markerTwo) => {
   try {
     const response = await fetch(href, {
       //if it isn't set to "darwin" the scraping fails for some reason
@@ -52,7 +54,7 @@ async function getVideoLocation(href, markerOne, markerTwo) {
     console.error(`Failed to get video location: ${error}`);
     return "";
   }
-}
+};
 
 /**
  * Generate message for Discord channel
@@ -64,16 +66,16 @@ async function getVideoLocation(href, markerOne, markerTwo) {
  * @param {number} fileSize - File size in MB
  * @returns {string} - Formatted message
  */
-function messageGen(title, href, directStreamLink, comments, canBeStreamed, fileSize) {
+const messageGen = (title, href, directStreamLink, comments, canBeStreamed, fileSize) => {
   return `${canBeStreamed ? `[[ STREAMING & DOWNLOAD ]](${directStreamLink})` : `[[ ORIGINAL MP4 ]](${href})`}  -  [[ FORUM POST ]](<${comments}>)\n${title}${canBeStreamed ? `\nSize: ${fileSize}MB` : `\nSize (might won't load): ${fileSize}MB`}`;
-}
+};
 
 /**
  * Process a single video
  * @param {Object} video - Video metadata
  * @returns {Promise<Object|null>} - Processed video result or null if failed
  */
-async function processVideo(video) {
+const processVideo = async (video) => {
   const { title, href, comments } = video;
   console.log(`Processing ${title} ${href}`);
 
@@ -205,7 +207,7 @@ async function processVideo(video) {
     console.error(`Error processing video ${title}: ${error}`);
     return null;
   }
-}
+};
 
 /**
  * Distribute a processed video to all configured channels
@@ -214,7 +216,7 @@ async function processVideo(video) {
  * @param {Object} processedVideo - Processed video result
  * @returns {Promise<void>}
  */
-async function distributeVideo(client, guildConfigs, processedVideo) {
+const distributeVideo = async (client, guildConfigs, processedVideo) => {
   const { title, href, comments, directStreamLink, canBeStreamed, fileSize } = processedVideo;
 
   const message = messageGen(title, href, directStreamLink, comments, canBeStreamed, fileSize);
@@ -236,13 +238,13 @@ async function distributeVideo(client, guildConfigs, processedVideo) {
       console.error(`Error sending to channel ${config.channelId}: ${error}`);
     }
   }
-}
+};
 
 /**
  * Fetch videos from feed
  * @returns {Promise<Array>} - Array of video objects
  */
-async function fetchVideosFromFeed() {
+const fetchVideosFromFeed = async () => {
   try {
     const response = await fetch(darwinConfig.feedUrl, {
       headers: { "User-Agent": "darwin" },
@@ -292,7 +294,7 @@ async function fetchVideosFromFeed() {
     console.error(`Error fetching videos from feed: ${error}`);
     return [];
   }
-}
+};
 
 /**
  * Run the Darwin process for all configured guilds
