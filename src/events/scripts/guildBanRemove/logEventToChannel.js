@@ -2,20 +2,20 @@ const { getGuildFromDB } = require("../../../helpers/log-data-query");
 const { embedMessageSuccessColorWithFields } = require("../../../helpers/embeds/embed-message");
 
 module.exports = {
-  async sendLogInfo(client, member) {
+  async sendLogInfo(client, unban) {
     try {
-      const guild = await client.guilds.fetch(member.guild.id);
-      const { doesGuildExist, logChannelId } = await getGuildFromDB(member.guild.id);
+      const guild = await client.guilds.fetch(unban.guild.id);
+      const { doesGuildExist, logChannelId } = await getGuildFromDB(unban.guild.id);
 
       if (doesGuildExist) {
         const logChannel = guild.channels.cache.get(logChannelId);
 
         const logEmbed = embedMessageSuccessColorWithFields(
           "Member unbanned",
-          `<@${member.user.id}> was unbanned from the server.`,
+          `<@${unban.user.id}> was unbanned from the server.`,
           [
-            { name: "Username", value: `${member.user.username}` },
-            { name: "User Id", value: `${member.user.id}` },
+            { name: "Username", value: `${unban.user.username}` },
+            { name: "User Id", value: `${unban.user.id}` },
           ]
         );
 
