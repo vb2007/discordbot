@@ -9,18 +9,18 @@ const { embedColors } = require("../../../config.json");
  * @returns {embedReply} An embed reply object
  */
 function embedReply(color, title, description, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(color),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(color),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -30,18 +30,18 @@ function embedReply(color, title, description, interaction) {
  * @returns {embedReply} An embed reply object
  */
 function embedReplyPrimaryColor(title, description, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.primary),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.primary),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -51,18 +51,18 @@ function embedReplyPrimaryColor(title, description, interaction) {
  * @returns {embedReply} An embed reply object
  */
 function embedReplySuccessColor(title, description, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.success),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.success),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -72,18 +72,18 @@ function embedReplySuccessColor(title, description, interaction) {
  * @returns {embedReply} An embed reply object
  */
 function embedReplySuccessSecondaryColor(title, description, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.successSecondary),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.successSecondary),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -93,18 +93,18 @@ function embedReplySuccessSecondaryColor(title, description, interaction) {
  * @returns {embedReply} An embed reply object
  */
 function embedReplyFailureColor(title, description, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.failure),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.failure),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -114,18 +114,18 @@ function embedReplyFailureColor(title, description, interaction) {
  * @returns {embedReply} An embed reply object
  */
 function embedReplyWarningColor(title, description, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.warning),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.warning),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -137,21 +137,21 @@ function embedReplyWarningColor(title, description, interaction) {
  * @returns {embedReply} An embed reply object
  */
 function embedReplyImg(color, title, description, image, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(color),
-        title: title,
-        description: description,
-        image: {
-            url: `${image}`
-        },
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(color),
+    title: title,
+    description: description,
+    image: {
+      url: `${image}`,
+    },
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -162,21 +162,21 @@ function embedReplyImg(color, title, description, image, interaction) {
  * @returns {embedReply} An embed reply object
  */
 function embedReplyPrimaryColorImg(title, description, image, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.primary),
-        title: title,
-        description: description,
-        image: {
-            url: `${image}`
-        },
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.primary),
+    title: title,
+    description: description,
+    image: {
+      url: `${image}`,
+    },
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -187,19 +187,19 @@ function embedReplyPrimaryColorImg(title, description, image, interaction) {
  * @returns {embedReply} An embed reply object
  */
 function embedReplyPrimaryColorWithFields(title, description, fields, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.primary),
-        title: title,
-        description: description,
-        fields: fields,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.primary),
+    title: title,
+    description: description,
+    fields: fields,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -210,19 +210,19 @@ function embedReplyPrimaryColorWithFields(title, description, fields, interactio
  * @returns {embedReply} An embed reply object
  */
 function embedReplySuccessColorWithFields(title, description, fields, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.success),
-        title: title,
-        description: description,
-        fields: fields,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.success),
+    title: title,
+    description: description,
+    fields: fields,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -233,19 +233,19 @@ function embedReplySuccessColorWithFields(title, description, fields, interactio
  * @returns {embedReply} An embed reply object
  */
 function embedReplyWarningColorWithFields(title, description, fields, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.warning),
-        title: title,
-        description: description,
-        fields: fields,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.warning),
+    title: title,
+    description: description,
+    fields: fields,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -256,19 +256,19 @@ function embedReplyWarningColorWithFields(title, description, fields, interactio
  * @returns {embedReply} An embed reply object
  */
 function embedReplyFailureColorWithFields(title, description, fields, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.failure),
-        title: title,
-        description: description,
-        fields: fields,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.failure),
+    title: title,
+    description: description,
+    fields: fields,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -279,21 +279,21 @@ function embedReplyFailureColorWithFields(title, description, fields, interactio
  * @returns {embedReply} An embed reply object
  */
 function embedReplyPrimaryColorWithFieldsAndThumbnail(title, fields, thumbnailUrl, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.primary),
-        title: title,
-        fields: fields,
-        thumbnail: {
-            url: thumbnailUrl,
-        },
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.primary),
+    title: title,
+    fields: fields,
+    thumbnail: {
+      url: thumbnailUrl,
+    },
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -304,21 +304,27 @@ function embedReplyPrimaryColorWithFieldsAndThumbnail(title, fields, thumbnailUr
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplyPrimaryColorWithFieldsAndAuthor(title, description, fields, author, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.primary),
-        title: title,
-        description: description,
-        fields: fields,
-        author: author,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Requested by: ${interaction.user.username}`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+function embedReplyPrimaryColorWithFieldsAndAuthor(
+  title,
+  description,
+  fields,
+  author,
+  interaction
+) {
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.primary),
+    title: title,
+    description: description,
+    fields: fields,
+    author: author,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Requested by: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -328,34 +334,34 @@ function embedReplyPrimaryColorWithFieldsAndAuthor(title, description, fields, a
  * @returns {embedReply} An embed reply object
  */
 function embedReplySaidByPrimaryColor(title, description, interaction) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.primary),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `${interaction.user.username} made the bot say this.`,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.primary),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `${interaction.user.username} made the bot say this.`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 module.exports = {
-    embedReply,
-    embedReplyPrimaryColor,
-    embedReplySuccessColor,
-    embedReplySuccessSecondaryColor,
-    embedReplyFailureColor,
-    embedReplyWarningColor,
-    embedReplyImg,
-    embedReplyPrimaryColorImg,
-    embedReplyPrimaryColorWithFields,
-    embedReplySuccessColorWithFields,
-    embedReplyWarningColorWithFields,
-    embedReplyFailureColorWithFields,
-    embedReplyPrimaryColorWithFieldsAndThumbnail,
-    embedReplyPrimaryColorWithFieldsAndAuthor,
-    embedReplySaidByPrimaryColor,
-}
+  embedReply,
+  embedReplyPrimaryColor,
+  embedReplySuccessColor,
+  embedReplySuccessSecondaryColor,
+  embedReplyFailureColor,
+  embedReplyWarningColor,
+  embedReplyImg,
+  embedReplyPrimaryColorImg,
+  embedReplyPrimaryColorWithFields,
+  embedReplySuccessColorWithFields,
+  embedReplyWarningColorWithFields,
+  embedReplyFailureColorWithFields,
+  embedReplyPrimaryColorWithFieldsAndThumbnail,
+  embedReplyPrimaryColorWithFieldsAndAuthor,
+  embedReplySaidByPrimaryColor,
+};

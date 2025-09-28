@@ -7,23 +7,18 @@ assignees: vb2007
 
 ---
 
-You can describe the issue however you want. But if you can, please try to follow the template below. If an issue is documented poorly, and the maintainer(s) can't understand your problem, your issue might get closed as "Not planned".
+## Description
 
-Please always take a look at the project itself, and at other issues before submitting a _supposedly unique_ issue.
+### Main purpose
 
-## How should the title look like?
+- e.g: A `/poll` command to create simple polls in a server.
 
-- New command: /`your-name-idea-here` (`category / categories`)
+### Category
 
-## What should you include in the description (if possible)?
+- e.g.: `Utility`, `Fun`, `Moderation`, etc.
 
-_Note that you can submit multiple commands as one issue, if they're related to each other. For example: https://github.com/vb2007/discordbot/issues/21_
+### Options
 
-- What will this command / commands do?
-- What options will the command have? (e.g.: `target` (user option) in the `/kick` command)
-- In case of multiple commands: what categories will specific commands belong to?
-- Any other creative ideas, future improvements.
-
-If you're not sure about the details above, feel free to submit the issue anyways. Ideas are always great to have.
-
-♥ **Every issue you describe with some effort is appreciated.** ♥
+- e.g.: `title`: The poll's title that the executor specifies (required)
+- e.g.: `channel`: The channel where the poll will be created (optional, defaults to current channel)
+- e.g.: `duration`: The duration of the poll in minutes (optional, defaults to 60 minutes)

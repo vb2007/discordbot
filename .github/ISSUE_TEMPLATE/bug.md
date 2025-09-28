@@ -1,26 +1,25 @@
 ---
 name: Bug
-about: Use this, if a command, feature, or anything related to the project isn't working
-  properly
+about: If a command, feature, or anything related to the project isn't working properly.
 title: 'Bug: '
 labels: bug
 assignees: vb2007
-
 ---
 
-You can describe the issue however you want. But if you can, please try to follow the template below. If an issue is documented poorly, and the maintainer(s) can't understand your problem, your issue might get closed as "Not planned".
+## Release version / last pulled commit's ID
 
-Please always take a look at the project itself, and at other issues before submitting a _supposedly unique_ issue.
+- e.g.: `v3.2` or `a1b2c3d4e5f6g7h8i9j0klmnopqrstuvwx` (provide GitHub link if possible)
 
-## What should you include in the description (if possible)
+## Description
 
-- **Release version / date of last pull**
-- ⚠**Screenshots**:  if you've captured the events, please send screenshots about anything that's relevant. _This helps a **lot** with the issue reproduction._
-- **Pre conditions**: what should I do before trying to reproduce the bug?
-- **Actual behavior**: what happened?
-- **Expected behavior**: what should've happened?
-- _(Optional, used in very few cases)_**Post conditions**: should I do anything else after trying to reproduce the issue?
+### Actual behavior
 
-If you're not sure about the details above, feel free to submit the issue anyways. It's great to have any feedback about the project.
+- e.g.: The `/help` command returns an error even after multiple tries.
 
-♥ **Every issue you describe with some effort is appreciated.** ♥
+### Expected behavior
+
+- e.g: The `/help` command should return a list of available commands.
+
+### Screenshots / logs
+
+- If any, paste screenshots / logs here.

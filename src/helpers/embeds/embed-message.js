@@ -8,14 +8,14 @@ const { embedColors } = require("../../../config.json");
  * @returns {embedReply} An embed message object
  */
 function embedMessage(color, title, description) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(color),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString()
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(color),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -25,18 +25,18 @@ function embedMessage(color, title, description) {
  * @returns {embedReply} An embed message object
  */
 function embedMessageWithServerIcon(color, title, description, guild) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(color),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `In: ${guild.name}`,
-            icon_url: guild.iconURL({ dynamic: true })
-        }
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(color),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `In: ${guild.name}`,
+      icon_url: guild.iconURL({ dynamic: true }),
+    },
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -45,14 +45,14 @@ function embedMessageWithServerIcon(color, title, description, guild) {
  * @returns {embedReply} An embed message object
  */
 function embedMessagePrimaryColor(title, description) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.primary),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString()
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.primary),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -61,14 +61,14 @@ function embedMessagePrimaryColor(title, description) {
  * @returns {embedReply} An embed message object
  */
 function embedMessageSuccessColor(title, description) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.success),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString()
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.success),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -77,14 +77,14 @@ function embedMessageSuccessColor(title, description) {
  * @returns {embedReply} An embed message object
  */
 function embedMessageSuccessSecondaryColor(title, description) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.successSecondary),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString()
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.successSecondary),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -93,14 +93,14 @@ function embedMessageSuccessSecondaryColor(title, description) {
  * @returns {embedReply} An embed message object
  */
 function embedMessageFailureColor(title, description) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.failure),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString()
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.failure),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -109,14 +109,14 @@ function embedMessageFailureColor(title, description) {
  * @returns {embedReply} An embed message object
  */
 function embedMessageWarningColor(title, description) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.warning),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString()
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.warning),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -127,15 +127,15 @@ function embedMessageWarningColor(title, description) {
  * @returns {embedReply} An embed message object
  */
 function embedMessageWithFields(color, title, description, fields) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(color),
-        title: title,
-        description: description,
-        fields: fields,
-        timestamp: new Date().toISOString()
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(color),
+    title: title,
+    description: description,
+    fields: fields,
+    timestamp: new Date().toISOString(),
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -145,15 +145,15 @@ function embedMessageWithFields(color, title, description, fields) {
  * @returns {embedReply} An embed message object
  */
 function embedMessagePrimaryColorWithFields(title, description, fields) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.primary),
-        title: title,
-        description: description,
-        fields: fields,
-        timestamp: new Date().toISOString()
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.primary),
+    title: title,
+    description: description,
+    fields: fields,
+    timestamp: new Date().toISOString(),
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -163,15 +163,15 @@ function embedMessagePrimaryColorWithFields(title, description, fields) {
  * @returns {embedReply} An embed message object
  */
 function embedMessageSuccessColorWithFields(title, description, fields) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.success),
-        title: title,
-        description: description,
-        fields: fields,
-        timestamp: new Date().toISOString()
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.success),
+    title: title,
+    description: description,
+    fields: fields,
+    timestamp: new Date().toISOString(),
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -181,15 +181,15 @@ function embedMessageSuccessColorWithFields(title, description, fields) {
  * @returns {embedReply} An embed message object
  */
 function embedMessageSuccessSecondaryColorWithFields(title, description, fields) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.successSecondary),
-        title: title,
-        description: description,
-        fields: fields,
-        timestamp: new Date().toISOString()
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.successSecondary),
+    title: title,
+    description: description,
+    fields: fields,
+    timestamp: new Date().toISOString(),
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -199,15 +199,15 @@ function embedMessageSuccessSecondaryColorWithFields(title, description, fields)
  * @returns {embedReply} An embed message object
  */
 function embedMessageFailureColorWithFields(title, description, fields) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.failure),
-        title: title,
-        description: description,
-        fields: fields,
-        timestamp: new Date().toISOString()
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.failure),
+    title: title,
+    description: description,
+    fields: fields,
+    timestamp: new Date().toISOString(),
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 /**
@@ -217,29 +217,29 @@ function embedMessageFailureColorWithFields(title, description, fields) {
  * @returns {embedReply} An embed message object
  */
 function embedMessageWarningColorWithFields(title, description, fields) {
-    const embedReply = new EmbedBuilder({
-        color: parseInt(embedColors.warning),
-        title: title,
-        description: description,
-        fields: fields,
-        timestamp: new Date().toISOString()
-    });
+  const embedReply = new EmbedBuilder({
+    color: parseInt(embedColors.warning),
+    title: title,
+    description: description,
+    fields: fields,
+    timestamp: new Date().toISOString(),
+  });
 
-    return embedReply;
+  return embedReply;
 }
 
 module.exports = {
-    embedMessage,
-    embedMessageWithServerIcon,
-    embedMessagePrimaryColor,
-    embedMessageSuccessColor,
-    embedMessageSuccessSecondaryColor,
-    embedMessageFailureColor,
-    embedMessageWarningColor,
-    embedMessageWithFields,
-    embedMessagePrimaryColorWithFields,
-    embedMessageSuccessColorWithFields,
-    embedMessageSuccessSecondaryColorWithFields,
-    embedMessageFailureColorWithFields,
-    embedMessageWarningColorWithFields
-}
+  embedMessage,
+  embedMessageWithServerIcon,
+  embedMessagePrimaryColor,
+  embedMessageSuccessColor,
+  embedMessageSuccessSecondaryColor,
+  embedMessageFailureColor,
+  embedMessageWarningColor,
+  embedMessageWithFields,
+  embedMessagePrimaryColorWithFields,
+  embedMessageSuccessColorWithFields,
+  embedMessageSuccessSecondaryColorWithFields,
+  embedMessageFailureColorWithFields,
+  embedMessageWarningColorWithFields,
+};

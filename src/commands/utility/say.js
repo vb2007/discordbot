@@ -3,25 +3,19 @@ const { embedReplySaidByPrimaryColor } = require("../../helpers/embeds/embed-rep
 const { logToFileAndDatabase } = require("../../helpers/logger");
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName("say")
-        .setDescription("Makes the bot say something.")
-        .addStringOption(option =>
-            option
-                .setName("message")
-                .setDescription("The message the bot will say.")
-                .setRequired(true))
-        .setDMPermission(true),
-    async execute(interaction) {
-        const message = interaction.options.getString("message");
+  data: new SlashCommandBuilder()
+    .setName("say")
+    .setDescription("Makes the bot say something.")
+    .addStringOption((option) =>
+      option.setName("message").setDescription("The message the bot will say.").setRequired(true)
+    )
+    .setDMPermission(true),
+  async execute(interaction) {
+    const message = interaction.options.getString("message");
 
-        var embedReply = embedReplySaidByPrimaryColor(
-            "The bot said:",
-            `*${message}*`,
-            interaction
-        );
+    var embedReply = embedReplySaidByPrimaryColor("The bot said:", `*${message}*`, interaction);
 
-        await interaction.reply({ embeds: [embedReply] });
-        await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
-    }
-}
+    await interaction.reply({ embeds: [embedReply] });
+    await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
+  },
+};

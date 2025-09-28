@@ -49,9 +49,7 @@ function getCommandsFromFS(commandsDir) {
 }
 
 describe("Command Data Tests", () => {
-  const csvCommands = parseCommandsFromCSV(
-    path.join(__dirname, "../data/commandData.csv"),
-  );
+  const csvCommands = parseCommandsFromCSV(path.join(__dirname, "../data/commandData.csv"));
   const fsCommands = getCommandsFromFS(path.join(__dirname, "../commands"));
 
   test("All filesystem commands exist in CSV", () => {

@@ -24,16 +24,16 @@ module.exports = {
         .setDescription("Configure or disable the Darwin feature?")
         .addChoices(
           { name: "configure", value: "configure" },
-          { name: "disable", value: "disable" },
+          { name: "disable", value: "disable" }
         )
-        .setRequired(true),
+        .setRequired(true)
     )
     .addChannelOption((option) =>
       option
         .setName("channel")
         .setDescription("The channel where videos will be posted.")
         .addChannelTypes(0)
-        .setRequired(false),
+        .setRequired(false)
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .setDMPermission(false),
@@ -63,56 +63,43 @@ module.exports = {
         const channelId = channel.id;
         const channelName = channel.name;
 
-        const query = await db.query(
-          "SELECT * FROM configDarwin WHERE guildId = ?",
-          [guildId],
-        );
+        const query = await db.query("SELECT * FROM configDarwin WHERE guildId = ?", [guildId]);
         const existingConfig = query[0] || null;
 
         if (existingConfig) {
           if (channelId !== existingConfig.channelId) {
             await db.query(
               "UPDATE configDarwin SET channelId = ?, channelName = ?, adderId = ?, adderUsername = ? WHERE guildId = ?",
-              [channelId, channelName, adderId, adderUsername, guildId],
+              [channelId, channelName, adderId, adderUsername, guildId]
             );
 
             title = "Darwin Configure: Channel Updated";
             description = `Successfully changed Darwin channel to <#${channelId}>. :white_check_mark:\n Videos will get posted there from now on.`;
             return replyAndLog(
               interaction,
-              embedReplySuccessSecondaryColor(title, description, interaction),
+              embedReplySuccessSecondaryColor(title, description, interaction)
             );
           }
 
           title = "Darwin Configure: No Change";
           description = `Darwin is already configured to post videos to <#${channelId}>.\n No changes were made.`;
-          return replyAndLog(
-            interaction,
-            embedReplyFailureColor(title, description, interaction),
-          );
+          return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
         }
 
         await db.query(
           "INSERT INTO configDarwin (guildId, channelId, channelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?)",
-          [guildId, channelId, channelName, adderId, adderUsername],
+          [guildId, channelId, channelName, adderId, adderUsername]
         );
 
         title = "Darwin Configure: Configuration Set";
         description = `Darwin has been configured successfully! :white_check_mark:\n Videos will be posted to <#${channelId}>.`;
-        return replyAndLog(
-          interaction,
-          embedReplySuccessColor(title, description, interaction),
-        );
+        return replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
       } catch (error) {
         console.error(`Error configuring Darwin: ${error}`);
 
         title = "Darwin Configure: Error";
-        description =
-          "An error occurred while configuring Darwin. Please try again.";
-        return replyAndLog(
-          interaction,
-          embedReplyFailureColor(title, description, interaction),
-        );
+        description = "An error occurred while configuring Darwin. Please try again.";
+        return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
       }
     }
 
@@ -120,43 +107,27 @@ module.exports = {
       try {
         const guildId = interaction.guild.id;
 
-        const query = await db.query(
-          "SELECT * FROM configDarwin WHERE guildId = ?",
-          [guildId],
-        );
+        const query = await db.query("SELECT * FROM configDarwin WHERE guildId = ?", [guildId]);
         const existingConfig = query[0] || null;
 
         if (existingConfig) {
-          await db.query("DELETE FROM configDarwin WHERE guildId = ?", [
-            guildId,
-          ]);
+          await db.query("DELETE FROM configDarwin WHERE guildId = ?", [guildId]);
 
           title = "Darwin Disable: Success";
-          description =
-            "Darwin has been disabled for this server. :white_check_mark:";
-          return replyAndLog(
-            interaction,
-            embedReplySuccessColor(title, description, interaction),
-          );
+          description = "Darwin has been disabled for this server. :white_check_mark:";
+          return replyAndLog(interaction, embedReplySuccessColor(title, description, interaction));
         }
 
         title = "Darwin Disable: Warning";
         description =
           "Darwin has not been configured for this server yet. :x:\nTherefore, you can't disable it.";
-        return replyAndLog(
-          interaction,
-          embedReplyWarningColor(title, description, interaction),
-        );
+        return replyAndLog(interaction, embedReplyWarningColor(title, description, interaction));
       } catch (error) {
         console.error(`Error disabling Darwin: ${error}`);
 
         title = "Darwin Disable: Error";
-        description =
-          "An error occurred while disabling Darwin. Please try again.";
-        return replyAndLog(
-          interaction,
-          embedReplyFailureColor(title, description, interaction),
-        );
+        description = "An error occurred while disabling Darwin. Please try again.";
+        return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
       }
     }
   },
