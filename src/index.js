@@ -6,8 +6,8 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-import "dotenv/config";
 import config from "../config.json" with { type: "json" };
+import "dotenv/config";
 const token = process.env.TOKEN;
 
 import { getConnection } from "./helpers/db.js";
