@@ -1,7 +1,7 @@
-const fs = require("fs");
-const path = require("path");
-const { parse } = require("@babel/parser");
-const traverse = require("@babel/traverse").default;
+import fs from "fs";
+import path from "path";
+import { parse } from "@babel/parser";
+import traverse from "@babel/traverse";
 
 const getAllCommandFiles = (foldersPath) => {
   const commandFiles = [];
