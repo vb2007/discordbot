@@ -1,16 +1,20 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import Ajv from "ajv";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const configPath = path.join(__dirname, "..", "..", "config.json");
 const configSchemaPath = path.join(__dirname, "config-schema.json");
 
-const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-const configSchema = JSON.parse(fs.readFileSync(configSchemaPath, "utf-8"));
+const configJson = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+const configSchemaJson = JSON.parse(fs.readFileSync(configSchemaPath, "utf-8"));
 
 const ajv = new Ajv();
-const validate = ajv.compile(configSchema);
-const valid = validate(config);
+const validate = ajv.compile(configSchemaJson);
+const valid = validate(configJson);
 
 export const validateConfig = () => {
   if (!valid) {

@@ -1,6 +1,10 @@
 import { Client, Collection, Events, GatewayIntentBits, Partials, ActivityType } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import "dotenv/config";
 import config from "../config.json" with { type: "json" };
@@ -8,6 +12,7 @@ const token = process.env.TOKEN;
 
 import { getConnection } from "./helpers/db.js";
 import { runDarwinProcess } from "./helpers/darwin/darwinProcess.js";
+import { validateConfig } from "./scripts/verify-config-syntax.js";
 
 if (!token) {
   console.error("[FATAL] Discord bot token is missing. Please set TOKEN in your .env file.");
@@ -24,7 +29,7 @@ try {
 
 // Verify config.json file's syntax
 try {
-  require("./scripts/verify-config-syntax");
+  validateConfig();
 } catch (err) {
   console.error("[FATAL] Config verification failed:", err);
   process.exit(1);
