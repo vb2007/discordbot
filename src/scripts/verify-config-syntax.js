@@ -1,6 +1,6 @@
-const fs = require("fs");
-const path = require("path");
-const Ajv = require("ajv");
+import fs from "fs";
+import path from "path";
+import Ajv from "ajv";
 
 const configPath = path.join(__dirname, "..", "..", "config.json");
 const configSchemaPath = path.join(__dirname, "config-schema.json");
@@ -12,11 +12,13 @@ const ajv = new Ajv();
 const validate = ajv.compile(configSchema);
 const valid = validate(config);
 
-if (!valid) {
-  console.error(
-    `The config.json file contains syntax errors:\n${JSON.stringify(validate.errors, null, 2)}\nPlease follow the schema that's present on the project's GitHub page: https://github.com/vb2007/discordbot/tree/dev-bank?tab=readme-ov-file#setting-up-the-bot`
-  );
-  process.exit(1);
-} else {
-  console.log("The config.json file's syntax is correct.");
-}
+export const validateConfig = () => {
+  if (!valid) {
+    console.error(
+      `The config.json file contains syntax errors:\n${JSON.stringify(validate.errors, null, 2)}\nPlease follow the schema that's present on the project's GitHub page: https://github.com/vb2007/discordbot/tree/dev-bank?tab=readme-ov-file#setting-up-the-bot`
+    );
+    process.exit(1);
+  } else {
+    console.log("The config.json file's syntax is correct.");
+  }
+};
