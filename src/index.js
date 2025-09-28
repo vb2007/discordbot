@@ -1,24 +1,26 @@
-const fs = require("node:fs");
-const path = require("node:path");
+import { Client, Collection, Events, GatewayIntentBits, Partials, ActivityType } from "discord.js";
+import fs from "node:fs";
+import path from "node:path";
 
-require("dotenv").config();
+import "dotenv/config";
+import config from "../config.json" with { type: "json" };
 const token = process.env.TOKEN;
+
+import { getConnection } from "./helpers/db.js";
+import { runDarwinProcess } from "./helpers/darwin/darwinProcess.js";
+
 if (!token) {
   console.error("[FATAL] Discord bot token is missing. Please set TOKEN in your .env file.");
   process.exit(1);
 }
 
 // Check database connection
-const db = require("./helpers/db");
 try {
-  db.getConnection();
+  getConnection();
 } catch (err) {
   console.error("[FATAL] Database connection failed: ", err);
   process.exit(1);
 }
-
-// Load config
-const config = require("../config.json");
 
 // Verify config.json file's syntax
 try {
@@ -27,15 +29,6 @@ try {
   console.error("[FATAL] Config verification failed:", err);
   process.exit(1);
 }
-
-const {
-  Client,
-  Collection,
-  Events,
-  GatewayIntentBits,
-  Partials,
-  ActivityType,
-} = require("discord.js");
 
 const client = new Client({
   intents: [
@@ -71,7 +64,6 @@ const client = new Client({
   // },
 });
 
-const { runDarwinProcess } = require("./helpers/darwin/darwinProcess");
 const darwinInterval = config.darwin?.interval || 120000; // Default to 120 seconds if not specified
 let darwinProcessRunning = false;
 
@@ -118,8 +110,10 @@ for (const folder of commandFolders) {
     console.warn(`[WARNING] Could not read commands subdirectory: ${commandsPath}`, err);
     continue;
   }
+
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
+
     try {
       const command = require(filePath);
       if ("data" in command && "execute" in command) {
@@ -197,7 +191,7 @@ process.on("unhandledRejection", (error) => {
 });
 
 // Set the bot's Discord activity
-function setActivity() {
+const setActivity = () => {
   if (!client.user) return;
 
   client.user.setActivity({
@@ -207,7 +201,7 @@ function setActivity() {
   });
 
   // console.log("Re-announced bot's activity.");
-}
+};
 
 client.on("clientReady", setActivity);
 

@@ -1,12 +1,12 @@
-const cheerio = require("cheerio");
-const fs = require("fs");
-const path = require("path");
-const { pipeline } = require("stream/promises");
-const darwinCache = require("./darwinCache");
-const db = require("../db");
-const config = require("../../../config.json");
+import cheerio from "cheerio";
+import fs from "fs";
+import path from "path";
+import { pipeline } from "stream/promises";
+import darwinCache from "./darwinCache";
+import { query } from "../db";
+import config from "../../../config.json" with { type: "json" };
 const darwinConfig = config.darwin;
-const { transcodeVideo, getFileSizeMB } = require("./darwinTranscode");
+import { transcodeVideo, getFileSizeMB } from "./darwinTranscode";
 
 /**
  * Get the final destination of a URL (follow redirects)
@@ -299,10 +299,10 @@ async function fetchVideosFromFeed() {
  * @param {Object} client - Discord client
  * @returns {Promise<void>}
  */
-async function runDarwinProcess(client) {
+export const runDarwinProcess = async (client) => {
   try {
     // Get all guild configurations
-    const guildConfigs = await db.query("SELECT * FROM configDarwin");
+    const guildConfigs = await query("SELECT * FROM configDarwin");
 
     if (guildConfigs.length === 0) {
       console.log("No Darwin configurations found");
@@ -376,8 +376,4 @@ async function runDarwinProcess(client) {
   } catch (error) {
     console.error(`Error running Darwin process: ${error}`);
   }
-}
-
-module.exports = {
-  runDarwinProcess,
 };
