@@ -16,7 +16,8 @@ module.exports = {
           [
             { name: "Username", value: `${ban.user.username}` || "Unknown", inline: true },
             { name: "User Id", value: `${ban.user.id}` || "Unknown", inline: true },
-            { name: "Reason", value: `${ban.reason}` || "Unknown" },
+            //the reason isn't in the ban object for some reason
+            //{ name: "Reason", value: `${ban.reason}` || "Unknown" },
           ]
         );
 
