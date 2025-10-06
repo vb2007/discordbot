@@ -1,13 +1,13 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const {
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
+import {
   embedReplyFailureColor,
   embedReplySuccessColor,
   embedReplySuccessSecondaryColor,
   embedReplyWarningColor,
-} = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/embeds/embed-reply.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import replyAndLog from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
 
 const commandName = "config-autorole";
 
@@ -71,10 +71,9 @@ module.exports = {
         const adderId = interaction.user.id;
         const guildId = interaction.guild.id;
 
-        const query = await db.query(
-          "SELECT guildId, roleId FROM configAutorole WHERE guildId = ?",
-          [guildId]
-        );
+        const query = await query("SELECT guildId, roleId FROM configAutorole WHERE guildId = ?", [
+          guildId,
+        ]);
         const autoRoleGuildId = query[0]?.guildId || null;
         const autoRoleRoleId = query[0]?.roleId || null;
 
@@ -89,7 +88,7 @@ module.exports = {
           );
         }
 
-        await db.query(
+        await query(
           "INSERT INTO configAutorole (guildId, roleId, adderId, adderUsername) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE roleId = ?, adderId = ?, adderUsername = ?",
           [guildId, targetRole, adderId, adderUsername, targetRole, adderId, adderUsername]
         );
@@ -117,13 +116,13 @@ module.exports = {
     if (action === "disable") {
       try {
         const currentGuildId = interaction.guild.id;
-        const query = await db.query("SELECT guildId FROM configAutorole WHERE guildId = ?", [
+        const query = await query("SELECT guildId FROM configAutorole WHERE guildId = ?", [
           currentGuildId,
         ]);
         const autoroleGuildId = query[0]?.guildId || null;
 
         if (autoroleGuildId) {
-          await db.query("DELETE FROM configAutorole WHERE guildId = ?", [autoroleGuildId]);
+          await query("DELETE FROM configAutorole WHERE guildId = ?", [autoroleGuildId]);
 
           title = "AutoRole Disable: Success";
           description = "The autorole feature has been disabled succesfully. :white_check_mark:";
