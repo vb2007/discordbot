@@ -1,11 +1,8 @@
 {
-    "type": "object",
-    "properties": {
-        "logToFile": { "type": "string", "enum": ["True", "False"] },
-        "logToDatabase": { "type": "string", "enum": ["True", "False"] }
-    },
-    "required": [
-        "logToFile",
-        "logToDatabase"
-    ]
+  "type": "object",
+  "properties": {
+    "logToFile": { "type": "string", "enum": ["True", "False"] },
+    "logToDatabase": { "type": "string", "enum": ["True", "False"] }
+  },
+  "required": ["logToFile", "logToDatabase"]
 }

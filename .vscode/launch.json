@@ -1,47 +1,41 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Launch bot.",
-            "type": "node",
-            "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/src/index.js"
-        },
-        {
-            "name": "Deploy slash commands.",
-            "type": "node",
-            "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/src/deploy-commands.js"
-        },
-        {
-            "name": "Run unit tests.",
-            "type": "node",
-            "request": "launch",
-            "runtimeArgs": [
-                "--inspect-brk",
-                "${workspaceRoot}/node_modules/jest/bin/jest.js",
-                "--runInBand"
-            ],
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen"
-        },
-        {
-            "name": "Create SQL tables.",
-            "type": "node",
-            "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/src/create-tables.js"
-        }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch bot.",
+      "type": "node",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/src/index.js"
+    },
+    {
+      "name": "Deploy slash commands.",
+      "type": "node",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/src/deploy-commands.js"
+    },
+    {
+      "name": "Run unit tests.",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/jest/bin/jest.js",
+        "--runInBand"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Create SQL tables.",
+      "type": "node",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/src/create-tables.js"
+    }
+  ]
 }

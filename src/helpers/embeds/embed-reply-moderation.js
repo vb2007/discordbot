@@ -8,18 +8,18 @@ const { embedColors } = require("../../../config.json");
  * @returns {embedReply} An embed reply object
  */
 function moderationDmEmbedReplyFailureColor(title, description, interaction) {
-    const embedDmReply = new EmbedBuilder({
-        color: parseInt(embedColors.failure),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Moderator: ${interaction.user.username}` ,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-        },
-    });
+  const embedDmReply = new EmbedBuilder({
+    color: parseInt(embedColors.failure),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Moderator: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedDmReply;
+  return embedDmReply;
 }
 
 /**
@@ -29,21 +29,21 @@ function moderationDmEmbedReplyFailureColor(title, description, interaction) {
  * @returns {embedReply} An embed reply object
  */
 function moderationDmEmbedReplyWarningColor(title, description, interaction) {
-    const embedDmReply = new EmbedBuilder({
-        color: parseInt(embedColors.warning),
-        title: title,
-        description: description,
-        timestamp: new Date().toISOString(),
-        footer: {
-            text: `Moderator: ${interaction.user.username}` ,
-            icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
-        },
-    });
+  const embedDmReply = new EmbedBuilder({
+    color: parseInt(embedColors.warning),
+    title: title,
+    description: description,
+    timestamp: new Date().toISOString(),
+    footer: {
+      text: `Moderator: ${interaction.user.username}`,
+      icon_url: interaction.user.displayAvatarURL({ dynamic: true }),
+    },
+  });
 
-    return embedDmReply;
+  return embedDmReply;
 }
 
 module.exports = {
-    moderationDmEmbedReplyFailureColor,
-    moderationDmEmbedReplyWarningColor,
-}
+  moderationDmEmbedReplyFailureColor,
+  moderationDmEmbedReplyWarningColor,
+};

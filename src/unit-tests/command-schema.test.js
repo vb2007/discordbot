@@ -41,8 +41,7 @@ const validateCommand = (filePath) => {
   if (!validation.hasModuleExports) issues.push("missing module.exports");
   if (!validation.hasData) issues.push("missing data property");
   if (!validation.hasExecute) issues.push("missing execute method");
-  if (!validation.hasSlashCommandBuilder)
-    issues.push("missing SlashCommandBuilder");
+  if (!validation.hasSlashCommandBuilder) issues.push("missing SlashCommandBuilder");
   if (!validation.hasSetName) issues.push("missing setName()");
   if (!validation.hasSetDescription) issues.push("missing setDescription()");
 
@@ -73,9 +72,7 @@ const validateCommandStructure = (ast) => {
           if (key === "data") {
             hasData = true;
             if (prop.value && prop.value.type === "CallExpression") {
-              const builderValidation = checkSlashCommandBuilderChain(
-                prop.value,
-              );
+              const builderValidation = checkSlashCommandBuilderChain(prop.value);
               hasSlashCommandBuilder = builderValidation.hasSlashCommandBuilder;
               hasSetName = builderValidation.hasSetName;
               hasSetDescription = builderValidation.hasSetDescription;
@@ -107,12 +104,8 @@ const checkSlashCommandBuilderChain = (node) => {
 
   function traverseChain(currentNode) {
     if (currentNode.type === "CallExpression") {
-      if (
-        currentNode.callee &&
-        currentNode.callee.type === "MemberExpression"
-      ) {
-        const methodName =
-          currentNode.callee.property && currentNode.callee.property.name;
+      if (currentNode.callee && currentNode.callee.type === "MemberExpression") {
+        const methodName = currentNode.callee.property && currentNode.callee.property.name;
 
         if (methodName === "setName") hasSetName = true;
         if (methodName === "setDescription") hasSetDescription = true;
@@ -122,10 +115,7 @@ const checkSlashCommandBuilderChain = (node) => {
         }
       }
     } else if (currentNode.type === "NewExpression") {
-      if (
-        currentNode.callee &&
-        currentNode.callee.name === "SlashCommandBuilder"
-      ) {
+      if (currentNode.callee && currentNode.callee.name === "SlashCommandBuilder") {
         hasSlashCommandBuilder = true;
       }
     }

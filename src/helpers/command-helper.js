@@ -15,9 +15,7 @@ class CommandHandler {
 
     for (const folder of commandFolders) {
       const commandsPath = path.join(foldersPath, folder);
-      const commandFiles = fs
-        .readdirSync(commandsPath)
-        .filter((file) => file.endsWith(".js"));
+      const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".js"));
 
       for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
@@ -27,7 +25,7 @@ class CommandHandler {
           this.client.commands.set(command.data.name, command);
         } else {
           console.log(
-            `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
+            `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
           );
         }
       }
@@ -40,9 +38,7 @@ class CommandHandler {
     const command = this.client.commands.get(interaction.commandName);
 
     if (!command) {
-      console.error(
-        `No command matching ${interaction.commandName} was found.`,
-      );
+      console.error(`No command matching ${interaction.commandName} was found.`);
       return;
     }
 

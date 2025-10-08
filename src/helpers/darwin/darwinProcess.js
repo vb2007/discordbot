@@ -64,15 +64,8 @@ async function getVideoLocation(href, markerOne, markerTwo) {
  * @param {number} fileSize - File size in MB
  * @returns {string} - Formatted message
  */
-function messageGen(
-  title,
-  href,
-  directStreamLink,
-  comments,
-  canBeStreamed,
-  fileSize,
-) {
-  return `${canBeStreamed ? `[[ STREAMING & DOWNLOAD ]](${directStreamLink})` : `[[ ORIGINAL MP4 ]](${href})`}  -  [[ FORUM POST ]](<${comments}>)  -  ${title}${canBeStreamed ? `Size: ${fileSize}MB` : ` - Size (might buffer): ${fileSize}MB)}`}`;
+function messageGen(title, href, directStreamLink, comments, canBeStreamed, fileSize) {
+  return `${canBeStreamed ? `[[ STREAMING & DOWNLOAD ]](${directStreamLink})` : `[[ ORIGINAL MP4 ]](${href})`}  -  [[ FORUM POST ]](<${comments}>)\n${title}${canBeStreamed ? `\nSize: ${fileSize}MB` : `\nSize (might won't load): ${fileSize}MB`}`;
 }
 
 /**
@@ -94,9 +87,7 @@ async function processVideo(video) {
     // Add to cache BEFORE downloading to prevent multiple uploads
     const addedToCache = await darwinCache.addToCache(href);
     if (!addedToCache) {
-      console.log(
-        `Failed to add to cache, skipping to prevent duplicates: ${href}`,
-      );
+      console.log(`Failed to add to cache, skipping to prevent duplicates: ${href}`);
       return null;
     }
 
@@ -125,14 +116,8 @@ async function processVideo(video) {
     }
 
     const videoId = href.split("/").pop().replace(".mp4", "");
-    const tempFilePath = path.join(
-      darwinConfig.tempDir,
-      `${videoId}_original.mp4`,
-    );
-    const transcodedFilePath = path.join(
-      darwinConfig.tempDir,
-      `${videoId}_transcoded.mp4`,
-    );
+    const tempFilePath = path.join(darwinConfig.tempDir, `${videoId}_original.mp4`);
+    const transcodedFilePath = path.join(darwinConfig.tempDir, `${videoId}_transcoded.mp4`);
     const finalFilePath = path.join(darwinConfig.targetDir, `${videoId}.mp4`);
     const directStreamLink = `${darwinConfig.cdnUrl}/${videoId}.mp4`;
 
@@ -149,15 +134,12 @@ async function processVideo(video) {
 
     try {
       console.log("Starting video transcoding process...");
-      const transcodingSuccess = await transcodeVideo(
-        tempFilePath,
-        transcodedFilePath,
-      );
+      const transcodingSuccess = await transcodeVideo(tempFilePath, transcodedFilePath);
 
+      const transcodedSize = getFileSizeMB(transcodedFilePath);
       if (transcodingSuccess) {
-        const transcodedSize = getFileSizeMB(transcodedFilePath);
         console.log(
-          `Transcoded file size: ${transcodedSize}MB (${Math.round((transcodedSize / originalSize) * 100)}% of original)`,
+          `Transcoded file size: ${transcodedSize}MB (${Math.round((transcodedSize / originalSize) * 100)}% of original)`
         );
 
         fs.copyFileSync(transcodedFilePath, finalFilePath);
@@ -182,19 +164,15 @@ async function processVideo(video) {
         comments,
         directStreamLink,
         canBeStreamed: true,
-        fileSize: 0,
+        fileSize: transcodedSize,
       };
     } catch (error) {
-      console.error(
-        `Transcoding failed, attempting to use original file: ${error}`,
-      );
+      console.error(`Transcoding failed, attempting to use original file: ${error}`);
 
       try {
         // Use original file as fallback
         fs.copyFileSync(tempFilePath, finalFilePath);
-        console.log(
-          `Original file moved to final destination: ${finalFilePath}`,
-        );
+        console.log(`Original file moved to final destination: ${finalFilePath}`);
 
         // Clean up temporary files
         if (fs.existsSync(tempFilePath)) {
@@ -219,9 +197,7 @@ async function processVideo(video) {
           fileSize: finalSize,
         };
       } catch (fallbackError) {
-        console.error(
-          `Failed to use original file as fallback: ${fallbackError}`,
-        );
+        console.error(`Failed to use original file as fallback: ${fallbackError}`);
         return null;
       }
     }
@@ -239,29 +215,19 @@ async function processVideo(video) {
  * @returns {Promise<void>}
  */
 async function distributeVideo(client, guildConfigs, processedVideo) {
-  const { title, href, comments, directStreamLink, canBeStreamed, fileSize } =
-    processedVideo;
+  const { title, href, comments, directStreamLink, canBeStreamed, fileSize } = processedVideo;
 
-  const message = messageGen(
-    title,
-    href,
-    directStreamLink,
-    comments,
-    canBeStreamed,
-    fileSize,
-  );
+  const message = messageGen(title, href, directStreamLink, comments, canBeStreamed, fileSize);
 
   for (const config of guildConfigs) {
     try {
-      console.log(
-        `Sending video to guild ${config.guildId}, channel ${config.channelId}`,
-      );
+      console.log(`Sending video to guild ${config.guildId}, channel ${config.channelId}`);
       const channel = await client.channels.fetch(config.channelId);
 
       if (channel) {
         await channel.send(message);
         console.log(
-          `Successfully sent video to channel ${config.channelName} (${config.channelId})`,
+          `Successfully sent video to channel ${config.channelName} (${config.channelId})`
         );
       } else {
         console.error(`Failed to fetch channel ${config.channelId}`);
@@ -298,29 +264,19 @@ async function fetchVideosFromFeed() {
         if (!title) continue;
 
         const finalUrl = await getDestination(href);
-        if (
-          finalUrl !== href ||
-          !finalUrl.startsWith(darwinConfig.markerTwo) ||
-          finalUrl === ""
-        )
+        if (finalUrl !== href || !finalUrl.startsWith(darwinConfig.markerTwo) || finalUrl === "")
           continue;
 
         const videoLocation = await getVideoLocation(
           href,
           darwinConfig.markerOne,
-          darwinConfig.markerTwo,
+          darwinConfig.markerTwo
         );
-        if (
-          !videoLocation.startsWith(darwinConfig.markerTwo) ||
-          videoLocation === ""
-        )
-          continue;
+        if (!videoLocation.startsWith(darwinConfig.markerTwo) || videoLocation === "") continue;
 
         const isInCache = await darwinCache.isInCache(videoLocation);
         if (isInCache) {
-          console.log(
-            `Skipping cached video: ${title.trim()} (${videoLocation})`,
-          );
+          console.log(`Skipping cached video: ${title.trim()} (${videoLocation})`);
           continue;
         }
 
@@ -371,10 +327,7 @@ async function runDarwinProcess(client) {
     const processedVideos = [];
 
     async function processNextVideos() {
-      while (
-        activeTasks < concurrencyLimit &&
-        videoIndex < videosToProcess.length
-      ) {
+      while (activeTasks < concurrencyLimit && videoIndex < videosToProcess.length) {
         const video = videosToProcess[videoIndex++];
         activeTasks++;
 
@@ -411,7 +364,7 @@ async function runDarwinProcess(client) {
     // Filter out "too big" videos that were already distributed
     const videosToDistribute = processedVideos.filter((video) => !video.tooBig);
     console.log(
-      `Successfully processed ${videosToDistribute.length} videos, distributing to ${guildConfigs.length} channels`,
+      `Successfully processed ${videosToDistribute.length} videos, distributing to ${guildConfigs.length} channels`
     );
 
     // Distribute each processed video to all configured channels
