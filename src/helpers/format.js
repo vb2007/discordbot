@@ -1,9 +1,9 @@
-function capitalizeFirstLetter(string) {
+export const capitalizeFirstLetter = (string) => {
   var stringWithCapitalizedFirstLetter = string.charAt(0).toUpperCase() + string.slice(1);
   return stringWithCapitalizedFirstLetter;
-}
+};
 
-function formatRouletteColor(color) {
+export const formatRouletteColor = (color) => {
   switch (color) {
     case "red":
       return ":red_circle: Red";
@@ -14,9 +14,4 @@ function formatRouletteColor(color) {
     default:
       console.error("The color you've provided for the formatRouletteColor() function is invalid.");
   }
-}
-
-module.exports = {
-  capitalizeFirstLetter,
-  formatRouletteColor,
 };

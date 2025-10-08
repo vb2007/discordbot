@@ -1,8 +1,8 @@
-const { PermissionFlagsBits } = require("discord.js");
-const { embedReplyFailureColor } = require("../embeds/embed-reply");
-const { capitalizeFirstLetter } = require("../format");
+import { PermissionFlagsBits } from "discord.js";
+import { embedReplyFailureColor } from "../embeds/embed-reply.js";
+import { capitalizeFirstLetter } from "../format.js";
 
-function checkIfNotInGuild(commandName, interaction) {
+export const checkIfNotInGuild = (commandName, interaction) => {
   if (!interaction.inGuild()) {
     const embedReply = embedReplyFailureColor(
       `${capitalizeFirstLetter(commandName)} - Not in a server`,
@@ -14,9 +14,9 @@ function checkIfNotInGuild(commandName, interaction) {
   }
 
   return null;
-}
+};
 
-function checkAdminPermissions(commandName, interaction) {
+export const checkAdminPermissions = (commandName, interaction) => {
   if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.Administrator)) {
     const embedReply = embedReplyFailureColor(
       `${capitalizeFirstLetter(commandName)} - Insufficient Permissions`,
@@ -28,6 +28,4 @@ function checkAdminPermissions(commandName, interaction) {
   }
 
   return null;
-}
-
-module.exports = { checkIfNotInGuild, checkAdminPermissions };
+};

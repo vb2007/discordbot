@@ -1,5 +1,5 @@
-const { EmbedBuilder } = require("discord.js");
-const { embedColors } = require("../../../config.json");
+import { EmbedBuilder } from "discord.js";
+import { embedColors } from "../../../config.json" with { type: "json" };
 
 /**
  * @param {color} color - Embed's sidebar HEX Color
