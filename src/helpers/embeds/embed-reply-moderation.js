@@ -1,13 +1,13 @@
-const { EmbedBuilder } = require("discord.js");
-const { embedColors } = require("../../../config.json");
+import { EmbedBuilder } from "discord.js";
+import { embedColors } from "../../../config.json" with { type: "json" };
 
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
  * @param {interaction} interaction - Interaction object from the command
- * @returns {embedReply} An embed reply object
+ * @returns {embedDmReply} An embed reply object
  */
-function moderationDmEmbedReplyFailureColor(title, description, interaction) {
+export const moderationDmEmbedReplyFailureColor = (title, description, interaction) => {
   const embedDmReply = new EmbedBuilder({
     color: parseInt(embedColors.failure),
     title: title,
@@ -20,15 +20,15 @@ function moderationDmEmbedReplyFailureColor(title, description, interaction) {
   });
 
   return embedDmReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
  * @param {interaction} interaction - Interaction object from the command
- * @returns {embedReply} An embed reply object
+ * @returns {embedDmReply} An embed reply object
  */
-function moderationDmEmbedReplyWarningColor(title, description, interaction) {
+export const moderationDmEmbedReplyWarningColor = (title, description, interaction) => {
   const embedDmReply = new EmbedBuilder({
     color: parseInt(embedColors.warning),
     title: title,
@@ -41,9 +41,4 @@ function moderationDmEmbedReplyWarningColor(title, description, interaction) {
   });
 
   return embedDmReply;
-}
-
-module.exports = {
-  moderationDmEmbedReplyFailureColor,
-  moderationDmEmbedReplyWarningColor,
 };

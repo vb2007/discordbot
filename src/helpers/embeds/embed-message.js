@@ -1,5 +1,5 @@
-const { EmbedBuilder } = require("discord.js");
-const { embedColors } = require("../../../config.json");
+import { EmbedBuilder } from "discord.js";
+import { embedColors } from "../../../config.json" with { type: "json" };
 
 /**
  * @param {color} color - Embed's sidebar HEX Color
@@ -7,7 +7,7 @@ const { embedColors } = require("../../../config.json");
  * @param {description} description - Embed's description
  * @returns {embedReply} An embed message object
  */
-function embedMessage(color, title, description) {
+export const embedMessage = (color, title, description) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(color),
     title: title,
@@ -16,7 +16,7 @@ function embedMessage(color, title, description) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {color} color - Embed's sidebar HEX Color
@@ -24,7 +24,7 @@ function embedMessage(color, title, description) {
  * @param {description} description - Embed's description
  * @returns {embedReply} An embed message object
  */
-function embedMessageWithServerIcon(color, title, description, guild) {
+export const embedMessageWithServerIcon = (color, title, description, guild) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(color),
     title: title,
@@ -37,14 +37,14 @@ function embedMessageWithServerIcon(color, title, description, guild) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
  * @returns {embedReply} An embed message object
  */
-function embedMessagePrimaryColor(title, description) {
+export const embedMessagePrimaryColor = (title, description) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.primary),
     title: title,
@@ -53,14 +53,14 @@ function embedMessagePrimaryColor(title, description) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
  * @returns {embedReply} An embed message object
  */
-function embedMessageSuccessColor(title, description) {
+export const embedMessageSuccessColor = (title, description) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.success),
     title: title,
@@ -69,14 +69,14 @@ function embedMessageSuccessColor(title, description) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
  * @returns {embedReply} An embed message object
  */
-function embedMessageSuccessSecondaryColor(title, description) {
+export const embedMessageSuccessSecondaryColor = (title, description) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.successSecondary),
     title: title,
@@ -85,14 +85,14 @@ function embedMessageSuccessSecondaryColor(title, description) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
  * @returns {embedReply} An embed message object
  */
-function embedMessageFailureColor(title, description) {
+export const embedMessageFailureColor = (title, description) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.failure),
     title: title,
@@ -101,14 +101,14 @@ function embedMessageFailureColor(title, description) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
  * @param {description} description - Embed's description
  * @returns {embedReply} An embed message object
  */
-function embedMessageWarningColor(title, description) {
+export const embedMessageWarningColor = (title, description) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.warning),
     title: title,
@@ -117,7 +117,7 @@ function embedMessageWarningColor(title, description) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {color} color - Embed's sidebar HEX Color
@@ -126,7 +126,7 @@ function embedMessageWarningColor(title, description) {
  * @param {fields} fields - Embed's fields
  * @returns {embedReply} An embed message object
  */
-function embedMessageWithFields(color, title, description, fields) {
+export const embedMessageWithFields = (color, title, description, fields) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(color),
     title: title,
@@ -136,7 +136,7 @@ function embedMessageWithFields(color, title, description, fields) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -144,7 +144,7 @@ function embedMessageWithFields(color, title, description, fields) {
  * @param {fields} fields - Embed's fields
  * @returns {embedReply} An embed message object
  */
-function embedMessagePrimaryColorWithFields(title, description, fields) {
+export const embedMessagePrimaryColorWithFields = (title, description, fields) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.primary),
     title: title,
@@ -154,7 +154,7 @@ function embedMessagePrimaryColorWithFields(title, description, fields) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -162,7 +162,7 @@ function embedMessagePrimaryColorWithFields(title, description, fields) {
  * @param {fields} fields - Embed's fields
  * @returns {embedReply} An embed message object
  */
-function embedMessageSuccessColorWithFields(title, description, fields) {
+export const embedMessageSuccessColorWithFields = (title, description, fields) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.success),
     title: title,
@@ -172,7 +172,7 @@ function embedMessageSuccessColorWithFields(title, description, fields) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -180,7 +180,7 @@ function embedMessageSuccessColorWithFields(title, description, fields) {
  * @param {fields} fields - Embed's fields
  * @returns {embedReply} An embed message object
  */
-function embedMessageSuccessSecondaryColorWithFields(title, description, fields) {
+export const embedMessageSuccessSecondaryColorWithFields = (title, description, fields) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.successSecondary),
     title: title,
@@ -190,7 +190,7 @@ function embedMessageSuccessSecondaryColorWithFields(title, description, fields)
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -198,7 +198,7 @@ function embedMessageSuccessSecondaryColorWithFields(title, description, fields)
  * @param {fields} fields - Embed's fields
  * @returns {embedReply} An embed message object
  */
-function embedMessageFailureColorWithFields(title, description, fields) {
+export const embedMessageFailureColorWithFields = (title, description, fields) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.failure),
     title: title,
@@ -208,7 +208,7 @@ function embedMessageFailureColorWithFields(title, description, fields) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -216,7 +216,7 @@ function embedMessageFailureColorWithFields(title, description, fields) {
  * @param {fields} fields - Embed's fields
  * @returns {embedReply} An embed message object
  */
-function embedMessageWarningColorWithFields(title, description, fields) {
+export const embedMessageWarningColorWithFields = (title, description, fields) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.warning),
     title: title,
@@ -226,20 +226,4 @@ function embedMessageWarningColorWithFields(title, description, fields) {
   });
 
   return embedReply;
-}
-
-module.exports = {
-  embedMessage,
-  embedMessageWithServerIcon,
-  embedMessagePrimaryColor,
-  embedMessageSuccessColor,
-  embedMessageSuccessSecondaryColor,
-  embedMessageFailureColor,
-  embedMessageWarningColor,
-  embedMessageWithFields,
-  embedMessagePrimaryColorWithFields,
-  embedMessageSuccessColorWithFields,
-  embedMessageSuccessSecondaryColorWithFields,
-  embedMessageFailureColorWithFields,
-  embedMessageWarningColorWithFields,
 };

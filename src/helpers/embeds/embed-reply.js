@@ -8,7 +8,7 @@ import { embedColors } from "../../../config.json" with { type: "json" };
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReply(color, title, description, interaction) {
+export const embedReply = (color, title, description, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(color),
     title: title,
@@ -21,7 +21,7 @@ function embedReply(color, title, description, interaction) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -29,7 +29,7 @@ function embedReply(color, title, description, interaction) {
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplyPrimaryColor(title, description, interaction) {
+export const embedReplyPrimaryColor = (title, description, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.primary),
     title: title,
@@ -42,7 +42,7 @@ function embedReplyPrimaryColor(title, description, interaction) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -50,7 +50,7 @@ function embedReplyPrimaryColor(title, description, interaction) {
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplySuccessColor(title, description, interaction) {
+export const embedReplySuccessColor = (title, description, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.success),
     title: title,
@@ -63,7 +63,7 @@ function embedReplySuccessColor(title, description, interaction) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -71,7 +71,7 @@ function embedReplySuccessColor(title, description, interaction) {
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplySuccessSecondaryColor(title, description, interaction) {
+export const embedReplySuccessSecondaryColor = (title, description, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.successSecondary),
     title: title,
@@ -84,7 +84,7 @@ function embedReplySuccessSecondaryColor(title, description, interaction) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -92,7 +92,7 @@ function embedReplySuccessSecondaryColor(title, description, interaction) {
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplyFailureColor(title, description, interaction) {
+export const embedReplyFailureColor = (title, description, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.failure),
     title: title,
@@ -105,7 +105,7 @@ function embedReplyFailureColor(title, description, interaction) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -113,7 +113,7 @@ function embedReplyFailureColor(title, description, interaction) {
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplyWarningColor(title, description, interaction) {
+export const embedReplyWarningColor = (title, description, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.warning),
     title: title,
@@ -126,7 +126,7 @@ function embedReplyWarningColor(title, description, interaction) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {color} color - Embed's sidebar HEX Color
@@ -136,7 +136,7 @@ function embedReplyWarningColor(title, description, interaction) {
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplyImg(color, title, description, image, interaction) {
+export const embedReplyImg = (color, title, description, image, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(color),
     title: title,
@@ -152,7 +152,7 @@ function embedReplyImg(color, title, description, image, interaction) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -161,7 +161,7 @@ function embedReplyImg(color, title, description, image, interaction) {
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplyPrimaryColorImg(title, description, image, interaction) {
+export const embedReplyPrimaryColorImg = (title, description, image, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.primary),
     title: title,
@@ -177,7 +177,7 @@ function embedReplyPrimaryColorImg(title, description, image, interaction) {
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -186,7 +186,7 @@ function embedReplyPrimaryColorImg(title, description, image, interaction) {
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplyPrimaryColorWithFields(title, description, fields, interaction) {
+export const embedReplyPrimaryColorWithFields = (title, description, fields, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.primary),
     title: title,
@@ -200,7 +200,7 @@ function embedReplyPrimaryColorWithFields(title, description, fields, interactio
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -209,7 +209,7 @@ function embedReplyPrimaryColorWithFields(title, description, fields, interactio
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplySuccessColorWithFields(title, description, fields, interaction) {
+export const embedReplySuccessColorWithFields = (title, description, fields, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.success),
     title: title,
@@ -223,7 +223,7 @@ function embedReplySuccessColorWithFields(title, description, fields, interactio
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -232,7 +232,7 @@ function embedReplySuccessColorWithFields(title, description, fields, interactio
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplyWarningColorWithFields(title, description, fields, interaction) {
+export const embedReplyWarningColorWithFields = (title, description, fields, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.warning),
     title: title,
@@ -246,7 +246,7 @@ function embedReplyWarningColorWithFields(title, description, fields, interactio
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -255,7 +255,7 @@ function embedReplyWarningColorWithFields(title, description, fields, interactio
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplyFailureColorWithFields(title, description, fields, interaction) {
+export const embedReplyFailureColorWithFields = (title, description, fields, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.failure),
     title: title,
@@ -269,7 +269,7 @@ function embedReplyFailureColorWithFields(title, description, fields, interactio
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -278,7 +278,12 @@ function embedReplyFailureColorWithFields(title, description, fields, interactio
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplyPrimaryColorWithFieldsAndThumbnail(title, fields, thumbnailUrl, interaction) {
+export const embedReplyPrimaryColorWithFieldsAndThumbnail = (
+  title,
+  fields,
+  thumbnailUrl,
+  interaction
+) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.primary),
     title: title,
@@ -294,7 +299,7 @@ function embedReplyPrimaryColorWithFieldsAndThumbnail(title, fields, thumbnailUr
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -304,13 +309,13 @@ function embedReplyPrimaryColorWithFieldsAndThumbnail(title, fields, thumbnailUr
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplyPrimaryColorWithFieldsAndAuthor(
+export const embedReplyPrimaryColorWithFieldsAndAuthor = (
   title,
   description,
   fields,
   author,
   interaction
-) {
+) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.primary),
     title: title,
@@ -325,7 +330,7 @@ function embedReplyPrimaryColorWithFieldsAndAuthor(
   });
 
   return embedReply;
-}
+};
 
 /**
  * @param {title} title - Embed's title
@@ -333,7 +338,7 @@ function embedReplyPrimaryColorWithFieldsAndAuthor(
  * @param {interaction} interaction - Interaction object from the command
  * @returns {embedReply} An embed reply object
  */
-function embedReplySaidByPrimaryColor(title, description, interaction) {
+export const embedReplySaidByPrimaryColor = (title, description, interaction) => {
   const embedReply = new EmbedBuilder({
     color: parseInt(embedColors.primary),
     title: title,
@@ -346,22 +351,4 @@ function embedReplySaidByPrimaryColor(title, description, interaction) {
   });
 
   return embedReply;
-}
-
-module.exports = {
-  embedReply,
-  embedReplyPrimaryColor,
-  embedReplySuccessColor,
-  embedReplySuccessSecondaryColor,
-  embedReplyFailureColor,
-  embedReplyWarningColor,
-  embedReplyImg,
-  embedReplyPrimaryColorImg,
-  embedReplyPrimaryColorWithFields,
-  embedReplySuccessColorWithFields,
-  embedReplyWarningColorWithFields,
-  embedReplyFailureColorWithFields,
-  embedReplyPrimaryColorWithFieldsAndThumbnail,
-  embedReplyPrimaryColorWithFieldsAndAuthor,
-  embedReplySaidByPrimaryColor,
 };
