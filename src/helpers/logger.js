@@ -1,9 +1,9 @@
-const fs = require("fs");
-const path = require("path");
-const db = require("./db");
-const { logToFile, logToDatabase } = require("../../config.json");
+import fs from "fs";
+import path from "path";
+import db from "./db.js";
+import { logToFile, logToDatabase } from "../../config.json" with { type: "json" };
 
-const logToFileAndDatabase = async (interaction, response) => {
+export const logToFileAndDatabase = async (interaction, response) => {
   //logging to file
   if (logToFile == "True") {
     const logDirectory = path.join(__dirname, "../command-logs");
@@ -68,5 +68,3 @@ Response: ${response}\n\n`;
     }
   }
 };
-
-module.exports = { logToFileAndDatabase };
