@@ -1,8 +1,8 @@
-const logEventToChannel = require("./scripts/emojiUpdate/logEventToChannel");
+import { sendLogInfo } from "./scripts/emojiUpdate/logEventToChannel.js";
 
-module.exports = {
+export default {
   name: "emojiUpdate",
   async execute(client, oldEmoji, newEmoji) {
-    await logEventToChannel.sendLogInfo(client, oldEmoji, newEmoji);
+    await sendLogInfo(client, oldEmoji, newEmoji);
   },
 };

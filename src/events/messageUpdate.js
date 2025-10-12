@@ -1,8 +1,8 @@
-const logEventToChannel = require("./scripts/messageUpdate/logEventToChannel");
+import { sendLogInfo } from "./scripts/messageUpdate/logEventToChannel.js";
 
-module.exports = {
+export default {
   name: "messageUpdate",
   async execute(client, oldMessage, newMessage) {
-    await logEventToChannel.sendLogInfo(client, oldMessage, newMessage);
+    await sendLogInfo(client, oldMessage, newMessage);
   },
 };

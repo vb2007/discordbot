@@ -1,10 +1,10 @@
-const messageLogging = require("./scripts/messageCreate/messageLogging");
-const bridge = require("./scripts/messageCreate/bridge");
+import { logMessagesToLocalDatabase } from "./scripts/messageCreate/messageLogging.js";
+import { sendMessageToDestinationChannel } from "./scripts/messageCreate/bridge.js";
 
-module.exports = {
+export default {
   name: "messageCreate",
   async execute(client, message) {
-    await messageLogging.logMessagesToLocalDatabase(message);
-    await bridge.sendMessageToDestinationChannel(client, message);
+    await logMessagesToLocalDatabase(message);
+    await sendMessageToDestinationChannel(client, message);
   },
 };

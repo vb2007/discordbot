@@ -1,10 +1,10 @@
-const logEventToChannel = require("./scripts/guildMemberRemove/logEventToChannel");
-const goodbye = require("./scripts/guildMemberRemove/goodbye");
+import { sendLogInfo } from "./scripts/guildMemberRemove/logEventToChannel.js";
+import { sendGoodbyeMessage } from "./scripts/guildMemberRemove/goodbye.js";
 
-module.exports = {
+export default {
   name: "guildMemberRemove",
   async execute(client, member) {
-    await logEventToChannel.sendLogInfo(client, member);
-    await goodbye.sendGoodbyeMessage(member);
+    await sendLogInfo(client, member);
+    await sendGoodbyeMessage(member);
   },
 };
