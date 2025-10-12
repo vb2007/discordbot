@@ -1,8 +1,8 @@
-const { Collection } = require("discord.js");
-const fs = require("fs");
-const path = require("path");
+import { Collection } from "discord.js";
+import fs from "fs";
+import path from "path";
 
-class CommandHandler {
+export class CommandHandler {
   constructor(client) {
     this.client = client;
     this.client.commands = new Collection();
@@ -61,5 +61,3 @@ class CommandHandler {
     }
   }
 }
-
-module.exports = CommandHandler;
