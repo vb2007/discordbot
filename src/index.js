@@ -120,7 +120,10 @@ for (const folder of commandFolders) {
     const filePath = path.join(commandsPath, file);
 
     try {
-      const command = require(filePath);
+      const fileURL = new URL(`file://${filePath}`); //conversion for dynamic import
+      const commandModule = await import(fileURL.href);
+      const command = commandModule.default || commandModule;
+
       if ("data" in command && "execute" in command) {
         client.commands.set(command.data.name, command);
       } else {
