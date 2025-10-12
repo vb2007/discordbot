@@ -1,18 +1,18 @@
-const { economyCooldown } = require("../../../config.json");
-const { capitalizeFirstLetter } = require("../format");
-const { embedReplyFailureColor } = require("../embeds/embed-reply");
-const db = require("../db");
+import { economyCooldown } from "../../../config.json" with { type: "json" };
+import { capitalizeFirstLetter } from "../format.js";
+import { embedReplyFailureColor } from "../embeds/embed-reply.js";
+import { query } from "../db.js";
 
-async function getUserAndCommandData(commandName, interaction) {
+const getUserAndCommandData = async (commandName, interaction) => {
   const commandNameCapitalized = capitalizeFirstLetter(commandName);
   const configuredCooldown = economyCooldown[commandName];
   const queryColumnName = "last" + commandNameCapitalized + "Time";
 
-  const query = await db.query(`SELECT balance, ${queryColumnName} FROM economy WHERE userId = ?`, [
+  const result = await query(`SELECT balance, ${queryColumnName} FROM economy WHERE userId = ?`, [
     interaction.user.id,
   ]);
-  const lastUsageTime = query[0]?.[queryColumnName] || null;
-  const userBalance = query[0]?.balance;
+  const lastUsageTime = result[0]?.[queryColumnName] || null;
+  const userBalance = result[0]?.balance;
   const nextApprovedUsageTime = new Date(
     new Date().getTime() + new Date().getTimezoneOffset() * 60000 - configuredCooldown * 60000
   );
@@ -24,9 +24,9 @@ async function getUserAndCommandData(commandName, interaction) {
     commandNameCapitalized,
     configuredCooldown,
   };
-}
+};
 
-async function checkCooldown(commandName, interaction) {
+export const checkCooldown = async (commandName, interaction) => {
   const { lastUsageTime, nextApprovedUsageTime, commandNameCapitalized, configuredCooldown } =
     await getUserAndCommandData(commandName, interaction);
 
@@ -47,9 +47,9 @@ async function checkCooldown(commandName, interaction) {
   } else {
     return null;
   }
-}
+};
 
-async function checkBalanceAndBetAmount(commandName, interaction, amount) {
+export const checkBalanceAndBetAmount = async (commandName, interaction, amount) => {
   const { commandNameCapitalized, userBalance } = await getUserAndCommandData(
     commandName,
     interaction
@@ -76,6 +76,4 @@ async function checkBalanceAndBetAmount(commandName, interaction, amount) {
   }
 
   return null;
-}
-
-module.exports = { checkCooldown, checkBalanceAndBetAmount };
+};
