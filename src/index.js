@@ -150,7 +150,10 @@ try {
 for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
   try {
-    const event = require(filePath);
+    const fileURL = new URL(`file://${filePath}`); //dynamic support, same as above w/ commands
+    const eventModule = await import(fileURL.href);
+    const event = eventModule.default || eventModule;
+
     if (event.once) {
       client.once(event.name, (...args) => event.execute(client, ...args));
     } else {
