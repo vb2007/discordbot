@@ -49,7 +49,7 @@
   },
   "scripts": {
     "app": "node ./src/index.js",
-    "dev": "nodemon ./src/index.js",
+    "dev": "node --trace-warnings ./src/index.js",
     "deploy": "node ./src/deploy-commands.js",
     "create-tables": "node ./src/create-tables.js",
     "verify-config": "node ./src/scripts/verify-config-syntax.js",
