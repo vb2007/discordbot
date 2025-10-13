@@ -16,7 +16,7 @@ export const sendLogInfo = async (client, oldState, newState) => {
       if (oldState.channel === null) {
         const logEmbed = embedMessageSuccessColor(
           "Voice state updated",
-          `<@${oldState.member?.id || newState.member?.id}}> has **joined** to <#${oldState.channel?.id}}>.`
+          `<@${oldState.member?.id}> has **joined** channel <#${newState.channel?.id}>.`
         );
 
         return await logChannel.send({ embeds: [logEmbed] });
@@ -25,7 +25,7 @@ export const sendLogInfo = async (client, oldState, newState) => {
       if (newState.channel === null) {
         const logEmbed = embedMessageFailureColor(
           "Voice state updated",
-          `<@${oldState.member?.id || newState.member?.id}}> has **left** from <#${oldState.channel?.id}>.`
+          `<@${oldState.member?.id}> has **left** from <#${oldState.channel?.id}>.`
         );
 
         return await logChannel.send({ embeds: [logEmbed] });
