@@ -1,19 +1,19 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const {
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
+import {
   embedReplySuccessColor,
   embedReplyFailureColor,
   embedReplySuccessSecondaryColor,
-} = require("../../helpers/embeds/embed-reply");
-const {
+} from "../../helpers/embeds/embed-reply.js";
+import {
   checkIfNotInGuild,
   checkAdminPermissions,
-} = require("../../helpers/command-validation/general");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/command-validation/general.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
 
 const commandName = "config-bridge";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription(
@@ -72,13 +72,13 @@ module.exports = {
         const interactionUserId = interaction.user.id;
         const interactionUsername = interaction.user.username;
 
-        const query = await db.query(
+        const result = await query(
           "SELECT destinationChannelId, sourceChannelId, destinationGuildId FROM configBridging WHERE sourceChannelId = ? AND destinationChannelId = ?",
           [sourceChannelId, destinationChannelId]
         );
-        const destinationGuildId = query[0]?.destinationGuildId || null;
-        const existingSourceChannelId = query[0]?.sourceChannelId || null;
-        const existingDestinationChannelId = query[0]?.destinationChannelId || null;
+        const destinationGuildId = result[0]?.destinationGuildId || null;
+        const existingSourceChannelId = result[0]?.sourceChannelId || null;
+        const existingDestinationChannelId = result[0]?.destinationChannelId || null;
 
         if (
           existingSourceChannelId == sourceChannelId &&
@@ -94,7 +94,7 @@ module.exports = {
         }
 
         if (existingSourceChannelId == sourceChannelId && destinationGuildId == guildId) {
-          await db.query(
+          await query(
             "UPDATE configBridging SET destinationChannelId = ?, destinationChannelName = ?, adderId = ?, adderUsername = ? WHERE sourceChannelId = ? AND destinationChannelId = ?",
             [
               destinationChannelId,
@@ -115,7 +115,7 @@ module.exports = {
         }
 
         if (existingSourceChannelId != sourceChannelId && destinationGuildId == guildId) {
-          await db.query(
+          await query(
             "INSERT INTO configBridging (sourceChannelId, destinationGuildId, destinationGuildName, destinationChannelId, destinationChannelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?)",
             [
               sourceChannelId,
@@ -136,7 +136,7 @@ module.exports = {
           );
         }
 
-        await db.query(
+        await query(
           "INSERT INTO configBridging (sourceChannelId, destinationGuildId, destinationGuildName, destinationChannelId, destinationChannelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?)",
           [
             sourceChannelId,
@@ -173,15 +173,15 @@ module.exports = {
         const sourceChannelId = interaction.options.getString("source-channel-id");
         const guildId = interaction.guild.id;
 
-        const query = await db.query(
+        const result = await query(
           "SELECT sourceChannelId, destinationGuildId FROM configBridging WHERE sourceChannelId = ? AND destinationGuildId = ?",
           [sourceChannelId, guildId]
         );
-        const existingGuildId = query[0]?.destinationGuildId || null;
-        const existingSourceChannelId = query[0]?.sourceChannelId || null;
+        const existingGuildId = result[0]?.destinationGuildId || null;
+        const existingSourceChannelId = result[0]?.sourceChannelId || null;
 
         if (existingSourceChannelId && existingGuildId) {
-          await db.query(
+          await query(
             "DELETE FROM configBridging WHERE sourceChannelId = ? AND destinationGuildId = ?",
             [sourceChannelId, guildId]
           );

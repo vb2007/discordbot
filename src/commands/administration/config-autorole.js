@@ -11,7 +11,7 @@ import { query } from "../../helpers/db.js";
 
 const commandName = "config-autorole";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Sets a role to be automatically assigned to new members on join.")
@@ -71,11 +71,11 @@ module.exports = {
         const adderId = interaction.user.id;
         const guildId = interaction.guild.id;
 
-        const query = await query("SELECT guildId, roleId FROM configAutorole WHERE guildId = ?", [
+        const result = await query("SELECT guildId, roleId FROM configAutorole WHERE guildId = ?", [
           guildId,
         ]);
-        const autoRoleGuildId = query[0]?.guildId || null;
-        const autoRoleRoleId = query[0]?.roleId || null;
+        const autoRoleGuildId = result[0]?.guildId || null;
+        const autoRoleRoleId = result[0]?.roleId || null;
 
         //if autorole has already been configured for this server...
         if (autoRoleRoleId == targetRole) {
@@ -116,10 +116,10 @@ module.exports = {
     if (action === "disable") {
       try {
         const currentGuildId = interaction.guild.id;
-        const query = await query("SELECT guildId FROM configAutorole WHERE guildId = ?", [
+        const result = await query("SELECT guildId FROM configAutorole WHERE guildId = ?", [
           currentGuildId,
         ]);
-        const autoroleGuildId = query[0]?.guildId || null;
+        const autoroleGuildId = result[0]?.guildId || null;
 
         if (autoroleGuildId) {
           await query("DELETE FROM configAutorole WHERE guildId = ?", [autoroleGuildId]);

@@ -1,20 +1,20 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const {
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
+import {
   embedReplySuccessColor,
   embedReplySuccessSecondaryColor,
   embedReplyFailureColor,
   embedReplyWarningColor,
-} = require("../../helpers/embeds/embed-reply");
-const {
+} from "../../helpers/embeds/embed-reply.js";
+import {
   checkIfNotInGuild,
   checkAdminPermissions,
-} = require("../../helpers/command-validation/general");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/command-validation/general.js";
+import replyAndLog from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
 
 const commandName = "config-darwin";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("config-darwin")
     .setDescription("Sets up automatic video posting from a feed to a channel.")
@@ -63,12 +63,12 @@ module.exports = {
         const channelId = channel.id;
         const channelName = channel.name;
 
-        const query = await db.query("SELECT * FROM configDarwin WHERE guildId = ?", [guildId]);
-        const existingConfig = query[0] || null;
+        const result = await query("SELECT * FROM configDarwin WHERE guildId = ?", [guildId]);
+        const existingConfig = result[0] || null;
 
         if (existingConfig) {
           if (channelId !== existingConfig.channelId) {
-            await db.query(
+            await query(
               "UPDATE configDarwin SET channelId = ?, channelName = ?, adderId = ?, adderUsername = ? WHERE guildId = ?",
               [channelId, channelName, adderId, adderUsername, guildId]
             );
@@ -86,7 +86,7 @@ module.exports = {
           return replyAndLog(interaction, embedReplyFailureColor(title, description, interaction));
         }
 
-        await db.query(
+        await query(
           "INSERT INTO configDarwin (guildId, channelId, channelName, adderId, adderUsername) VALUES (?, ?, ?, ?, ?)",
           [guildId, channelId, channelName, adderId, adderUsername]
         );
@@ -107,11 +107,11 @@ module.exports = {
       try {
         const guildId = interaction.guild.id;
 
-        const query = await db.query("SELECT * FROM configDarwin WHERE guildId = ?", [guildId]);
-        const existingConfig = query[0] || null;
+        const result = await query("SELECT * FROM configDarwin WHERE guildId = ?", [guildId]);
+        const existingConfig = result[0] || null;
 
         if (existingConfig) {
-          await db.query("DELETE FROM configDarwin WHERE guildId = ?", [guildId]);
+          await query("DELETE FROM configDarwin WHERE guildId = ?", [guildId]);
 
           title = "Darwin Disable: Success";
           description = "Darwin has been disabled for this server. :white_check_mark:";

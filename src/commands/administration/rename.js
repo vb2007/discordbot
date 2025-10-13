@@ -1,16 +1,16 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const {
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
+import {
   embedReplyFailureColor,
   embedReplySuccessColor,
   embedReplyWarningColor,
   moderationDmEmbedReplyWarningColor,
-} = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const replyAndLog = require("../../helpers/reply");
+} from "../../helpers/embeds/embed-reply.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import { replyAndLog } from "../../helpers/reply.js";
 
 const commandName = "rename";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Renames a specified user.")
