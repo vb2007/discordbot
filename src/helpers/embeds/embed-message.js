@@ -1,5 +1,7 @@
 import { EmbedBuilder } from "discord.js";
-import { embedColors } from "../../../config.json" with { type: "json" };
+import config from "../../../config.json" with { type: "json" };
+
+const { embedColors } = config;
 
 /**
  * @param {color} color - Embed's sidebar HEX Color
