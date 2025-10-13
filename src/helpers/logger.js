@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { query } from "./db.js";
 import config from "../../config.json" with { type: "json" };
 
@@ -8,6 +9,9 @@ const { logToFile, logToDatabase } = config;
 export const logToFileAndDatabase = async (interaction, response) => {
   //logging to file
   if (logToFile == "True") {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
     const logDirectory = path.join(__dirname, "../command-logs");
 
     if (!fs.existsSync(logDirectory)) {
