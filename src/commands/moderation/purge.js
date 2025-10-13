@@ -1,17 +1,17 @@
-const {
+import {
   SlashCommandBuilder,
   PermissionFlagsBits,
   ButtonBuilder,
   ButtonStyle,
   ActionRowBuilder,
-} = require("discord.js");
-const {
+} from "discord.js";
+import {
   embedReplySuccessColor,
   embedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+} from "../../helpers/embeds/embed-reply.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("purge")
     .setDescription(
