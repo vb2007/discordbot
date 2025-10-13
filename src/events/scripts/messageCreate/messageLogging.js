@@ -1,7 +1,7 @@
 import { query } from "../../../helpers/db.js";
 import { logMessagesToLocalDatabase } from "../../../../config.json" with { type: "json" };
 
-export const logMessagesToLocalDatabase = async (message) => {
+export const logToDB = async (message) => {
   try {
     if (logMessagesToLocalDatabase == "True") {
       if (message.author?.bot) return;
