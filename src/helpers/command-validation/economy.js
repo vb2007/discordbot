@@ -1,7 +1,8 @@
-import { economyCooldown } from "../../../config.json" with { type: "json" };
 import { capitalizeFirstLetter } from "../format.js";
 import { embedReplyFailureColor } from "../embeds/embed-reply.js";
 import { query } from "../db.js";
+import config from "../../../config.json" with { type: "json" };
+const { economyCooldown } = config;
 
 const getUserAndCommandData = async (commandName, interaction) => {
   const commandNameCapitalized = capitalizeFirstLetter(commandName);

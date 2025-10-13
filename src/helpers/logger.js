@@ -1,7 +1,9 @@
 import fs from "fs";
 import path from "path";
 import { query } from "./db.js";
-import { logToFile, logToDatabase } from "../../config.json" with { type: "json" };
+import config from "../../config.json" with { type: "json" };
+
+const { logToFile, logToDatabase } = config;
 
 export const logToFileAndDatabase = async (interaction, response) => {
   //logging to file

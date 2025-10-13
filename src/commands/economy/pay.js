@@ -4,7 +4,7 @@ import {
   embedReplySuccessColor,
 } from "../../helpers/embeds/embed-reply.js";
 import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
-import replyAndLog from "../../helpers/reply.js";
+import { replyAndLog } from "../../helpers/reply.js";
 import { query } from "../../helpers/db.js";
 
 const commandName = "pay";
