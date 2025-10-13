@@ -94,75 +94,86 @@ client.once(Events.ClientReady, (readyClient) => {
   }, darwinInterval);
 });
 
-client.commands = new Collection();
-
-// Load commands from the /commands folder's subfolders
-const foldersPath = path.join(__dirname, "commands");
-let commandFolders = [];
-try {
-  commandFolders = fs.readdirSync(foldersPath);
-} catch (err) {
-  console.error(`[FATAL] Could not read commands directory: ${foldersPath}`, err);
-  process.exit(1);
-}
-
-for (const folder of commandFolders) {
-  const commandsPath = path.join(foldersPath, folder);
-  let commandFiles = [];
+// Initialize commands and events
+(async () => {
   try {
-    commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".js"));
-  } catch (err) {
-    console.warn(`[WARNING] Could not read commands subdirectory: ${commandsPath}`, err);
-    continue;
-  }
+    client.commands = new Collection();
 
-  for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-
+    // Load commands from the /commands folder's subfolders
+    const foldersPath = path.join(__dirname, "commands");
+    let commandFolders = [];
     try {
-      const fileURL = new URL(`file://${filePath}`); //conversion for dynamic import
-      const commandModule = await import(fileURL.href);
-      const command = commandModule.default || commandModule;
-
-      if ("data" in command && "execute" in command) {
-        client.commands.set(command.data.name, command);
-      } else {
-        console.warn(
-          `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
-        );
-      }
+      commandFolders = fs.readdirSync(foldersPath);
     } catch (err) {
-      console.warn(`[WARNING] Failed to load command at ${filePath}:`, err);
+      console.error(`[FATAL] Could not read commands directory: ${foldersPath}`, err);
+      process.exit(1);
     }
-  }
-}
 
-// Load event listeners from the /events folder
-const eventsPath = path.join(__dirname, "events");
-let eventFiles = [];
-try {
-  eventFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith(".js"));
-} catch (err) {
-  console.error(`[FATAL] Could not read events directory: ${eventsPath}`, err);
-  process.exit(1);
-}
+    for (const folder of commandFolders) {
+      const commandsPath = path.join(foldersPath, folder);
+      let commandFiles = [];
+      try {
+        commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".js"));
+      } catch (err) {
+        console.warn(`[WARNING] Could not read commands subdirectory: ${commandsPath}`, err);
+        continue;
+      }
 
-for (const file of eventFiles) {
-  const filePath = path.join(eventsPath, file);
-  try {
-    const fileURL = new URL(`file://${filePath}`); //dynamic support, same as above w/ commands
-    const eventModule = await import(fileURL.href);
-    const event = eventModule.default || eventModule;
+      for (const file of commandFiles) {
+        const filePath = path.join(commandsPath, file);
 
-    if (event.once) {
-      client.once(event.name, (...args) => event.execute(client, ...args));
-    } else {
-      client.on(event.name, (...args) => event.execute(client, ...args));
+        try {
+          const fileURL = new URL(`file://${filePath}`); //conversion for dynamic import
+          const commandModule = await import(fileURL.href);
+          const command = commandModule.default || commandModule;
+
+          if ("data" in command && "execute" in command) {
+            client.commands.set(command.data.name, command);
+          } else {
+            console.warn(
+              `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+            );
+          }
+        } catch (err) {
+          console.warn(`[WARNING] Failed to load command at ${filePath}:`, err);
+        }
+      }
     }
+
+    // Load event listeners from the /events folder
+    const eventsPath = path.join(__dirname, "events");
+    let eventFiles = [];
+    try {
+      eventFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith(".js"));
+    } catch (err) {
+      console.error(`[FATAL] Could not read events directory: ${eventsPath}`, err);
+      process.exit(1);
+    }
+
+    for (const file of eventFiles) {
+      const filePath = path.join(eventsPath, file);
+      try {
+        const fileURL = new URL(`file://${filePath}`); //dynamic support, same as above w/ commands
+        const eventModule = await import(fileURL.href);
+        const event = eventModule.default || eventModule;
+
+        if (event.once) {
+          client.once(event.name, (...args) => event.execute(client, ...args));
+        } else {
+          client.on(event.name, (...args) => event.execute(client, ...args));
+        }
+      } catch (err) {
+        console.warn(`[WARNING] Failed to load event at ${filePath}:`, err);
+      }
+    }
+
+    // Log in to discord with the set token
+    await client.login(token);
   } catch (err) {
-    console.warn(`[WARNING] Failed to load event at ${filePath}:`, err);
+    console.error("[FATAL] Failed to initialize bot:", err);
+    process.exit(1);
   }
-}
+})();
 
 // Handle slash commands
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -218,13 +229,3 @@ client.on("clientReady", setActivity);
 
 // Re-announce the bot's activity every 20 minutes (in case of an internet outage or something)
 setInterval(setActivity, 20 * 60 * 1000);
-
-// Log in to discord with the set token
-(async () => {
-  try {
-    await client.login(token);
-  } catch (err) {
-    console.error("[FATAL] Failed to login to Discord:", err);
-    process.exit(1);
-  }
-})();
