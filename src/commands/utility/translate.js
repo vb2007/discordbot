@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 import {
   embedReplyPrimaryColorWithFields,
   embedReplyFailureColor,
-} from "../../helpers/embeds/embed-reply";
+} from "../../helpers/embeds/embed-reply.js";
 import { logToFileAndDatabase } from "../../helpers/logger.js";
 import translate from "google-translate-api-x";
 import fs from "fs";
