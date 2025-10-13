@@ -1,8 +1,8 @@
-const { SlashCommandBuilder } = require("discord.js");
-const { embedReplyPrimaryColorWithFields } = require("../../helpers/embeds/embed-reply");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+import { SlashCommandBuilder } from "discord.js";
+import { embedReplyPrimaryColorWithFields } from "../../helpers/embeds/embed-reply.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("ping")
     .setDescription("Displays the discord API's current latency."),
