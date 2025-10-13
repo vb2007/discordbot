@@ -7,6 +7,10 @@ import { logToFileAndDatabase } from "../../helpers/logger.js";
 import translate from "google-translate-api-x";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const languageCodesPath = path.join(__dirname, "../../data/language-codes.json");
 const languageCodes = JSON.parse(fs.readFileSync(languageCodesPath, "utf8"));

@@ -13,7 +13,7 @@ import { query } from "../../helpers/db.js";
 
 const commandName = "coinflip";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Let's you bet a specified amout of money on heads or tais.")
