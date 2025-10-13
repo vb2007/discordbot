@@ -1,13 +1,13 @@
-const { SlashCommandBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder } from "discord.js";
+import {
   embedReplyPrimaryColorWithFields,
   embedReplyPrimaryColor,
-} = require("../../helpers/embeds/embed-reply");
-const replyAndLog = require("../../helpers/reply");
+} from "../../helpers/embeds/embed-reply.js";
+import { replyAndLog } from "../../helpers/reply.js";
 
 const commandName = "911-countdown";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Displays how much time is left until 9/11.")
