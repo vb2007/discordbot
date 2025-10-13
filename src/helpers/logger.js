@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import db from "./db.js";
+import { query } from "./db.js";
 import { logToFile, logToDatabase } from "../../config.json" with { type: "json" };
 
 export const logToFileAndDatabase = async (interaction, response) => {
@@ -48,7 +48,7 @@ Response: ${response}\n\n`;
       }
 
       //insert data into the commandUsageLog table
-      await db.query(
+      await query(
         `INSERT INTO commandUsageLog (commandName, executorUserName, executorUserId, isInServer, serverName, serverId, channelName, channelId, usageTime, response) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           interaction.commandName,
