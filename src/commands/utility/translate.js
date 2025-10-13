@@ -55,7 +55,6 @@ export default {
     const message = interaction.options.getString("message");
     const sourceLanguage = interaction.options.getString("source-language") || "auto";
     const targetLanguage = interaction.options.getString("target-language") || "en";
-    console.log(message, sourceLanguage, targetLanguage);
 
     if (sourceLanguage !== "auto" && !supportedLanguages.includes(sourceLanguage)) {
       var embedReply = embedReplyFailureColor(
