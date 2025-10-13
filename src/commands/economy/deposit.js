@@ -1,21 +1,21 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require("discord.js");
-const {
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } from "discord.js";
+import {
   embedReplyFailureColor,
   embedReplySuccessColor,
   embedReplyWarningColor,
-} = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const { logToFileAndDatabase } = require("../../helpers/logger");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/embeds/embed-reply.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
+
+const commandName = "deposit";
 
 //should be configureable in the future with the config.json file
 const dailyDepositLimit = 10;
 const feePercentage = 0.3;
 
-const commandName = "deposit";
-
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Deposits a specified amount of money to your bank account.")
@@ -36,20 +36,20 @@ module.exports = {
 
     const amount = interaction.options.getInteger("amount");
     const interactionUserId = interaction.user.id;
-    const query = await db.query(
+    const result = await query(
       "SELECT balance, balanceInBank, dailyDeposits, lastDepositTime FROM economy WHERE userId = ?",
       [interactionUserId]
     );
-    const balanceInBank = Number(query[0]?.balanceInBank) || 0;
-    const balance = Number(query[0]?.balance) || 0;
-    let dailyDeposits = Number(query[0]?.dailyDeposits) || 0;
-    const lastDepositTime = query[0]?.lastDepositTime;
+    const balanceInBank = Number(result[0]?.balanceInBank) || 0;
+    const balance = Number(result[0]?.balance) || 0;
+    let dailyDeposits = Number(result[0]?.dailyDeposits) || 0;
+    const lastDepositTime = result[0]?.lastDepositTime;
     const now = new Date();
 
     //resets daily deposits if the last deposit was not today
     if (lastDepositTime && lastDepositTime.toDateString() !== now.toDateString()) {
       dailyDeposits = 0;
-      await db.query("UPDATE economy SET dailyDeposits = 0 WHERE userId = ?", [interactionUserId]);
+      await query("UPDATE economy SET dailyDeposits = 0 WHERE userId = ?", [interactionUserId]);
     }
 
     if (amount <= 0) {
@@ -112,7 +112,7 @@ module.exports = {
 
       collector.on("collect", async (i) => {
         if (i.customId === "confirm") {
-          await db.query(
+          await query(
             "UPDATE economy SET balance = balance - ?, balanceInBank = balanceInBank + ?, dailyDeposits = dailyDeposits + 1, lastDepositTime = ? WHERE userId = ?",
             [totalAmount, amount, now, interactionUserId]
           );
@@ -148,7 +148,7 @@ module.exports = {
         }
       });
     } else {
-      await db.query(
+      await query(
         "UPDATE economy SET balance = balance - ?, balanceInBank = balanceInBank + ?, dailyDeposits = dailyDeposits + 1, lastDepositTime = ? WHERE userId = ?",
         [amount, amount, now, interactionUserId]
       );

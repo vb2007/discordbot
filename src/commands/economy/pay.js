@@ -1,15 +1,15 @@
-const { SlashCommandBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder } from "discord.js";
+import {
   embedReplyFailureColor,
   embedReplySuccessColor,
-} = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/embeds/embed-reply.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import replyAndLog from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
 
 const commandName = "pay";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Pay someone a specified amount of money.")
@@ -47,15 +47,13 @@ module.exports = {
       );
     }
 
-    const interactionUserBalanceQuery = await db.query(
+    const interactionUserBalanceQuery = await query(
       "SELECT balance FROM economy WHERE userId = ?",
       [interactionUserId]
     );
     const userBalance = interactionUserBalanceQuery[0]?.balance || 0;
 
-    const targetUserQuery = await db.query("SELECT * FROM economy WHERE userId = ?", [
-      targetUserId,
-    ]);
+    const targetUserQuery = await query("SELECT * FROM economy WHERE userId = ?", [targetUserId]);
     const targetUserExists = targetUserQuery.length > 0;
 
     if (amount > userBalance) {
@@ -71,19 +69,19 @@ module.exports = {
         interaction
       );
     } else {
-      await db.query("UPDATE economy SET balance = balance - ? WHERE userId = ?", [
+      await query("UPDATE economy SET balance = balance - ? WHERE userId = ?", [
         amount,
         interactionUserId,
       ]);
 
       if (!targetUserExists) {
-        await db.query("INSERT INTO economy (userName, userId, balance) VALUES (?, ?, ?)", [
+        await query("INSERT INTO economy (userName, userId, balance) VALUES (?, ?, ?)", [
           targetUserName,
           targetUserId,
           amount,
         ]);
       } else {
-        await db.query("UPDATE economy SET balance = balance + ? WHERE userId = ?", [
+        await query("UPDATE economy SET balance = balance + ? WHERE userId = ?", [
           amount,
           targetUserId,
         ]);

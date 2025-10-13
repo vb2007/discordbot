@@ -1,23 +1,25 @@
-const { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
+import {
   embedReplySuccessColorWithFields,
   embedReplyFailureColorWithFields,
   embedReplyWarningColorWithFields,
   embedReplyPrimaryColorWithFields,
-} = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const {
+} from "../../helpers/embeds/embed-reply.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import {
   checkCooldown,
   checkBalanceAndBetAmount,
-} = require("../../helpers/command-validation/economy");
-const { logToFileAndDatabase } = require("../../helpers/logger");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/command-validation/economy.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
+
+const commandName = "blackjack";
 
 const suits = ["♠", "♥", "♦", "♣"];
 const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 
-function createDeck() {
+const createDeck = () => {
   let deck = [];
   for (let suit of suits) {
     for (let value of values) {
@@ -25,23 +27,23 @@ function createDeck() {
     }
   }
   return shuffle(deck);
-}
+};
 
-function shuffle(deck) {
+const shuffle = (deck) => {
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [deck[i], deck[j]] = [deck[j], deck[i]];
   }
   return deck;
-}
+};
 
-function getCardValue(card) {
+const getCardValue = (card) => {
   if (["J", "Q", "K"].includes(card.value)) return 10;
   if (card.value === "A") return 11;
   return parseInt(card.value);
-}
+};
 
-function calculateHandValue(hand) {
+const calculateHandValue = (hand) => {
   let value = 0;
   let aces = 0;
 
@@ -56,22 +58,22 @@ function calculateHandValue(hand) {
   }
 
   return value;
-}
+};
 
-function formatCards(hand) {
+const formatCards = (hand) => {
   return hand.map((card) => `${card.value}${card.suit}`).join(" ");
-}
+};
 
-async function updateBalance(won, amount, interactionUserId) {
+const updateBalance = async (won, amount, interactionUserId) => {
   switch (won) {
     case true:
-      await db.query(
+      await query(
         "UPDATE economy SET balance = balance + ?, lastBlackjackTime = ? WHERE userId = ?",
         [amount, new Date().toISOString().slice(0, 19).replace("T", " "), interactionUserId]
       );
       break;
     case false:
-      await db.query(
+      await query(
         "UPDATE economy SET balance = balance - ?, lastBlackjackTime = ? WHERE userId = ?",
         [amount, new Date().toISOString().slice(0, 19).replace("T", " "), interactionUserId]
       );
@@ -79,11 +81,9 @@ async function updateBalance(won, amount, interactionUserId) {
     default:
       throw new Error("Invalid parameter: won must be true or false");
   }
-}
+};
 
-const commandName = "blackjack";
-
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Play a game of blackjack.")

@@ -1,15 +1,15 @@
-const { SlashCommandBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder } from "discord.js";
+import {
   embedReplySuccessColor,
   embedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const {
+} from "../../helpers/embeds/embed-reply.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import {
   checkCooldown,
   checkBalanceAndBetAmount,
-} = require("../../helpers/command-validation/economy");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/command-validation/economy.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
 
 const commandName = "coinflip";
 
@@ -51,17 +51,17 @@ module.exports = {
 
     const interactionUserId = interaction.user.id;
 
-    const query = await db.query("SELECT balance, lastCoinflipTime FROM economy WHERE userId = ?", [
+    const result = await query("SELECT balance, lastCoinflipTime FROM economy WHERE userId = ?", [
       interactionUserId,
     ]);
-    const userBalance = Number(query[0]?.balance);
+    const userBalance = Number(result[0]?.balance);
 
     const userBet = interaction.options.getString("side");
     const flip = Math.random() < 0.5 ? "tails" : "head";
     const won = userBet === flip;
 
     if (won) {
-      await db.query(
+      await query(
         "UPDATE economy SET balance = balance + ?, lastCoinflipTime = ? WHERE userId = ?",
         [amount, new Date().toISOString().slice(0, 19).replace("T", " "), interactionUserId]
       );
@@ -75,10 +75,11 @@ module.exports = {
       return await replyAndLog(interaction, embedReply);
     }
 
-    await db.query(
-      "UPDATE economy SET balance = balance - ?, lastCoinflipTime = ? WHERE userId = ?",
-      [amount, new Date().toISOString().slice(0, 19).replace("T", " "), interactionUserId]
-    );
+    await query("UPDATE economy SET balance = balance - ?, lastCoinflipTime = ? WHERE userId = ?", [
+      amount,
+      new Date().toISOString().slice(0, 19).replace("T", " "),
+      interactionUserId,
+    ]);
 
     var embedReply = embedReplyFailureColor(
       "Coinflip - Lost",
