@@ -8,7 +8,7 @@ import {
   checkIfNotInGuild,
   checkAdminPermissions,
 } from "../../helpers/command-validation/general.js";
-import replyAndLog from "../../helpers/reply.js";
+import { replyAndLog } from "../../helpers/reply.js";
 import { query } from "../../helpers/db.js";
 
 const commandName = "config-logging";

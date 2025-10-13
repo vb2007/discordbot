@@ -1,5 +1,6 @@
 import { query } from "../../../helpers/db.js";
-import { embedColors } from "../../../../config.json" with { type: "json" };
+import config from "../../../../config.json" with { type: "json" };
+const { embedColors } = config;
 import { embedMessageWithServerIcon } from "../../../helpers/embeds/embed-message.js";
 
 export const sendGoodbyeMessage = async (member) => {

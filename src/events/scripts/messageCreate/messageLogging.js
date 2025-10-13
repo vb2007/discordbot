@@ -1,5 +1,6 @@
 import { query } from "../../../helpers/db.js";
-import { logMessagesToLocalDatabase } from "../../../../config.json" with { type: "json" };
+import config from "../../../../config.json" with { type: "json" };
+const { logMessagesToLocalDatabase } = config;
 
 export const logToDB = async (message) => {
   try {

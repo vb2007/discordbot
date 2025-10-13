@@ -1,6 +1,7 @@
 import { query } from "../../../helpers/db.js";
 import { embedMessageWithServerIcon } from "../../../helpers/embeds/embed-message.js";
-import { embedColors } from "../../../../config.json" with { type: "json" };
+import config from "../../../../config.json" with { type: "json" };
+const { embedColors } = config;
 
 export const sendWelcomeMessage = async (member) => {
   const guildId = member.guild.id;
