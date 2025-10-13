@@ -3,8 +3,8 @@ import {
   embedReplyFailureColor,
   embedReplySuccessColor,
   embedReplyWarningColor,
-  moderationDmEmbedReplyWarningColor,
 } from "../../helpers/embeds/embed-reply.js";
+import { moderationDmEmbedReplyWarningColor } from "../../helpers/embeds/embed-reply-moderation.js";
 import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
 import { replyAndLog } from "../../helpers/reply.js";
 
