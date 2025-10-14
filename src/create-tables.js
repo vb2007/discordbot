@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { query, getConnection } from "./helpers/db";
+import { query, getConnection } from "./helpers/db.js";
 getConnection();
 
 //reads the SQL queries from a folder's subfolder
@@ -30,7 +30,7 @@ const updateCommandData = async () => {
       .slice(1)
       .filter((line) => line.trim())
       .map((line) => {
-        //csv parsing (i don't understand it either)
+        //csv parsing
         const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^,"]*))/g;
         const values = [];
         let match;
@@ -50,15 +50,10 @@ const updateCommandData = async () => {
     for (const cmd of commands) {
       console.log(`Processing command: ${cmd.name}`);
 
-      const query = `
-                INSERT INTO commandData (name, category, description)
-                VALUES (?, ?, ?)
-                ON DUPLICATE KEY UPDATE
-                    category = VALUES(category),
-                    description = VALUES(description)
-            `;
-
-      await query(query, [cmd.name, cmd.category, cmd.description]);
+      await query(
+        "INSERT INTO commandData (name, category, description) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE category = VALUES(category), description = VALUES(description)",
+        [cmd.name, cmd.category, cmd.description]
+      );
     }
 
     console.log("Command data has been updated successfully.");
