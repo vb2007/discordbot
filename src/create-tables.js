@@ -1,7 +1,11 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { query, getConnection } from "./helpers/db.js";
 getConnection();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //reads the SQL queries from a folder's subfolder
 const readSQLFiles = (dir) => {
@@ -85,9 +89,9 @@ const createTables = async () => {
     }
 
     //executes the table creation (and other) queries
-    for (const query of sqlQueries) {
+    for (const sqlQuery of sqlQueries) {
       try {
-        await query(query);
+        await query(sqlQuery);
         console.log("Query executed successfully.");
       } catch (error) {
         console.error("Error executing query: ", error);
