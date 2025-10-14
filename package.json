@@ -1,6 +1,6 @@
 {
   "name": "discordbot",
-  "version": "2.3.1",
+  "version": "4.0.1",
   "description": "A simple discord bot of mine developed with discord.js (Node.js).",
   "type": "module",
   "main": "index.js",
