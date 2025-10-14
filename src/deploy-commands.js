@@ -2,6 +2,7 @@ import { REST, Routes } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
 
 import "dotenv/config";
 const token = process.env.TOKEN;
@@ -17,12 +18,13 @@ const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
   //getting .js files from the commands folder
-  const commandsPath = path.join(__dirname, foldersPath, folder);
+  const commandsPath = path.join(foldersPath, folder);
   const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".js"));
 
   //checking and storing the commands
   for (const file of commandFiles) {
-    const filePath = path.join(__dirname, commandsPath, file);
+    const filePath = path.join(commandsPath, file);
+    const require = createRequire(import.meta.url);
     const command = require(filePath);
 
     if ("data" in command && "execute" in command) {
