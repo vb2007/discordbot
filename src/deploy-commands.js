@@ -2,7 +2,6 @@ import { REST, Routes } from "discord.js";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "url";
-import { createRequire } from "module";
 
 import "dotenv/config";
 const token = process.env.TOKEN;
@@ -24,8 +23,9 @@ for (const folder of commandFolders) {
   //checking and storing the commands
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
-    const require = createRequire(import.meta.url);
-    const command = require(filePath);
+    const fileUrl = new URL(`file://${filePath}`).href;
+    const commandModule = await import(fileUrl);
+    const command = commandModule.default;
 
     if ("data" in command && "execute" in command) {
       commands.push(command.data.toJSON());
@@ -46,7 +46,7 @@ const rest = new REST().setToken(token);
     //registering / re-registering the commands
     await rest.put(Routes.applicationCommands(clientId), { body: commands });
 
-    console.log(`Successfully registered ${commands.length} slash (/) commands at Discord.`);
+    console.log(`Registered ${commands.length} slash (/) commands at Discord.`);
   } catch (err) {
     console.error("Error while registering commands: ", err);
   }
