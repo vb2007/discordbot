@@ -25,7 +25,7 @@ Do the following for setting up the application from sratch:
 1. Clone the repository.
 2. Create a `.env` file, or rename the existing [.env.example](./src/.env.example) file, and fill it out with the required data.
 3. Create a `config.json` file, or rename the existing [config.json.example](./src/config.json.example) file, and fill it out with the required configuration settings.
-4. Like you would with any other node.js app, install dependencies with with the `npm i` command.
+4. Like you would with any other node.js app, install dependencies with with the `npm ci` command.
 
 ### Setting up nvm & the correct Node.js version
 
