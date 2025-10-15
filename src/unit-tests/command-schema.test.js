@@ -2,6 +2,10 @@ import fs from "fs";
 import path from "path";
 import { parse } from "@babel/parser";
 import traverse from "@babel/traverse";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const getAllCommandFiles = (foldersPath) => {
   const commandFiles = [];
@@ -38,7 +42,7 @@ const validateCommand = (filePath) => {
 
   const validation = validateCommandStructure(ast);
 
-  if (!validation.hasModuleExports) issues.push("missing module.exports");
+  if (!validation.hasDefaultExport) issues.push("missing default export");
   if (!validation.hasData) issues.push("missing data property");
   if (!validation.hasExecute) issues.push("missing execute method");
   if (!validation.hasSlashCommandBuilder) issues.push("missing SlashCommandBuilder");
@@ -51,22 +55,17 @@ const validateCommand = (filePath) => {
 const validateCommandStructure = (ast) => {
   let hasData = false;
   let hasExecute = false;
-  let hasModuleExports = false;
+  let hasDefaultExport = false;
   let hasSlashCommandBuilder = false;
   let hasSetName = false;
   let hasSetDescription = false;
 
-  traverse(ast, {
-    AssignmentExpression(path) {
-      if (
-        path.node.left.type === "MemberExpression" &&
-        path.node.left.object.name === "module" &&
-        path.node.left.property.name === "exports" &&
-        path.node.right.type === "ObjectExpression"
-      ) {
-        hasModuleExports = true;
+  traverse.default(ast, {
+    ExportDefaultDeclaration(path) {
+      if (path.node.declaration && path.node.declaration.type === "ObjectExpression") {
+        hasDefaultExport = true;
 
-        path.node.right.properties.forEach((prop) => {
+        path.node.declaration.properties.forEach((prop) => {
           const key = prop.key.name || prop.key.value;
 
           if (key === "data") {
@@ -90,7 +89,7 @@ const validateCommandStructure = (ast) => {
   return {
     hasData,
     hasExecute,
-    hasModuleExports,
+    hasDefaultExport,
     hasSlashCommandBuilder,
     hasSetName,
     hasSetDescription,
