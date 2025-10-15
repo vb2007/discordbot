@@ -1,7 +1,8 @@
 {
   "name": "discordbot",
-  "version": "2.3.1",
+  "version": "4.0.1",
   "description": "A simple discord bot of mine developed with discord.js (Node.js).",
+  "type": "module",
   "main": "index.js",
   "keywords": [
     "discord",
@@ -48,11 +49,11 @@
   },
   "scripts": {
     "app": "node ./src/index.js",
-    "dev": "nodemon ./src/index.js",
+    "dev": "node --trace-warnings ./src/index.js",
     "deploy": "node ./src/deploy-commands.js",
     "create-tables": "node ./src/create-tables.js",
     "verify-config": "node ./src/scripts/verify-config-syntax.js",
-    "test": "jest",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "format": "prettier --write ."
   }
 }

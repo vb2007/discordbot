@@ -1,8 +1,8 @@
-const logEventToChannel = require("./scripts/voiceStateUpdate/logEventToChannel");
+import { sendLogInfo } from "./scripts/voiceStateUpdate/logEventToChannel.js";
 
-module.exports = {
+export default {
   name: "voiceStateUpdate",
   async execute(client, oldState, newState) {
-    await logEventToChannel.sendLogInfo(client, oldState, newState);
+    await sendLogInfo(client, oldState, newState);
   },
 };

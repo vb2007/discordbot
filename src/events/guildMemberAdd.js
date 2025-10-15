@@ -1,12 +1,12 @@
-const logEventToChannel = require("./scripts/guildMemberAdd/logEventToChannel");
-const autorole = require("./scripts/guildMemberAdd/autorole");
-const welcome = require("./scripts/guildMemberAdd/welcome");
+import { sendLogInfo } from "./scripts/guildMemberAdd/logEventToChannel.js";
+import { assignRole } from "./scripts/guildMemberAdd/autorole.js";
+import { sendWelcomeMessage } from "./scripts/guildMemberAdd/welcome.js";
 
-module.exports = {
+export default {
   name: "guildMemberAdd",
   async execute(client, member) {
-    await logEventToChannel.sendLogInfo(client, member);
-    await autorole.assignRole(member);
-    await welcome.sendWelcomeMessage(member);
+    await sendLogInfo(client, member);
+    await assignRole(member);
+    await sendWelcomeMessage(member);
   },
 };

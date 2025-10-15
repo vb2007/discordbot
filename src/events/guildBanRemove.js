@@ -1,8 +1,8 @@
-const logEventToChannel = require("./scripts/guildBanRemove/logEventToChannel");
+import { sendLogInfo } from "./scripts/guildBanRemove/logEventToChannel.js";
 
-module.exports = {
+export default {
   name: "guildBanRemove",
   async execute(client, unban) {
-    await logEventToChannel.sendLogInfo(client, unban);
+    await sendLogInfo(client, unban);
   },
 };

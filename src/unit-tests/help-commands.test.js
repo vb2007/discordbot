@@ -1,7 +1,11 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-function parseCommandsFromCSV(csvPath) {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const parseCommandsFromCSV = (csvPath) => {
   const csvContent = fs.readFileSync(csvPath, "utf8");
 
   return csvContent
@@ -24,9 +28,9 @@ function parseCommandsFromCSV(csvPath) {
       return { name, category, description };
     })
     .filter((cmd) => cmd !== null);
-}
+};
 
-function getCommandsFromFS(commandsDir) {
+const getCommandsFromFS = (commandsDir) => {
   const commands = [];
 
   const categories = fs.readdirSync(commandsDir);
@@ -46,7 +50,7 @@ function getCommandsFromFS(commandsDir) {
   });
 
   return commands;
-}
+};
 
 describe("Command Data Tests", () => {
   const csvCommands = parseCommandsFromCSV(path.join(__dirname, "../data/commandData.csv"));

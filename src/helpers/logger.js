@@ -1,11 +1,17 @@
-const fs = require("fs");
-const path = require("path");
-const db = require("./db");
-const { logToFile, logToDatabase } = require("../../config.json");
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { query } from "./db.js";
+import config from "../../config.json" with { type: "json" };
 
-const logToFileAndDatabase = async (interaction, response) => {
+const { logToFile, logToDatabase } = config;
+
+export const logToFileAndDatabase = async (interaction, response) => {
   //logging to file
   if (logToFile == "True") {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
     const logDirectory = path.join(__dirname, "../command-logs");
 
     if (!fs.existsSync(logDirectory)) {
@@ -48,7 +54,7 @@ Response: ${response}\n\n`;
       }
 
       //insert data into the commandUsageLog table
-      await db.query(
+      await query(
         `INSERT INTO commandUsageLog (commandName, executorUserName, executorUserId, isInServer, serverName, serverId, channelName, channelId, usageTime, response) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           interaction.commandName,
@@ -68,5 +74,3 @@ Response: ${response}\n\n`;
     }
   }
 };
-
-module.exports = { logToFileAndDatabase };

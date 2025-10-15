@@ -1,19 +1,19 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const {
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
+import {
   embedReplySuccessColor,
   embedReplySuccessSecondaryColor,
   embedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply");
-const {
+} from "../../helpers/embeds/embed-reply.js";
+import {
   checkIfNotInGuild,
   checkAdminPermissions,
-} = require("../../helpers/command-validation/general");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/command-validation/general.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
 
 const commandName = "config-logging";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Sets up logging with various options for the current server.")
@@ -61,12 +61,12 @@ module.exports = {
         const targetChannelName = targetChannel.name;
         const guildId = interaction.guild.id;
 
-        const query = await db.query(
+        const result = await query(
           "SELECT guildId, logChannelId FROM configLogging WHERE guildId = ?",
           [guildId]
         );
-        const existingGuildId = query[0]?.guildId || null;
-        const existingLogChannelId = query[0]?.logChannelId || null;
+        const existingGuildId = result[0]?.guildId || null;
+        const existingLogChannelId = result[0]?.logChannelId || null;
 
         if (existingLogChannelId == targetChannelId) {
           title = "Logging Configure: Error";
@@ -75,7 +75,7 @@ module.exports = {
         }
 
         if (existingGuildId == guildId) {
-          await db.query(
+          await query(
             "UPDATE configLogging SET logChannelId = ?, logChannelName = ?, lastModifierId = ?, lastModifierName = ? WHERE guildId = ?",
             [targetChannelId, targetChannelName, interactionUserId, interactionUsername, guildId]
           );
@@ -88,7 +88,7 @@ module.exports = {
           );
         }
 
-        await db.query(
+        await query(
           "INSERT INTO configLogging (guildId, logChannelId, logChannelName, firstConfigurerId, firstConfigurerName) VALUES (?, ?, ?, ?, ?)",
           [guildId, targetChannelId, targetChannelName, interactionUserId, interactionUsername]
         );
@@ -108,13 +108,13 @@ module.exports = {
     if (action === "disable") {
       try {
         const currentGuildId = interaction.guild.id;
-        const query = await db.query("SELECT guildId FROM configLogging WHERE guildId = ?", [
+        const result = await query("SELECT guildId FROM configLogging WHERE guildId = ?", [
           currentGuildId,
         ]);
-        const existingGuildId = query[0]?.guildId || null;
+        const existingGuildId = result[0]?.guildId || null;
 
         if (existingGuildId) {
-          await db.query("DELETE FROM configLogging WHERE guildId = ?", [currentGuildId]);
+          await query("DELETE FROM configLogging WHERE guildId = ?", [currentGuildId]);
 
           title = "Logging Disable: Success";
           description = "The logging feature has been disabled successfully. :white_check_mark:";

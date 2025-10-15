@@ -1,15 +1,15 @@
-const { SlashCommandBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder } from "discord.js";
+import {
   embedReplyPrimaryColor,
   embedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/embeds/embed-reply.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
 
 const commandName = "leaderboard";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Check the users with the most money on the server.")
@@ -53,24 +53,23 @@ module.exports = {
 
     switch (type) {
       case "cash":
-        var query = await db.query(
+        var allUsersResult = await query(
           "SELECT userId, balance FROM economy WHERE userId IN (?) AND balance > 0 ORDER BY balance DESC LIMIT ?",
           [memberIds, amount]
         );
 
-        var actualUserAmount = query.length;
-
-        var replyContent = query
+        var actualUserAmount = allUsersResult.length;
+        var replyContent = allUsersResult
           .map(
             (user, index) => `**${index + 1}**. <@${user.userId}> : \`$${user.balance}\` :moneybag:`
           )
           .join("\n");
 
-        var query = await db.query(
+        var userCountResult = await query(
           "SELECT COUNT(*) FROM economy WHERE userId IN (?) AND balance > 0",
           [memberIds]
         );
-        var totalUserAmount = Number(query[0]["COUNT(*)"]);
+        var totalUserAmount = Number(userCountResult[0]["COUNT(*)"]);
 
         var replyContent =
           replyContent +
@@ -92,25 +91,25 @@ module.exports = {
 
         break;
       case "bank":
-        var query = await db.query(
+        var allUsersResult = await query(
           "SELECT userId, balanceInBank FROM economy WHERE userId IN (?) AND balanceInBank > 0 ORDER BY balanceInBank DESC LIMIT ?",
           [memberIds, amount]
         );
 
-        var actualUserAmount = query.length;
+        var actualUserAmount = allUsersResult.length;
 
-        var replyContent = query
+        var replyContent = allUsersResult
           .map(
             (user, index) =>
               `**${index + 1}**. <@${user.userId}> : \`$${user.balanceInBank}\` :bank:`
           )
           .join("\n");
 
-        var query = await db.query(
+        var allUsersResult = await query(
           "SELECT COUNT(*) FROM economy WHERE userId IN (?) AND balanceInBank > 0",
           [memberIds]
         );
-        var totalUserAmount = Number(query[0]["COUNT(*)"]);
+        var totalUserAmount = Number(allUsersResult[0]["COUNT(*)"]);
 
         var replyContent =
           replyContent +

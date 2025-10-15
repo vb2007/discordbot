@@ -1,18 +1,18 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const {
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
+import {
   embedReplySuccessColor,
   embedReplySuccessSecondaryColor,
   embedReplyWarningColor,
   embedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply");
-const {
+} from "../../helpers/embeds/embed-reply.js";
+import {
   checkIfNotInGuild,
   checkAdminPermissions,
-} = require("../../helpers/command-validation/general");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/command-validation/general.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("config-welcome")
     .setDescription(
@@ -85,18 +85,18 @@ module.exports = {
         const adderId = interaction.user.id;
         const adderUsername = interaction.user.username;
 
-        const query = await db.query(
+        const result = await query(
           "SELECT channelId, message, isEmbed, embedColor FROM configWelcome WHERE guildId = ?",
           [guildId]
         );
-        const existingChannelId = query[0]?.channelId || null;
-        const existingWelcomeMessage = query[0]?.message || null;
-        const existingIsEmbed = query[0]?.isEmbed || 0;
-        const existingEmbedColor = query[0]?.embedColor || null;
+        const existingChannelId = result[0]?.channelId || null;
+        const existingWelcomeMessage = result[0]?.message || null;
+        const existingIsEmbed = result[0]?.isEmbed || 0;
+        const existingEmbedColor = result[0]?.embedColor || null;
 
         //if welcome messages haven't been configured for the current server
         if (!existingChannelId) {
-          await db.query(
+          await query(
             "INSERT INTO configWelcome (guildId, channelId, message, isEmbed, embedColor, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?)",
             [
               guildId,
@@ -144,7 +144,7 @@ module.exports = {
           return replyAndLog(interaction, embedReplyWarningColor(title, description, interaction));
         }
 
-        await db.query(
+        await query(
           "UPDATE configWelcome SET channelId = ?, message = ?, adderId = ?, adderUsername = ?, isEmbed = ?, embedColor = ? WHERE guildId = ?",
           [channelId, welcomeMessage, adderId, adderUsername, isEmbed, embedColor, guildId]
         );
@@ -178,13 +178,13 @@ module.exports = {
     if (action === "disable") {
       try {
         const currentGuildId = interaction.guild.id;
-        const query = await db.query("SELECT guildId FROM configWelcome WHERE guildId = ?", [
+        const result = await query("SELECT guildId FROM configWelcome WHERE guildId = ?", [
           currentGuildId,
         ]);
-        const welcomeGuildId = query[0]?.guildId || null;
+        const welcomeGuildId = result[0]?.guildId || null;
 
         if (welcomeGuildId) {
-          await db.query("DELETE FROM configWelcome WHERE guildId = ?", [welcomeGuildId]);
+          await query("DELETE FROM configWelcome WHERE guildId = ?", [welcomeGuildId]);
 
           title = "Welcome Disable: Success";
           description =

@@ -1,14 +1,12 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const {
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
+import {
   embedReplyFailureColor,
   embedReplySuccessColor,
-} = require("../../helpers/embeds/embed-reply");
-const {
-  moderationDmEmbedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply-moderation");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+} from "../../helpers/embeds/embed-reply.js";
+import { moderationDmEmbedReplyFailureColor } from "../../helpers/embeds/embed-reply-moderation.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("ban")
     .setDescription("Bans a specified member from the server.")

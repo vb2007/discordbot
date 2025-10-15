@@ -1,9 +1,9 @@
-const { SlashCommandBuilder } = require("discord.js");
-const { embedReplyPrimaryColorImg, embedReplyImg } = require("../../helpers/embeds/embed-reply");
-const { loadLinks } = require("../../helpers/scraping");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+import { SlashCommandBuilder } from "discord.js";
+import { embedReplyPrimaryColorImg, embedReplyImg } from "../../helpers/embeds/embed-reply.js";
+import { loadLinks } from "../../helpers/scraping.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("randomfeet")
     .setDescription("Sends a random feetpic.")

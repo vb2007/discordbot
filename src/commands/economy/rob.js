@@ -1,16 +1,16 @@
-const { SlashCommandBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder } from "discord.js";
+import {
   embedReplyFailureColor,
   embedReplySuccessColor,
-} = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const { checkCooldown } = require("../../helpers/command-validation/economy");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/embeds/embed-reply.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import { checkCooldown } from "../../helpers/command-validation/economy.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
 
 const commandName = "rob";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Tries to rob a random amount of money from a specified user.")
@@ -44,8 +44,8 @@ module.exports = {
       return await replyAndLog(interaction, cooldownCheck);
     }
 
-    const query = await db.query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
-    const targetUserBalance = query[0]?.balance || null;
+    const result = await query("SELECT balance FROM economy WHERE userId = ?", [targetUserId]);
+    const targetUserBalance = result[0]?.balance || null;
 
     //if target user's balance is below 50...
     if (targetUserBalance < 50) {
@@ -61,19 +61,19 @@ module.exports = {
     const robAmount = Math.floor(Math.random() * 50);
 
     //removes the robbed amount from the target user
-    await db.query("UPDATE economy SET balance = balance - ? WHERE userId = ?", [
+    await query("UPDATE economy SET balance = balance - ? WHERE userId = ?", [
       robAmount,
       targetUserId,
     ]);
 
-    const uidquery = await db.query("SELECT userId FROM economy WHERE userId = ?", [
+    const userIdResult = await query("SELECT userId FROM economy WHERE userId = ?", [
       interaction.user.id,
     ]);
-    const userId = Number(uidquery[0]?.userId) || null;
+    const userId = Number(userIdResult[0]?.userId) || null;
 
     if (userId) {
       //adds the robbed amount to the interaction's executor
-      await db.query("UPDATE economy SET balance = balance + ?, lastRobTime = ? WHERE userId = ?", [
+      await query("UPDATE economy SET balance = balance + ?, lastRobTime = ? WHERE userId = ?", [
         robAmount,
         new Date().toISOString().slice(0, 19).replace("T", " "),
         interaction.user.id,
@@ -81,7 +81,7 @@ module.exports = {
     }
     //if it's the executor's first time using any economy command (so it's userId is not in the database yet...)
     else {
-      await db.query(
+      await query(
         "INSERT INTO economy (userName, userId, balance, firstTransactionDate, lastRobTime) VALUES (?, ?, ?, ?, ?)",
         [
           interaction.user.username,

@@ -1,19 +1,19 @@
-const { SlashCommandBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder } from "discord.js";
+import {
   embedReplyPrimaryColorWithFields,
   embedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply");
-const db = require("../../helpers/db");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+} from "../../helpers/embeds/embed-reply.js";
+import { query } from "../../helpers/db.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("ping-db")
     .setDescription("Displays the the bot's MariaDB database's current latency."),
   async execute(interaction) {
     try {
       const startTime = Date.now();
-      await db.query("SELECT 1");
+      await query("SELECT 1");
       const endTime = Date.now();
 
       const latency = endTime - startTime;

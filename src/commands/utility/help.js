@@ -1,12 +1,12 @@
-const { SlashCommandBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder } from "discord.js";
+import {
   embedReplyPrimaryColorWithFields,
   embedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply");
-const { logToFileAndDatabase } = require("../../helpers/logger");
-const db = require("../../helpers/db");
+} from "../../helpers/embeds/embed-reply.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
+import { query } from "../../helpers/db.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("help")
     .setDescription("Displays the bot's commands.")
@@ -41,7 +41,7 @@ module.exports = {
         interaction
       );
     } else if (commandCategory) {
-      const commandsQuery = await db.query(
+      const commandsQuery = await query(
         "SELECT name, category FROM commandData WHERE category = ? ORDER BY name",
         [commandCategory]
       );
@@ -63,7 +63,7 @@ module.exports = {
         );
       }
     } else if (commandName) {
-      const commandQuery = await db.query(
+      const commandQuery = await query(
         "SELECT category, description FROM commandData WHERE name = ?",
         [commandName]
       );
@@ -88,7 +88,7 @@ module.exports = {
         );
       }
     } else {
-      const allCommandsQuery = await db.query(
+      const allCommandsQuery = await query(
         "SELECT name, category FROM commandData ORDER BY category, name"
       );
 

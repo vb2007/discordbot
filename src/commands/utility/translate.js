@@ -1,12 +1,16 @@
-const { SlashCommandBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder } from "discord.js";
+import {
   embedReplyPrimaryColorWithFields,
   embedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply");
-const { logToFileAndDatabase } = require("../../helpers/logger");
-const translate = require("google-translate-api-x");
-const fs = require("fs");
-const path = require("path");
+} from "../../helpers/embeds/embed-reply.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
+import translate from "google-translate-api-x";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const languageCodesPath = path.join(__dirname, "../../data/language-codes.json");
 const languageCodes = JSON.parse(fs.readFileSync(languageCodesPath, "utf8"));
@@ -16,7 +20,7 @@ const languageMap = languageCodes.reduce((map, lang) => {
   return map;
 }, {});
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("translate")
     .setDescription("Translates a message to a specified language.")
@@ -51,7 +55,6 @@ module.exports = {
     const message = interaction.options.getString("message");
     const sourceLanguage = interaction.options.getString("source-language") || "auto";
     const targetLanguage = interaction.options.getString("target-language") || "en";
-    console.log(message, sourceLanguage, targetLanguage);
 
     if (sourceLanguage !== "auto" && !supportedLanguages.includes(sourceLanguage)) {
       var embedReply = embedReplyFailureColor(

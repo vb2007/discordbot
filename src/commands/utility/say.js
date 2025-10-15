@@ -1,8 +1,8 @@
-const { SlashCommandBuilder } = require("discord.js");
-const { embedReplySaidByPrimaryColor } = require("../../helpers/embeds/embed-reply");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+import { SlashCommandBuilder } from "discord.js";
+import { embedReplySaidByPrimaryColor } from "../../helpers/embeds/embed-reply.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("say")
     .setDescription("Makes the bot say something.")
