@@ -1,8 +1,8 @@
 import { SlashCommandBuilder } from "discord.js";
 import { embedReplyPrimaryColorWithFields } from "../../helpers/embeds/embed-reply.js";
 import { getRemainingCooldown } from "../../helpers/command-validation/economy.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
 import { replyAndLog } from "../../helpers/reply.js";
-import { query } from "../../helpers/db.js";
 
 const commandName = "cooldown";
 
