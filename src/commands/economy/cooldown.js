@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { embedReplyPrimaryColorWithFields } from "../../helpers/embeds/embed-reply.js";
+import { getRemainingCooldown } from "../../helpers/command-validation/economy.js";
 import { replyAndLog } from "../../helpers/reply.js";
 import { query } from "../../helpers/db.js";
 
@@ -18,39 +19,42 @@ export default {
 
     const interactionUserId = interaction.user.id;
 
-    const result = await query(
-      "SELECT lastWorkTime, lastBegTime, lastRobTime, lastRouletteTime, lastBlackjackTime, lastCoinflipTime  FROM economy WHERE userId = ?",
-      [interactionUserId]
-    );
-
-    const lastWorkTime = query[0]?.lastWorkTime;
-    const lastBegTime = query[0]?.lastBegTime;
-    const lastRobTime = query[0]?.lastRobTime;
-    const lastRouletteTime = query[0]?.lastRouletteTime;
-    const lastBlackjackTime = query[0]?.lastBlackjackTime;
-    const lastCoinflipTime = query[0]?.lastCoinflipTime;
-
-    const remainingTimeInSeconds = Math.ceil(
-      (lastWorkTime.getTime() - nextApprovedUsageTime.getTime()) / 1000
-    );
-    const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
-    const remainingSeconds = remainingTimeInSeconds % 60;
-
-    const nextApprovedUsageTime = new Date(
-      new Date().getTime() + new Date().getTimezoneOffset() * 60000 - configuredCooldown * 60000
-    );
-
     const remainingTimes = [
-      { name: "Working", value: lastWorkTime ? "You haven't worked yet" : "", inline: true },
-      { name: "Begging", value: "", inline: true },
-      { name: "Robbing", value: "", inline: true },
-      { name: "Playing roulette", value: "", inline: true },
-      { name: "Playing blackjack", value: "", inline: true },
-      { name: "Flipping a coin", value: "", inline: true },
+      {
+        name: "Working",
+        value: await getRemainingCooldown("work", "lastWorkTime", interactionUserId),
+        inline: true,
+      },
+      {
+        name: "Begging",
+        value: await getRemainingCooldown("beg", "lastBegTime", interactionUserId),
+        inline: true,
+      },
+      {
+        name: "Robbing",
+        value: await getRemainingCooldown("rob", "lastRobTime", interactionUserId),
+        inline: true,
+      },
+      {
+        name: "Playing roulette",
+        value: await getRemainingCooldown("roulette", "lastRouletteTime", interactionUserId),
+        inline: true,
+      },
+      {
+        name: "Playing blackjack",
+        value: await getRemainingCooldown("blackjack", "lastBlackjackTime", interactionUserId),
+        inline: true,
+      },
+      {
+        name: "Flipping a coin",
+        value: await getRemainingCooldown("coinflip", "lastCoinflipTime", interactionUserId),
+        inline: true,
+      },
     ];
 
     const embedReply = embedReplyPrimaryColorWithFields(
       "Economy cooldowns",
+      "",
       remainingTimes,
       interaction
     );
