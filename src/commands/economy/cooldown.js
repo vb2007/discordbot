@@ -9,7 +9,27 @@ const commandName = "cooldown";
 export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
-    .setDescription("Display the remaining cooldowns for all economy commands.")
+    .setDescription("Display the remaining cooldowns for a specified / all economy commands.")
+    .addStringOption((option) =>
+      option
+        .setName("command-name")
+        .setDescription("Gives you back the remaining time for a specific command.")
+        .addChoices(
+          { name: "Work", value: "work" },
+          { name: "Beg", value: "beg" },
+          { name: "Rob", value: "rob" },
+          { name: "Roulette", value: "roulette" },
+          { name: "Blackjack", value: "blackjack" },
+          { name: "Coinflip", value: "coinflip" }
+        )
+        .setRequired(false)
+    )
+    .addUserOption((option) =>
+      option
+        .setName("user")
+        .setDescription("The user whose cooldowns you would like to check.")
+        .setRequired(false)
+    )
     .setDMPermission(false),
   async execute(interaction) {
     const guildCheck = checkIfNotInGuild(commandName, interaction);
