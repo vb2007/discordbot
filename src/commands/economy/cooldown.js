@@ -21,32 +21,32 @@ export default {
 
     const remainingTimes = [
       {
-        name: "Working",
+        name: "/work",
         value: await getRemainingCooldown("work", "lastWorkTime", interactionUserId),
         inline: true,
       },
       {
-        name: "Begging",
+        name: "/beg",
         value: await getRemainingCooldown("beg", "lastBegTime", interactionUserId),
         inline: true,
       },
       {
-        name: "Robbing",
+        name: "/rob",
         value: await getRemainingCooldown("rob", "lastRobTime", interactionUserId),
         inline: true,
       },
       {
-        name: "Playing roulette",
+        name: "/roulette",
         value: await getRemainingCooldown("roulette", "lastRouletteTime", interactionUserId),
         inline: true,
       },
       {
-        name: "Playing blackjack",
+        name: "/blackjack",
         value: await getRemainingCooldown("blackjack", "lastBlackjackTime", interactionUserId),
         inline: true,
       },
       {
-        name: "Flipping a coin",
+        name: "/coinflip",
         value: await getRemainingCooldown("coinflip", "lastCoinflipTime", interactionUserId),
         inline: true,
       },
@@ -54,7 +54,7 @@ export default {
 
     const embedReply = embedReplyPrimaryColorWithFields(
       "Economy cooldowns",
-      "",
+      "Various economy commands and the next time you will be able to use them.",
       remainingTimes,
       interaction
     );

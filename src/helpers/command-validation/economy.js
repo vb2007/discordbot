@@ -67,10 +67,10 @@ export const getRemainingCooldown = async (commandName, timeColumnName, userId) 
     const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
     const remainingSeconds = remainingTimeInSeconds % 60;
 
-    return `You can use \`/${commandName}\` in **${remainingMinutes} minute${remainingMinutes <= 1 ? "" : "s"}** and **${remainingSeconds} second${remainingSeconds <= 1 ? "" : "s"}**`;
+    return `**${remainingMinutes} minute${remainingMinutes <= 1 ? "" : "s"}** and **${remainingSeconds} second${remainingSeconds <= 1 ? "" : "s"}**`;
   }
 
-  return `You can use \`/${commandName}\` now.`;
+  return "You can use it again currently.";
 };
 
 export const checkBalanceAndBetAmount = async (commandName, interaction, amount) => {
