@@ -13,7 +13,7 @@ export default {
     .setDescription("Display the remaining cooldowns for a specified / all economy commands.")
     .addStringOption((option) =>
       option
-        .setName("command-name")
+        .setName("command")
         .setDescription("Gives you back the remaining time for a specific command.")
         .addChoices(
           { name: "Work", value: "work" },
@@ -40,17 +40,14 @@ export default {
       return await replyAndLog(interaction, guildCheck);
     }
 
-    const command = interaction.option.getString("command-name") || null;
-    const userId = interaction.options.getInteger("user").id || interaction.user.id;
+    const command = interaction.options.getString("command") || null;
+    const userId = interaction.options.getUser("user").id || interaction.user.id;
 
     if (command != null) {
       remainingTimes = [
         {
-          name: `/${commandName}`,
-          value: await getRemainingCooldown(
-            commandName,
-            `last${capitalizeFirstLetter(commandName)}Time`
-          ),
+          name: `/${command}`,
+          value: await getRemainingCooldown(command, `last${capitalizeFirstLetter(command)}Time`),
           inline: false,
         },
       ];
