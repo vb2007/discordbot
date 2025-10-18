@@ -35,3 +35,4 @@
 112,blackjack,economy,Lets you play a game of blackjack with a specified amount. You can pick **Hit** or **Stand** until the player or the house wins
 192,config-darwin,administration,Sets / modifies / disables Darwin's occasional video scraping & posting feature.
 193,cigany,fun,"Says ""fuj"" and sends a random pic of a ""person"" from a specific race."
+194,cooldown,economy,Lets you check your or other users economy cooldowns for all or a specified economy command.
