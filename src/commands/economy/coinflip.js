@@ -17,17 +17,17 @@ export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Let's you bet a specified amout of money on heads or tais.")
+    .addIntegerOption((option) =>
+      option
+        .setName("amount")
+        .setDescription("The amount of money you would like to play with.")
+        .setRequired(true)
+    )
     .addStringOption((option) =>
       option
         .setName("side")
         .setDescription("The side of the coin you would like to place your bet on.")
         .addChoices({ name: "Head", value: "head" }, { name: "Tails", value: "tails" })
-        .setRequired(true)
-    )
-    .addIntegerOption((option) =>
-      option
-        .setName("amount")
-        .setDescription("The amount of money you would like to play with.")
         .setRequired(true)
     )
     .setDMPermission(false),
