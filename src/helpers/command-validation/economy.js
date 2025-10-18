@@ -73,7 +73,7 @@ export const getRemainingCooldown = async (commandName, timeColumnName, userId) 
     return `**${remainingMinutes} minute${remainingMinutes <= 1 ? "" : "s"}** and **${remainingSeconds} second${remainingSeconds <= 1 ? "" : "s"}**`;
   }
 
-  return "You can use it again currently.";
+  return "It's usable again currently.";
 };
 
 export const checkBalanceAndBetAmount = async (commandName, interaction, amount) => {
