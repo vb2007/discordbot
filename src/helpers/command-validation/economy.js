@@ -50,6 +50,30 @@ export const checkCooldown = async (commandName, interaction) => {
   }
 };
 
+export const getRemainingCooldown = async (commandName, timeColumnName, userId) => {
+  const configuredCooldown = economyCooldown[commandName];
+
+  const result = await query(`SELECT ${timeColumnName} FROM economy WHERE userId = ?`, [userId]);
+  const lastUsageTime = result[0]?.[timeColumnName] || null;
+
+  const nextApprovedUsageTime = new Date(
+    new Date().getTime() + new Date().getTimezoneOffset() * 60000 - configuredCooldown * 60000
+  );
+
+  if (lastUsageTime >= nextApprovedUsageTime) {
+    const remainingTimeInSeconds = Math.ceil(
+      (lastUsageTime.getTime() - nextApprovedUsageTime.getTime()) / 1000
+    );
+
+    const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
+    const remainingSeconds = remainingTimeInSeconds % 60;
+
+    return `**${remainingMinutes} minute${remainingMinutes <= 1 ? "" : "s"}** and **${remainingSeconds} second${remainingSeconds <= 1 ? "" : "s"}**`;
+  }
+
+  return "It's usable again currently.";
+};
+
 export const checkBalanceAndBetAmount = async (commandName, interaction, amount) => {
   const { commandNameCapitalized, userBalance } = await getUserAndCommandData(
     commandName,
