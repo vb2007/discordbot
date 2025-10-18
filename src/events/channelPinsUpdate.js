@@ -1,8 +1,8 @@
-const logEventToChannel = require("./scripts/channelPinsUpdate/logEventToChannel");
+import { sendLogInfo } from "./scripts/channelPinsUpdate/logEventToChannel.js";
 
-module.exports = {
+export default {
   name: "channelPinsUpdate",
   async execute(client, channel) {
-    await logEventToChannel.sendLogInfo(client, channel);
+    await sendLogInfo(client, channel);
   },
 };

@@ -1,15 +1,15 @@
-const { SlashCommandBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder } from "discord.js";
+import {
   embedReplySuccessColor,
   embedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/embeds/embed-reply.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
 
 const commandName = "withdraw";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Withdraws a specified amount of money from your bank account.")
@@ -28,11 +28,11 @@ module.exports = {
 
     const amount = interaction.options.getInteger("amount");
     const interactionUserId = interaction.user.id;
-    const query = await db.query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [
+    const result = await query("SELECT balance, balanceInBank FROM economy WHERE userId = ?", [
       interactionUserId,
     ]);
-    const balance = Number(query[0]?.balance) || 0;
-    const balanceInBank = Number(query[0]?.balanceInBank) || 0;
+    const balance = Number(result[0]?.balance) || 0;
+    const balanceInBank = Number(result[0]?.balanceInBank) || 0;
 
     if (balanceInBank < amount) {
       var embedReply = embedReplyFailureColor(
@@ -44,7 +44,7 @@ module.exports = {
       return await replyAndLog(interaction, embedReply);
     }
 
-    await db.query(
+    await query(
       "UPDATE economy SET balance = balance + ?, balanceInBank = balanceInBank - ? WHERE userId = ?",
       [amount, amount, interactionUserId]
     );

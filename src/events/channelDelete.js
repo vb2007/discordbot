@@ -1,8 +1,8 @@
-const logEventToChannel = require("./scripts/channelDelete/logEventToChannel");
+import { sendLogInfo } from "./scripts/channelDelete/logEventToChannel.js";
 
-module.exports = {
+export default {
   name: "channelDelete",
   async execute(client, channel) {
-    await logEventToChannel.sendLogInfo(client, channel);
+    await sendLogInfo(client, channel);
   },
 };

@@ -1,15 +1,15 @@
-const { SlashCommandBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder } from "discord.js";
+import {
   embedReplyPrimaryColorImg,
   embedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply");
-const { loadLinks } = require("../../helpers/scraping");
-const replyAndLog = require("../../helpers/reply");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+} from "../../helpers/embeds/embed-reply.js";
+import { loadLinks } from "../../helpers/scraping.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
 
 const commandName = "cigany";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder().setName(commandName).setDescription("fuj").setDMPermission(true),
   async execute(interaction) {
     await interaction.deferReply();

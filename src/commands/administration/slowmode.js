@@ -1,16 +1,14 @@
-const { SlashCommandBuilder, PermissionFlagsBits, InviteType } = require("discord.js");
-const {
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
+import {
   embedReplyFailureColor,
   embedReplySuccessColor,
-  embedReplyWarningColor,
-  moderationDmEmbedReplyWarningColor,
-} = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const replyAndLog = require("../../helpers/reply");
+} from "../../helpers/embeds/embed-reply.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import { replyAndLog } from "../../helpers/reply.js";
 
 const commandName = "slowmode";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Sets / modifies the slowmode for a channel.")

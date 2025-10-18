@@ -1,14 +1,12 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const {
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
+import {
   embedReplySuccessColor,
   embedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply");
-const {
-  moderationDmEmbedReplyWarningColor,
-} = require("../../helpers/embeds/embed-reply-moderation");
-const { logToFileAndDatabase } = require("../../helpers/logger");
+} from "../../helpers/embeds/embed-reply.js";
+import { moderationDmEmbedReplyWarningColor } from "../../helpers/embeds/embed-reply-moderation.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName("warn")
     .setDescription("Warns a specified member on the server.")

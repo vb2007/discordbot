@@ -1,32 +1,30 @@
-const { getGuildFromDB } = require("../../../helpers/log-data-query");
-const { getChannelType } = require("../../../helpers/channel-types");
-const { embedMessageFailureColorWithFields } = require("../../../helpers/embeds/embed-message");
+import { getGuildFromDB } from "../../../helpers/log-data-query.js";
+import { getChannelType } from "../../../helpers/channel-types.js";
+import { embedMessageFailureColorWithFields } from "../../../helpers/embeds/embed-message.js";
 
-module.exports = {
-  async sendLogInfo(client, channel) {
-    try {
-      const guild = await client.guilds.fetch(channel.guildId);
-      const { doesGuildExist, logChannelId } = await getGuildFromDB(channel.guildId);
+export const sendLogInfo = async (client, channel) => {
+  try {
+    const guild = await client.guilds.fetch(channel.guildId);
+    const { doesGuildExist, logChannelId } = await getGuildFromDB(channel.guildId);
 
-      if (doesGuildExist) {
-        const logChannel = guild.channels.cache.get(logChannelId);
+    if (doesGuildExist) {
+      const logChannel = guild.channels.cache.get(logChannelId);
 
-        const logEmbed = embedMessageFailureColorWithFields(
-          "Channel deleted",
-          `Channel "<#${channel.id}>" was deleted.`,
-          [
-            { name: "Name", value: `${channel.name}` || "Unknown", inline: true },
-            { name: "Id", value: `${channel.id}` || "Unknown", inline: true },
-            { name: "Category", value: `${channel.parent?.name}` || "Unknown" },
-            { name: "Type", value: `${getChannelType(channel)}` || "Unknown", inline: true },
-            { name: "NSFW?", value: `${channel.nsfw ? "Yes" : "No"}` || "Unknown", inline: true },
-          ]
-        );
+      const logEmbed = embedMessageFailureColorWithFields(
+        "Channel deleted",
+        `Channel "<#${channel.id}>" was deleted.`,
+        [
+          { name: "Name", value: `${channel.name}` || "Unknown", inline: true },
+          { name: "Id", value: `${channel.id}` || "Unknown", inline: true },
+          { name: "Category", value: `${channel.parent?.name}` || "Unknown" },
+          { name: "Type", value: `${getChannelType(channel)}` || "Unknown", inline: true },
+          { name: "NSFW?", value: `${channel.nsfw ? "Yes" : "No"}` || "Unknown", inline: true },
+        ]
+      );
 
-        await logChannel.send({ embeds: [logEmbed] });
-      }
-    } catch (error) {
-      console.error(`Failed to send log info to target channel: ${error}`);
+      await logChannel.send({ embeds: [logEmbed] });
     }
-  },
+  } catch (error) {
+    console.error(`Failed to send log info to target channel: ${error}`);
+  }
 };

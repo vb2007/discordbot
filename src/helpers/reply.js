@@ -1,8 +1,6 @@
-const { logToFileAndDatabase } = require("./logger");
+import { logToFileAndDatabase } from "./logger.js";
 
-async function replyAndLog(interaction, embedReply) {
+export const replyAndLog = async (interaction, embedReply) => {
   await interaction.reply({ embeds: [embedReply] });
   await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
-}
-
-module.exports = replyAndLog;
+};

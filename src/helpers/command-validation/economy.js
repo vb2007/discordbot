@@ -1,18 +1,19 @@
-const { economyCooldown } = require("../../../config.json");
-const { capitalizeFirstLetter } = require("../format");
-const { embedReplyFailureColor } = require("../embeds/embed-reply");
-const db = require("../db");
+import { capitalizeFirstLetter } from "../format.js";
+import { embedReplyFailureColor } from "../embeds/embed-reply.js";
+import { query } from "../db.js";
+import config from "../../../config.json" with { type: "json" };
+const { economyCooldown } = config;
 
-async function getUserAndCommandData(commandName, interaction) {
+const getUserAndCommandData = async (commandName, interaction) => {
   const commandNameCapitalized = capitalizeFirstLetter(commandName);
   const configuredCooldown = economyCooldown[commandName];
   const queryColumnName = "last" + commandNameCapitalized + "Time";
 
-  const query = await db.query(`SELECT balance, ${queryColumnName} FROM economy WHERE userId = ?`, [
+  const result = await query(`SELECT balance, ${queryColumnName} FROM economy WHERE userId = ?`, [
     interaction.user.id,
   ]);
-  const lastUsageTime = query[0]?.[queryColumnName] || null;
-  const userBalance = query[0]?.balance;
+  const lastUsageTime = result[0]?.[queryColumnName] || null;
+  const userBalance = result[0]?.balance;
   const nextApprovedUsageTime = new Date(
     new Date().getTime() + new Date().getTimezoneOffset() * 60000 - configuredCooldown * 60000
   );
@@ -24,9 +25,9 @@ async function getUserAndCommandData(commandName, interaction) {
     commandNameCapitalized,
     configuredCooldown,
   };
-}
+};
 
-async function checkCooldown(commandName, interaction) {
+export const checkCooldown = async (commandName, interaction) => {
   const { lastUsageTime, nextApprovedUsageTime, commandNameCapitalized, configuredCooldown } =
     await getUserAndCommandData(commandName, interaction);
 
@@ -47,9 +48,33 @@ async function checkCooldown(commandName, interaction) {
   } else {
     return null;
   }
-}
+};
 
-async function checkBalanceAndBetAmount(commandName, interaction, amount) {
+export const getRemainingCooldown = async (commandName, timeColumnName, userId) => {
+  const configuredCooldown = economyCooldown[commandName];
+
+  const result = await query(`SELECT ${timeColumnName} FROM economy WHERE userId = ?`, [userId]);
+  const lastUsageTime = result[0]?.[timeColumnName] || null;
+
+  const nextApprovedUsageTime = new Date(
+    new Date().getTime() + new Date().getTimezoneOffset() * 60000 - configuredCooldown * 60000
+  );
+
+  if (lastUsageTime >= nextApprovedUsageTime) {
+    const remainingTimeInSeconds = Math.ceil(
+      (lastUsageTime.getTime() - nextApprovedUsageTime.getTime()) / 1000
+    );
+
+    const remainingMinutes = Math.floor(remainingTimeInSeconds / 60);
+    const remainingSeconds = remainingTimeInSeconds % 60;
+
+    return `**${remainingMinutes} minute${remainingMinutes <= 1 ? "" : "s"}** and **${remainingSeconds} second${remainingSeconds <= 1 ? "" : "s"}**`;
+  }
+
+  return "It's usable again currently.";
+};
+
+export const checkBalanceAndBetAmount = async (commandName, interaction, amount) => {
   const { commandNameCapitalized, userBalance } = await getUserAndCommandData(
     commandName,
     interaction
@@ -76,6 +101,4 @@ async function checkBalanceAndBetAmount(commandName, interaction, amount) {
   }
 
   return null;
-}
-
-module.exports = { checkCooldown, checkBalanceAndBetAmount };
+};

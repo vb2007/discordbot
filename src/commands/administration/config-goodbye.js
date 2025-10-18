@@ -1,20 +1,20 @@
-const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
-const {
+import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
+import {
   embedReplyFailureColor,
   embedReplySuccessColor,
   embedReplySuccessSecondaryColor,
   embedReplyWarningColor,
-} = require("../../helpers/embeds/embed-reply");
-const {
+} from "../../helpers/embeds/embed-reply.js";
+import {
   checkIfNotInGuild,
   checkAdminPermissions,
-} = require("../../helpers/command-validation/general");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/command-validation/general.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
 
 const commandName = "config-goodbye";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription(
@@ -87,16 +87,16 @@ module.exports = {
         const adderId = interaction.user.id;
         const adderUsername = interaction.user.username;
 
-        const query = await db.query(
+        const result = await query(
           "SELECT channelId, message, isEmbed, embedColor FROM configGoodbye WHERE guildId = ?",
           [guildId]
         );
-        const existingChannelId = query[0]?.channelId || null;
-        const existingGoodbyeMessage = query[0]?.message || null;
-        const existingIsEmbed = query[0]?.isEmbed || 0;
-        const existingEmbedColor = query[0]?.embedColor || null;
+        const existingChannelId = result[0]?.channelId || null;
+        const existingGoodbyeMessage = result[0]?.message || null;
+        const existingIsEmbed = result[0]?.isEmbed || 0;
+        const existingEmbedColor = result[0]?.embedColor || null;
 
-        await db.query(
+        await query(
           "INSERT INTO configGoodbye (guildId, channelId, message, isEmbed, embedColor, adderId, adderUsername) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE channelId = ?, message = ?, adderId = ?, adderUsername = ?, isEmbed = ?, embedColor = ?",
           [
             guildId,
@@ -175,13 +175,13 @@ module.exports = {
     if (action === "disable") {
       try {
         const currentGuildId = interaction.guild.id;
-        const query = await db.query("SELECT guildId FROM configGoodbye WHERE guildId = ?", [
+        const result = await query("SELECT guildId FROM configGoodbye WHERE guildId = ?", [
           currentGuildId,
         ]);
-        const goodbyeGuildId = query[0]?.guildId || null;
+        const goodbyeGuildId = result[0]?.guildId || null;
 
         if (goodbyeGuildId) {
-          await db.query("DELETE FROM configGoodbye WHERE guildId = ?", [goodbyeGuildId]);
+          await query("DELETE FROM configGoodbye WHERE guildId = ?", [goodbyeGuildId]);
 
           title = "Goodbye Disable: Success";
           description = "The goodbye messages have been disabled successfully for this server.";

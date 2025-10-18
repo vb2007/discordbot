@@ -1,16 +1,16 @@
-const { SlashCommandBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder } from "discord.js";
+import {
   embedReplySuccessColor,
   embedReplyFailureColor,
-} = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const { checkCooldown } = require("../../helpers/command-validation/economy");
-const replyAndLog = require("../../helpers/reply");
-const db = require("../../helpers/db");
+} from "../../helpers/embeds/embed-reply.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import { checkCooldown } from "../../helpers/command-validation/economy.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { query } from "../../helpers/db.js";
 
 const commandName = "work";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Lets you work for a random amount of money.")
@@ -26,17 +26,18 @@ module.exports = {
       return await replyAndLog(interaction, cooldownCheck);
     }
 
-    const query = await db.query("SELECT userId FROM economy WHERE userId = ?", [
+    const result = await query("SELECT userId FROM economy WHERE userId = ?", [
       interaction.user.id,
     ]);
-    const userId = query[0]?.userId || null;
+    const userId = result[0]?.userId || null;
 
     const amount = Math.floor(Math.random() * 100);
     if (userId) {
-      await db.query(
-        "UPDATE economy SET balance = balance + ?, lastWorkTime = ? WHERE userId = ?",
-        [amount, new Date().toISOString().slice(0, 19).replace("T", " "), userId]
-      );
+      await query("UPDATE economy SET balance = balance + ?, lastWorkTime = ? WHERE userId = ?", [
+        amount,
+        new Date().toISOString().slice(0, 19).replace("T", " "),
+        userId,
+      ]);
 
       var embedReply = embedReplySuccessColor(
         "Working",
@@ -48,7 +49,7 @@ module.exports = {
     }
 
     //if it's the executor's first time using any economy command (so it's userId is not in the database yet...)
-    await db.query(
+    await query(
       "INSERT INTO economy (userName, userId, balance, firstTransactionDate, lastWorkTime) VALUES (?, ?, ?, ?, ?)",
       [
         interaction.user.username,

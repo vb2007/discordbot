@@ -1,14 +1,17 @@
-const { REST, Routes } = require("discord.js");
-const fs = require("node:fs");
-const path = require("node:path");
+import { REST, Routes } from "discord.js";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "url";
 
-require("dotenv").config();
+import "dotenv/config";
 const token = process.env.TOKEN;
 const clientId = process.env.CLIENT_ID;
 
 const commands = [];
 
-//specifying the path to the commands
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
@@ -20,7 +23,9 @@ for (const folder of commandFolders) {
   //checking and storing the commands
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
+    const fileUrl = new URL(`file://${filePath}`).href;
+    const commandModule = await import(fileUrl);
+    const command = commandModule.default;
 
     if ("data" in command && "execute" in command) {
       commands.push(command.data.toJSON());
@@ -41,8 +46,8 @@ const rest = new REST().setToken(token);
     //registering / re-registering the commands
     await rest.put(Routes.applicationCommands(clientId), { body: commands });
 
-    console.log(`Successfully registered ${commands.length} slash (/) commands at Discord.`);
-  } catch (error) {
-    console.error(error);
+    console.log(`Registered ${commands.length} slash (/) commands at Discord.`);
+  } catch (err) {
+    console.error("Error while registering commands: ", err);
   }
 })();

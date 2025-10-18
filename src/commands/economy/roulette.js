@@ -1,22 +1,22 @@
-const { SlashCommandBuilder } = require("discord.js");
-const {
+import { SlashCommandBuilder } from "discord.js";
+import {
   embedReplySuccessColor,
   embedReplyFailureColor,
   embedReplyWarningColor,
-} = require("../../helpers/embeds/embed-reply");
-const { checkIfNotInGuild } = require("../../helpers/command-validation/general");
-const {
+} from "../../helpers/embeds/embed-reply.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import {
   checkCooldown,
   checkBalanceAndBetAmount,
-} = require("../../helpers/command-validation/economy");
-const replyAndLog = require("../../helpers/reply");
-const format = require("../../helpers/format");
-const generate = require("../../helpers/generate");
-const db = require("../../helpers/db");
+} from "../../helpers/command-validation/economy.js";
+import { replyAndLog } from "../../helpers/reply.js";
+import { formatRouletteColor } from "../../helpers/format.js";
+import { generateRandomOutcome } from "../../helpers/generate.js";
+import { query } from "../../helpers/db.js";
 
 const commandName = "roulette";
 
-module.exports = {
+export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
     .setDescription("Try your luck and play a game of roulette.")
@@ -71,43 +71,43 @@ module.exports = {
       return await replyAndLog(interaction, embedReply);
     }
 
-    const randomOutcome = generate.generateRandomOutcome();
+    const randomOutcome = generateRandomOutcome();
     const randomColor = randomOutcome.color;
     const randomNumber = randomOutcome.number;
 
     if (guessedColor === randomColor) {
       if (guessedColor === "green") {
-        await db.query(
+        await query(
           "UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
           [amount * 35, new Date().toISOString().slice(0, 19).replace("T", " "), interactionUserId]
         );
 
         var embedReply = embedReplySuccessColor(
           "Roulette - Jackpot",
-          `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}**.\nYou hit the jackpot, and won \`$${amount * 35}\`! :money_mouth:`,
+          `The ball landed on **${formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${formatRouletteColor(guessedColor)}**.\nYou hit the jackpot, and won \`$${amount * 35}\`! :money_mouth:`,
           interaction
         );
       } else {
-        await db.query(
+        await query(
           "UPDATE economy SET balance = balance + ?, lastRouletteTime = ? WHERE userId = ?",
           [amount, new Date().toISOString().slice(0, 19).replace("T", " "), interactionUserId]
         );
 
         var embedReply = embedReplySuccessColor(
           "Roulette - Won",
-          `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}** as well!\nYou won \`$${amount * 2}\`. :money_mouth:`,
+          `The ball landed on **${formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${formatRouletteColor(guessedColor)}** as well!\nYou won \`$${amount * 2}\`. :money_mouth:`,
           interaction
         );
       }
     } else {
-      await db.query(
+      await query(
         "UPDATE economy SET balance = balance - ?, lastRouletteTime = ? WHERE userId = ?",
         [amount, new Date().toISOString().slice(0, 19).replace("T", " "), interactionUserId]
       );
 
       var embedReply = embedReplyWarningColor(
         "Roulette - Lost",
-        `The ball landed on **${format.formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${format.formatRouletteColor(guessedColor)}**.\nMaybe try your luck again. :upside_down:`,
+        `The ball landed on **${formatRouletteColor(randomColor)} ${randomNumber}**.\nYour guess was **${formatRouletteColor(guessedColor)}**.\nMaybe try your luck again. :upside_down:`,
         interaction
       );
     }

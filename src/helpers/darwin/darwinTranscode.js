@@ -1,12 +1,12 @@
-const ffmpeg = require("fluent-ffmpeg");
-const fs = require("fs");
+import ffmpeg from "fluent-ffmpeg";
+import fs from "fs";
 
 /**
  * Get video information including dimensions and duration
  * @param {string} inputPath - Path to the video file
  * @returns {Promise<Object>} - Video metadata object
  */
-async function getVideoInfo(inputPath) {
+export const getVideoInfo = async (inputPath) => {
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(inputPath, (err, metadata) => {
       if (err) {
@@ -29,14 +29,14 @@ async function getVideoInfo(inputPath) {
       });
     });
   });
-}
+};
 
 /**
  * Get video file size in MB
  * @param {string} filePath - Path to the video file
  * @returns {number} - File size in MB
  */
-function getFileSizeMB(filePath) {
+export const getFileSizeMB = (filePath) => {
   try {
     const stats = fs.statSync(filePath);
     return (stats.size / (1024 * 1024)).toFixed(2);
@@ -44,14 +44,14 @@ function getFileSizeMB(filePath) {
     console.error(`Failed to get file size: ${error}`);
     return 0;
   }
-}
+};
 
 /**
  * Calculate optimal CRF value based on video resolution
  * @param {number} totalPixels - Total pixels in the video
  * @returns {number} - Optimal CRF value
  */
-function calculateOptimalCRF(totalPixels) {
+const calculateOptimalCRF = (totalPixels) => {
   // Higher resolution can use higher CRF (more compression) while still looking good
   if (totalPixels > 2073600) {
     // > 1080p
@@ -66,14 +66,14 @@ function calculateOptimalCRF(totalPixels) {
     // Lower resolutions need less compression to look good
     return 23;
   }
-}
+};
 
 /**
  * Calculate optimal dimensions for transcoding while preserving aspect ratio
  * @param {Object} videoInfo - Original video information
  * @returns {Object} - Calculated dimensions and scaling information
  */
-function calculateOptimalDimensions(videoInfo) {
+const calculateOptimalDimensions = (videoInfo) => {
   const { width, height, rotation } = videoInfo;
 
   const effectiveWidth = rotation === 90 || rotation === 270 ? height : width;
@@ -134,7 +134,7 @@ function calculateOptimalDimensions(videoInfo) {
     isSquare: Math.abs(aspectRatio - 1) < 0.1,
     totalPixels,
   };
-}
+};
 
 /**
  * Transcode video to reduce file size while maintaining Discord compatibility
@@ -142,7 +142,7 @@ function calculateOptimalDimensions(videoInfo) {
  * @param {string} outputPath - Path for the transcoded output file
  * @returns {Promise<boolean>} - Whether transcoding was successful
  */
-async function transcodeVideo(inputPath, outputPath) {
+export const transcodeVideo = async (inputPath, outputPath) => {
   try {
     // Get original video dimensions
     const videoInfo = await getVideoInfo(inputPath);
@@ -165,7 +165,7 @@ async function transcodeVideo(inputPath, outputPath) {
       throw finalError;
     }
   }
-}
+};
 
 /**
  * Transcode video using software encoding
@@ -175,7 +175,7 @@ async function transcodeVideo(inputPath, outputPath) {
  * @param {Object} videoInfo - Original video metadata or null for fallback
  * @returns {Promise<boolean>} - Whether transcoding was successful
  */
-async function performTranscode(inputPath, outputPath, dimensions, videoInfo) {
+const performTranscode = async (inputPath, outputPath, dimensions, videoInfo) => {
   return new Promise((resolve, reject) => {
     console.log(`Starting software transcoding: ${inputPath} -> ${outputPath}`);
 
@@ -222,10 +222,4 @@ async function performTranscode(inputPath, outputPath, dimensions, videoInfo) {
       })
       .save(outputPath);
   });
-}
-
-module.exports = {
-  transcodeVideo,
-  getFileSizeMB,
-  getVideoInfo,
 };
