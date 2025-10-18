@@ -53,9 +53,7 @@ export const checkCooldown = async (commandName, interaction) => {
 export const getRemainingCooldown = async (commandName, timeColumnName, userId) => {
   const configuredCooldown = economyCooldown[commandName];
 
-  const result = await query(`SELECT ${timeColumnName}, userId FROM economy WHERE userId = ?`, [
-    userId,
-  ]);
+  const result = await query(`SELECT ${timeColumnName} FROM economy WHERE userId = ?`, [userId]);
   const lastUsageTime = result[0]?.[timeColumnName] || null;
 
   const nextApprovedUsageTime = new Date(

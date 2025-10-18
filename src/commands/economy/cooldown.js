@@ -42,13 +42,17 @@ export default {
 
     const command = interaction.options.getString("command") || null;
     const user = interaction.options.getUser("user");
-    const userId = user.id || interaction.user.id;
+    const userId = user != null ? user.id : interaction.user.id;
 
     if (command != null) {
       remainingTimes = [
         {
           name: `/${command}`,
-          value: await getRemainingCooldown(command, `last${capitalizeFirstLetter(command)}Time`),
+          value: await getRemainingCooldown(
+            command,
+            `last${capitalizeFirstLetter(command)}Time`,
+            userId
+          ),
           inline: false,
         },
       ];
