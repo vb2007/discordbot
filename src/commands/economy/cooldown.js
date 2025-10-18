@@ -41,7 +41,8 @@ export default {
     }
 
     const command = interaction.options.getString("command") || null;
-    const userId = interaction.options.getUser("user").id || interaction.user.id;
+    const user = interaction.options.getUser("user");
+    const userId = user.id || interaction.user.id;
 
     if (command != null) {
       remainingTimes = [
