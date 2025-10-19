@@ -12,5 +12,15 @@ export default {
     .setName(commandName)
     .setDescription("Gives you an URL to invite the bot to any server.")
     .setDMPermission(true),
-  async execute(interaction) {},
+  async execute(interaction) {
+    const inviteURL = `https://discord.com/oauth2/authorize?client_id=${clientId}&scope=bot&permissions=8`;
+
+    const embedReply = embedReplyPrimaryColor(
+      "Invite",
+      `You can invite the bot to any server using [THIS URL](${inviteURL}).`,
+      interaction
+    );
+
+    return replyAndLog(interaction, embedReply);
+  },
 };
