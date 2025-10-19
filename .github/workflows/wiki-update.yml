@@ -6,12 +6,21 @@ on:
       - main
     paths:
       - "src/data/commandData.csv"
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to run wiki update on"
+        required: false
+        default: "main"
+        type: string
 
 jobs:
   update-wiki:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v2

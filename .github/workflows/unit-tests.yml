@@ -3,6 +3,13 @@ name: Unit tests
 on:
   pull_request:
     branches: [main, dev]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to run tests on"
+        required: false
+        default: "main"
+        type: string
 
 jobs:
   test:
@@ -11,6 +18,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
