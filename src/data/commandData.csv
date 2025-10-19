@@ -36,3 +36,4 @@
 192,config-darwin,administration,Sets / modifies / disables Darwin's occasional video scraping & posting feature.
 193,cigany,fun,"Says ""fuj"" and sends a random pic of a ""person"" from a specific race."
 194,cooldown,economy,Lets you check your or other users economy cooldowns for all or a specified economy command.
+195,invite,utility,Gives you back a link for inviting the bot to any server where you have permissions to do so.
