@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
 const parseCommandsFromCSV = (csvPath) => {
   const csvContent = fs.readFileSync(csvPath, "utf8");
@@ -54,6 +55,9 @@ const generateWikiContent = (commands) => {
 
   return content;
 };
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const commands = parseCommandsFromCSV(path.join(__dirname, "../../src/data/commandData.csv"));
 const wikiContent = generateWikiContent(commands);
