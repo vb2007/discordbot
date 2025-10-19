@@ -1,7 +1,7 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
-function parseCommandsFromCSV(csvPath) {
+const parseCommandsFromCSV = (csvPath) => {
   const csvContent = fs.readFileSync(csvPath, "utf8");
 
   return csvContent
@@ -22,9 +22,9 @@ function parseCommandsFromCSV(csvPath) {
       return { name, category, description };
     })
     .filter((cmd) => cmd !== null);
-}
+};
 
-function generateWikiContent(commands) {
+const generateWikiContent = (commands) => {
   let content =
     "# Bot commands\n\nEvery command the bot currently has to offer can be found here.\n\n> [!NOTE] \n> This wiki gets updated automatically. After release, it can take up to 5 minutes for the possible new commands to appear here.\n\n## Categories\n\n";
 
@@ -53,7 +53,7 @@ function generateWikiContent(commands) {
     });
 
   return content;
-}
+};
 
 const commands = parseCommandsFromCSV(path.join(__dirname, "../../src/data/commandData.csv"));
 const wikiContent = generateWikiContent(commands);
