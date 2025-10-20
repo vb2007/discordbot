@@ -142,11 +142,12 @@ export default {
       interaction
     );
 
-    const response = await interaction.reply({
+    await interaction.reply({
       embeds: [embedReply],
       components: [row],
-      fetchReply: true,
     });
+
+    const response = await interaction.fetchReply();
 
     const collector = response.createMessageComponentCollector({
       time: 30000,
