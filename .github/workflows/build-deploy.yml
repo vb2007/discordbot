@@ -4,3 +4,53 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted # REQUIRES SOME SUDO EXECUTION PRIVILEGES WITHOUT A PASSWORD PROMPT
+
+    steps:
+      - name: Stopping systemd service
+        run: sudo systemctl stop discordbot
+
+      - name: Pulling latest changes
+        working-directory: /home/vb2007/prod/discordbot
+        run: |
+          git fetch origin
+          git reset --hard origin/main
+          git clean -fd
+          echo "Successfully pulled latest changes"
+
+      - name: Intalling Node.js dependencies
+        working-directory: /home/vb2007/prod/discordbot
+        run: |
+          # Clean install to ensure fresh dependencies
+          rm -rf node_modules package-lock.json
+          npm install
+          echo "Dependencies installed successfully"
+
+      # - name: Build the application # for now we run without building
+      #   working-directory: /home/vb2007/prod/discordbot
+      #   run: |
+      #     npm run build
+      #     echo "Application built successfully"
+
+      - name: Starting systemd service
+        run: |
+          sudo systemctl start discordbot
+          sleep 5
+          sudo systemctl status discordbot --no-pager
+          echo "Service started and status checked"
+
+      - name: Verifying deployment outcome
+        run: |
+          echo "Waiting for the service to start"
+          sleep 10
+
+          if sudo systemctl is-active --quiet discordbot.service; then
+            echo "✅ Deployment successful - service is running"
+          else
+            echo "❌ Deployment failed - service is not running"
+            sudo systemctl status discordbot.service --no-pager
+            exit 1
+          fi
