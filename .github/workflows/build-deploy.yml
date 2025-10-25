@@ -32,7 +32,7 @@ jobs:
       - name: Intalling Node.js dependencies
         working-directory: /home/vb2007/prod/discordbot
         run: |
-          rm -rf node_modules package-lock.json
+          rm -rf node_modules
           npm ci
           echo "Dependencies installed successfully"
 
