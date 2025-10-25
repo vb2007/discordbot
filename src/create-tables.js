@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { query, getConnection } from "./helpers/db.js";
-import { exit } from "process";
 getConnection();
 
 const __filename = fileURLToPath(import.meta.url);
