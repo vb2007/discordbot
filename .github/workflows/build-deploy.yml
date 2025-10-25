@@ -35,17 +35,27 @@ jobs:
       #     npm run build
       #     echo "Application built successfully"
 
+      - name: Verifying the config.json file's syntax
+        run: |
+          npm run verify-config
+          sleep 3
+
       - name: Deploying possible new commands
         run: |
           npm run deploy
           sleep 8
+
+      - name: Updating command data
+        run: |
+          npm run create-tables
+          sleep 5
 
       - name: Starting systemd service
         run: |
           sudo systemctl start discordbot
           sleep 5
           sudo systemctl status discordbot --no-pager
-          echo "Service started and status checked"
+          echo "Systemd service started"
 
       - name: Verifying deployment outcome
         run: |
