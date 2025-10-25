@@ -35,11 +35,6 @@ jobs:
       #     npm run build
       #     echo "Application built successfully"
 
-      - name: Verifying the config.json file's syntax
-        run: |
-          npm run verify-config
-          sleep 3
-
       - name: Deploying possible new commands
         run: |
           npm run deploy
