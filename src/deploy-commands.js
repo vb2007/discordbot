@@ -7,6 +7,16 @@ import "dotenv/config";
 const token = process.env.TOKEN;
 const clientId = process.env.CLIENT_ID;
 
+if (!token) {
+  console.error("[FATAL] Bot token is missing. Set TOKEN in the .env file.");
+  process.exit(1);
+}
+
+if (!clientId) {
+  console.error("[FATAL] Bot client Id token is missing. Set CLIENT_ID in the .env file.");
+  process.exit(1);
+}
+
 const commands = [];
 
 const __filename = fileURLToPath(import.meta.url);
