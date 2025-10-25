@@ -27,7 +27,7 @@ jobs:
           git fetch origin
           git reset --hard origin/$BRANCH
           git clean -fd
-          echo "Successfully pulled latest changes from $BRANCH"
+          echo "✅ Successfully pulled latest changes from $BRANCH"
 
       # i use manual node paths and manage version manually w/ nvm
       # - name: Setup Node.js
@@ -42,7 +42,7 @@ jobs:
         run: |
           rm -rf node_modules
           npm ci
-          echo "Dependencies installed successfully"
+          echo "✅ Dependencies installed successfully"
 
       # for now we run without building
       # - name: Build the application
