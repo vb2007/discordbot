@@ -35,6 +35,11 @@ jobs:
       #     npm run build
       #     echo "Application built successfully"
 
+      - name: Deploying possible new commands
+        run: |
+          npm run deploy
+          sleep 8
+
       - name: Starting systemd service
         run: |
           sudo systemctl start discordbot
