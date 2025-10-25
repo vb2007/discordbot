@@ -107,7 +107,7 @@ const createTables = async () => {
 const init = async () => {
   await createTables();
   await updateCommandData();
-  process.exit();
+  process.exit(0);
 };
 
 init();
