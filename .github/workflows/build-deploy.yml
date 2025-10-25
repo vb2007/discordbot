@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to deploy"
+        required: true
+        default: "main"
+        type: string
 
 jobs:
   deploy:
@@ -16,10 +22,12 @@ jobs:
       - name: Pulling latest changes
         working-directory: /home/vb2007/prod/discordbot
         run: |
+          BRANCH="${{ github.event.inputs.branch || 'main' }}"
+          echo "Deploying branch: $BRANCH"
           git fetch origin
-          git reset --hard origin/main
+          git reset --hard origin/$BRANCH
           git clean -fd
-          echo "Successfully pulled latest changes"
+          echo "Successfully pulled latest changes from $BRANCH"
 
       - name: Intalling Node.js dependencies
         working-directory: /home/vb2007/prod/discordbot
