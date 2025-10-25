@@ -29,8 +29,16 @@ jobs:
           git clean -fd
           echo "Successfully pulled latest changes from $BRANCH"
 
+      # i use manual node paths and manage version manually w/ nvm
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: "24.8.0"
+
       - name: Intalling Node.js dependencies
         working-directory: /home/vb2007/prod/discordbot
+        env:
+          PATH: /home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         run: |
           rm -rf node_modules
           npm ci
@@ -45,6 +53,8 @@ jobs:
 
       - name: Deploying possible new commands
         working-directory: /home/vb2007/prod/discordbot
+        env:
+          PATH: /home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         run: |
           echo "Starting command deployment..."
           deployOutput=$(npm run deploy 2>&1)
@@ -60,6 +70,8 @@ jobs:
 
       - name: Updating command data
         working-directory: /home/vb2007/prod/discordbot
+        env:
+          PATH: /home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         run: |
           echo "Starting table creation and command data update..."
           queriesOutput=$(npm run create-tables 2>&1)
