@@ -15,7 +15,7 @@ if (!token) {
 if (!clientId) {
   console.error("[FATAL] Bot client Id token is missing. Set CLIENT_ID in the .env file.");
   process.exit(1);
-  CLIENT_ID;
+}
 
 const commands = [];
 
