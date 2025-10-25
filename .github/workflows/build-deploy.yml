@@ -47,10 +47,10 @@ jobs:
         working-directory: /home/vb2007/prod/discordbot
         run: |
           echo "Starting command deployment..."
-          output=$(npm run deploy 2>&1)
-          echo "$output"
+          deployOutput=$(npm run deploy 2>&1)
+          echo "$deployOutput"
 
-          if echo "$output" | grep -q "Registered .* slash (/) commands at Discord"; then
+          if echo "$deployOutput" | grep -q "Registered .* slash (/) commands at Discord"; then
             echo "✅ Command deployment successful"
           else
             echo "❌ Command deployment failed"
@@ -62,10 +62,10 @@ jobs:
         working-directory: /home/vb2007/prod/discordbot
         run: |
           echo "Starting table creation and command data update..."
-          output=$(npm run create-tables 2>&1)
-          echo "$output"
+          queriesOutput=$(npm run create-tables 2>&1)
+          echo "$queriesOutput"
 
-          if echo "$output" | grep -q "All queries are executed & all tables are processed." && echo "$table_output" | grep -q "Command data has been updated successfully."; then
+          if echo "$queriesOutput" | grep -q "All queries are executed & all tables are processed." && echo "$queriesOutput" | grep -q "Command data has been updated successfully."; then
             echo "✅ Table creation and command data update successful"
           else
             echo "❌ Table creation or command data update failed"
