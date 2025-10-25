@@ -34,7 +34,7 @@ jobs:
         run: |
           # Clean install to ensure fresh dependencies
           rm -rf node_modules package-lock.json
-          npm install
+          npm ci
           echo "Dependencies installed successfully"
 
       # - name: Build the application # for now we run without building
