@@ -15,7 +15,7 @@ import { runDarwinProcess } from "./helpers/darwin/darwinProcess.js";
 import { validateConfig } from "./scripts/verify-config-syntax.js";
 
 if (!token) {
-  console.error("[FATAL] Discord bot token is missing. Please set TOKEN in your .env file.");
+  console.error("[FATAL] Bot token is missing. Set TOKEN in the .env file.");
   process.exit(1);
 }
 
