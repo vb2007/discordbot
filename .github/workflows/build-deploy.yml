@@ -2,7 +2,7 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [main, dev-release-ci]
+    branches: [main]
   workflow_dispatch:
     inputs:
       branch:
@@ -22,7 +22,7 @@ jobs:
       - name: Pulling latest changes
         working-directory: /home/vb2007/prod/discordbot
         run: |
-          BRANCH="${{ github.event.inputs.branch || 'dev-release-ci' }}"
+          BRANCH="${{ github.event.inputs.branch || 'main' }}"
           echo "Deploying branch: $BRANCH"
           git fetch origin
           git reset --hard origin/$BRANCH
