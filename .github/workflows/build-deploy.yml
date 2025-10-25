@@ -47,14 +47,8 @@ jobs:
         working-directory: /home/vb2007/prod/discordbot
         run: |
           echo "Starting command deployment..."
-
-          echo "Running npm run deploy directly:"
-          npm run deploy || echo "Direct command failed with exit code $?"
-
-          echo "Now capturing output for parsing:"
           deployOutput=$(npm run deploy 2>&1)
-          echo "Captured output: '$deployOutput'"
-          echo "Length of output: ${#deployOutput}"
+          echo "$deployOutput"
 
           if echo "$deployOutput" | grep -q "Registered .* slash (/) commands at Discord"; then
             echo "✅ Command deployment successful"
