@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Deploy
 permissions: {}
 
 on:
@@ -44,13 +44,6 @@ jobs:
           rm -rf node_modules
           npm ci
           echo "✅ Dependencies installed successfully"
-
-      # for now we run without building
-      # - name: Build the application
-      #   working-directory: /home/vb2007/prod/discordbot
-      #   run: |
-      #     npm run build
-      #     echo "Application built successfully"
 
       - name: Deploying possible new commands
         working-directory: /home/vb2007/prod/discordbot
