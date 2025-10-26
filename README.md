@@ -6,6 +6,12 @@
 
 </div>
 
+<div align="center">
+
+[![CodeQL](https://github.com/vb2007/discordbot/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/vb2007/discordbot/actions/workflows/github-code-scanning/codeql)
+
+</div>
+
 A simple discord bot of mine developed with **Node.js**'s [discord.js](https://www.npmjs.com/package/discord.js?activeTab=readme) package.
 
 ## Invite the bot
