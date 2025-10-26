@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![Unit tests](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml/badge.svg?branch=dev)](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml) [![Update Wiki Commands](https://github.com/vb2007/discordbot/actions/workflows/wiki-update.yml/badge.svg)](https://github.com/vb2007/discordbot/actions/workflows/wiki-update.yml) [![CodeQL](https://github.com/vb2007/discordbot/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/vb2007/discordbot/actions/workflows/github-code-scanning/codeql)
+[![Deploy](https://github.com/vb2007/discordbot/actions/workflows/deploy.yml/badge.svg)](https://github.com/vb2007/discordbot/actions/workflows/deploy.yml) [![Release on GitHub](https://github.com/vb2007/discordbot/actions/workflows/gh-release.yml/badge.svg)](https://github.com/vb2007/discordbot/actions/workflows/gh-release.yml) [![Update Wiki Commands](https://github.com/vb2007/discordbot/actions/workflows/wiki-update.yml/badge.svg)](https://github.com/vb2007/discordbot/actions/workflows/wiki-update.yml) [![Unit tests](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/vb2007/discordbot/actions/workflows/unit-tests.yml)
 
 </div>
 
