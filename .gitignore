@@ -1,3 +1,4 @@
+# Application specific files & folders
 .env
 config.json
 /node_modules
@@ -5,3 +6,7 @@ config.json
 /src/data/cigpics.json
 /src/data/pics.json
 /src/data/commands.md
+
+# IDE / code editor specific folders
+/.vscode
+/.zed
