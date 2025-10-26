@@ -1,0 +1,100 @@
+name: Deploy
+permissions: {}
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to deploy"
+        required: true
+        default: "main"
+        type: string
+
+jobs:
+  deploy:
+    runs-on: self-hosted # REQUIRES SOME SUDO EXECUTION PRIVILEGES WITHOUT A PASSWORD PROMPT
+
+    steps:
+      - name: Stopping systemd service
+        run: sudo systemctl stop discordbot
+
+      - name: Pulling latest changes
+        working-directory: /home/vb2007/prod/discordbot
+        run: |
+          BRANCH="${{ github.event.inputs.branch || 'main' }}"
+          echo "Deploying branch: $BRANCH"
+          git fetch origin
+          git reset --hard origin/$BRANCH
+          git clean -fd
+          echo "✅ Successfully pulled latest changes from $BRANCH"
+
+      # i use manual node paths and manage version manually w/ nvm
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: "24.8.0"
+
+      - name: Intalling Node.js dependencies
+        working-directory: /home/vb2007/prod/discordbot
+        env:
+          PATH: /home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        run: |
+          rm -rf node_modules
+          npm ci
+          echo "✅ Dependencies installed successfully"
+
+      - name: Deploying possible new commands
+        working-directory: /home/vb2007/prod/discordbot
+        env:
+          PATH: /home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        run: |
+          echo "Starting command deployment..."
+          deployOutput=$(npm run deploy 2>&1)
+          echo "$deployOutput"
+
+          if echo "$deployOutput" | grep -q "Registered .* slash (/) commands at Discord"; then
+            echo "✅ Command deployment successful"
+          else
+            echo "❌ Command deployment failed"
+            exit 1
+          fi
+          sleep 8
+
+      - name: Updating command data
+        working-directory: /home/vb2007/prod/discordbot
+        env:
+          PATH: /home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        run: |
+          echo "Starting table creation and command data update..."
+          queriesOutput=$(npm run create-tables 2>&1)
+          echo "$queriesOutput"
+
+          if echo "$queriesOutput" | grep -q "All queries are executed & all tables are processed." && echo "$queriesOutput" | grep -q "Command data has been updated successfully."; then
+            echo "✅ Table creation and command data update successful"
+          else
+            echo "❌ Table creation or command data update failed"
+            exit 1
+          fi
+          sleep 5
+
+      - name: Starting systemd service
+        run: |
+          sudo systemctl start discordbot
+          sleep 5
+          sudo systemctl status discordbot --no-pager
+          echo "Systemd service started"
+
+      - name: Verifying deployment outcome
+        run: |
+          echo "Waiting for the service to start"
+          sleep 10
+
+          if sudo systemctl is-active --quiet discordbot.service; then
+            echo "✅ Deployment successful - service is running"
+          else
+            echo "❌ Deployment failed - service is not running"
+            sudo systemctl status discordbot.service --no-pager
+            exit 1
+          fi
