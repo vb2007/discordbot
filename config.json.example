@@ -38,6 +38,6 @@
     "maxDownloadSize" : 50,
     "targetDir" : "/path/to/videos/folder",
     "tempDir" : "/path/to/videos/folder/transcodes",
-    "cdnUrl" : "https://cdn.vb2007.hu/darwin/"
+    "cdnUrl" : "https://cdn.vb2007.hu/darwin"
   }
 }
