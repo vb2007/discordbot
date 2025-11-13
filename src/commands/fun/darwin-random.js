@@ -1,7 +1,10 @@
 import { SlashCommandBuilder } from "discord.js";
 import { query } from "../../helpers/db.js";
 import { embedReplyPrimaryColorWithFields } from "../../helpers/embeds/embed-reply.js";
-import { replyAndLogWithEmbedAndDescription } from "../../helpers/reply.js";
+import { baseReplyAndLog } from "../../helpers/reply.js";
+
+import config from "../../../config.json" with { type: "json" };
+const darwinConfig = config.darwin;
 
 export default {
   data: new SlashCommandBuilder()
@@ -14,6 +17,11 @@ export default {
       "SELECT videoId, processedAt FROM darwinCache ORDER BY RAND() LIMIT 1;"
     );
 
+    const videoId = randomVideo[0].videoId;
+    const directStreamLink = `${darwinConfig.cdnUrl}/${videoId}.mp4`;
+
+    const messageContent = `[[ STREAMING & DOWNLOAD ]](${directStreamLink})  -  [[ FORUM POST ]](<${comments}>)\nTitle: {}\nProcessed at: {}\nSize: {}`;
+
     const embedReply = embedReplyPrimaryColorWithFields(
       "Random video from Darwin's database",
       "",
@@ -25,6 +33,6 @@ export default {
       interaction
     );
 
-    await replyAndLogWithEmbedAndDescription(interaction, embedReply, "a");
+    await baseReplyAndLog(messageContent, embedReply, "a");
   },
 };
