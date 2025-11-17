@@ -1,8 +1,6 @@
 import { load } from "cheerio";
 import fs from "fs";
 import path from "path";
-import { pipeline } from "stream/promises";
-import { request } from "undici";
 import { spawn } from "child_process";
 
 import { query } from "../db.js";
@@ -77,41 +75,6 @@ const downloadVideoWithCurl = async (url, referer, outputPath) => {
 };
 
 /**
- * Download video using undici with browser-like configuration
- * @param {string} url - Video URL
- * @param {string} referer - Referer URL (comments page)
- * @returns {Promise<Object>} - Response object with body stream and headers
- */
-const downloadVideo = async (url, referer) => {
-  const headers = {
-    "User-Agent":
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
-    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.5",
-    "Accept-Encoding": "gzip, deflate, br",
-    "Upgrade-Insecure-Requests": "1",
-    "Sec-Fetch-Dest": "document",
-    "Sec-Fetch-Mode": "navigate",
-    "Sec-Fetch-Site": "cross-site",
-    "Sec-Fetch-User": "?1",
-    "sec-ch-ua": '"Not/A)Brand";v="8", "Chromium";v="142", "Google Chrome";v="142"',
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": '"Windows"',
-    Referer: referer,
-    "Cache-Control": "no-cache",
-    Pragma: "no-cache",
-  };
-
-  const response = await request(url, {
-    method: "GET",
-    headers,
-    maxRedirections: 5,
-  });
-
-  return response;
-};
-
-/**
  * Get the final destination of a URL (follow redirects)
  * @param {string} url - Initial URL
  * @returns {Promise<string>} - Final URL after redirects
@@ -141,7 +104,6 @@ const getVideoLocation = async (href, markerOne, markerTwo) => {
     const response = await fetch(href, {
       headers: { "User-Agent": "darwin" },
       // headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0" }
-      // headers: getPageHeaders(),
     });
     const html = await response.text();
     const start = html.indexOf(markerOne);
@@ -203,55 +165,13 @@ const processVideo = async (video) => {
     // Maximum download size in bytes from config
     const maxSizeBytes = darwinConfig.maxDownloadSize * 1024 * 1024;
 
-    console.log(`Attempting to download video using curl: ${href}`);
-
-    // Try curl first (better TLS fingerprint)
-    let downloadSuccess = false;
+    console.log(`Downloading video using curl: ${href}`);
     try {
       await downloadVideoWithCurl(href, comments, tempFilePath);
       console.log("Successfully downloaded using curl");
-      downloadSuccess = true;
     } catch (curlError) {
-      console.log(`Curl download failed: ${curlError.message}`);
-    }
-
-    // Fallback to undici if curl failed
-    if (!downloadSuccess) {
-      console.log("Attempting download with undici...");
-      try {
-        const response = await downloadVideo(href, comments);
-
-        if (response.statusCode !== 200) {
-          console.error(`${href} ${response.statusCode} ${response.statusText || "Error"}`);
-          return null;
-        }
-
-        const contentLength = parseInt(response.headers["content-length"], 10);
-        if (contentLength && contentLength > maxSizeBytes) {
-          console.log(
-            `Skipping download: File size exceeds limit (${darwinConfig.maxDownloadSize}MB)`
-          );
-          await response.body.dump();
-
-          const fileSize = (contentLength / 1000000).toFixed(0);
-          return {
-            title,
-            href,
-            comments,
-            canBeStreamed: false,
-            directStreamLink: "",
-            fileSize,
-            tooBig: true,
-          };
-        }
-
-        console.log(`Downloading video to temp location: ${tempFilePath}`);
-        await pipeline(response.body, fs.createWriteStream(tempFilePath));
-        downloadSuccess = true;
-      } catch (undiciError) {
-        console.error(`Undici download also failed: ${undiciError.message}`);
-        return null;
-      }
+      console.error(`Curl download failed: ${curlError.message}`);
+      return null;
     }
 
     if (!fs.existsSync(tempFilePath)) {
@@ -392,7 +312,6 @@ const fetchVideosFromFeed = async () => {
     const response = await fetch(darwinConfig.feedUrl, {
       headers: { "User-Agent": "darwin" },
       // headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36" }
-      // headers: getPageHeaders(),
     });
 
     const html = await response.text();
