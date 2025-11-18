@@ -232,162 +232,137 @@ export const generateRandomRequestConfig = () => {
 };
 
 /**
- * Download video using randomized curl configuration to evade detection
+ * Create adaptive curl configuration based on system capabilities
+ * @param {string} url - Video URL
+ * @param {string} referer - Referer URL
+ * @param {string} outputPath - Output file path
+ * @returns {Array} Curl arguments array
+ */
+const createAdaptiveCurlArgs = (url, referer, outputPath) => {
+  // Base arguments that work across systems
+  const baseArgs = [
+    "-L", // Follow redirects
+    "-s", // Silent mode to reduce noise
+    "--max-redirs",
+    "5",
+    "--connect-timeout",
+    "30",
+    "--max-time",
+    "300",
+
+    // Core headers that match successful dev PC behavior
+    "-A",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "-H",
+    "Accept: video/mp4,video/*,application/octet-stream,*/*;q=0.8",
+    "-H",
+    "Accept-Language: en-US,en;q=0.5",
+    "-H",
+    "Accept-Encoding: identity",
+    "-H",
+    `Referer: ${referer}`,
+
+    "-o",
+    outputPath,
+    url,
+  ];
+
+  // Try enhanced options that work on newer systems
+  if (CURL_CAPABILITIES.hasHTTP2) {
+    baseArgs.splice(-3, 0, "--http2");
+  }
+
+  if (CURL_CAPABILITIES.hasBrotli) {
+    baseArgs.splice(-3, 0, "--compressed");
+  }
+
+  return baseArgs;
+};
+
+/**
+ * Download video with system-adaptive approach
  * @param {string} url - Video URL
  * @param {string} referer - Referer URL (comments page)
  * @param {string} outputPath - Where to save the file
  * @param {number} attempt - Current attempt number (for logging)
  * @returns {Promise<boolean>} - Whether download was successful
  */
-export const downloadVideoWithRandomizedCurl = async (url, referer, outputPath, attempt = 1) => {
+const downloadVideoWithRandomizedCurl = async (url, referer, outputPath, attempt = 1) => {
   return new Promise((resolve, reject) => {
-    const config = generateRandomRequestConfig();
-
-    const curlArgs = [
-      "-L", // Follow redirects
-      "-s", // Silent mode to reduce log spam
-      "--max-redirs",
-      "5",
-      "--connect-timeout",
-      config.timing.connectTimeout.toString(),
-      "--max-time",
-      config.timing.maxTime.toString(),
-
-      // Browser fingerprint
-      "-A",
-      config.userAgent,
-      "-H",
-      `Accept: ${config.headers.accept}`,
-      "-H",
-      `Accept-Language: ${config.headers.acceptLanguage}`,
-      "-H",
-      `Accept-Encoding: identity`,
-      "-H",
-      `Cache-Control: ${config.variations.cacheControl}`,
-      "-H",
-      `Connection: ${config.variations.connection}`,
-      "-H",
-      `Referer: ${referer}`,
-
-      // Conditional headers for variation
-      ...(config.optionalHeaders.includeUpgradeInsecure
-        ? ["-H", "Upgrade-Insecure-Requests: 1"]
-        : []),
-      ...(config.optionalHeaders.includeDNT ? ["-H", "DNT: 1"] : []),
-      ...(config.optionalHeaders.includeSecFetchDest ? ["-H", "Sec-Fetch-Dest: video"] : []),
-      ...(config.optionalHeaders.includeSecFetchMode ? ["-H", "Sec-Fetch-Mode: no-cors"] : []),
-      ...(config.optionalHeaders.includePragma ? ["-H", "Pragma: no-cache"] : []),
-      "-H",
-      `Sec-Fetch-Site: ${config.headers.secFetchSite}`,
-
-      // Connection management
-      "--keepalive-time",
-      config.timing.keepaliveTime.toString(),
-      "--limit-rate",
-      config.variations.rateLimit,
-
-      // Output
-      "-o",
-      outputPath,
-      url,
-    ];
+    const curlArgs = createAdaptiveCurlArgs(url, referer, outputPath);
 
     console.log(
-      `[Attempt ${attempt}] Using fingerprint: ${config.name} (Session: ${config.sessionId})`
-    );
-    console.log(
-      `Browser: ${config.userAgent.split(" ")[0]} | Rate: ${config.variations.rateLimit} | Delay: ${Math.round(config.timing.preDelay)}ms`
+      `[Attempt ${attempt}] Adaptive download (${CURL_CAPABILITIES.hasHTTP2 ? "HTTP2" : "HTTP1"}, ${CURL_CAPABILITIES.version})`
     );
 
-    // Random pre-request delay
-    setTimeout(() => {
-      const curl = spawn(CURL_PATH, curlArgs);
-      let stderr = "";
+    const curl = spawn(CURL_PATH, curlArgs);
+    let stderr = "";
 
-      curl.stderr.on("data", (data) => {
-        stderr += data.toString();
-      });
+    curl.stderr.on("data", (data) => {
+      stderr += data.toString();
+    });
 
-      curl.on("close", (code) => {
-        // Check for various blocking indicators
-        const isBlocked =
-          stderr.includes("403") ||
-          stderr.includes("Forbidden") ||
-          stderr.includes("Access Denied") ||
-          (code === 0 && stderr.includes("text/html"));
+    curl.on("close", (code) => {
+      // Log any curl errors for debugging
+      if (code !== 0) {
+        console.log(`Curl exit code: ${code}`);
+        if (stderr) {
+          console.log(`Curl error: ${stderr.substring(0, 200)}...`);
+        }
+      }
 
-        if (isBlocked) {
-          console.log(`❌ [Attempt ${attempt}] Request blocked with fingerprint: ${config.name}`);
-          if (stderr.includes("403")) {
-            console.log("Server returned 403 Forbidden");
-          }
-          reject(new Error(`Request blocked (HTTP 403 or similar)`));
+      try {
+        const stats = fs.statSync(outputPath);
+
+        if (stats.size === 0) {
+          console.log(`❌ [Attempt ${attempt}] Downloaded empty file`);
+          reject(new Error(`Downloaded empty file`));
           return;
         }
 
-        // In silent mode, we rely on exit code and file size for success detection
-        const hasSuccessResponse = code === 0;
+        // Validate file content
+        const fileBuffer = fs.readFileSync(outputPath, { start: 0, end: 100 });
 
-        try {
-          const stats = fs.statSync(outputPath);
-
-          if (stats.size === 0) {
-            console.log(`❌ [Attempt ${attempt}] Downloaded empty file`);
-            reject(new Error(`Downloaded empty file`));
-            return;
-          }
-
-          // Quick file format validation
-          const fileBuffer = fs.readFileSync(outputPath, { start: 0, end: 100 });
-
-          // Check for HTML responses (blocked)
-          const fileStart = fileBuffer.toString("utf8", 0, 50);
-          if (
-            fileStart.includes("<!DOCTYPE") ||
-            fileStart.includes("<html") ||
-            fileStart.includes("<HTML")
-          ) {
-            console.log(`❌ [Attempt ${attempt}] Downloaded HTML error page instead of video`);
-            reject(new Error(`Server returned HTML error page`));
-            return;
-          }
-
-          // Check for video file signatures
-          const hasVideoSignature =
-            fileBuffer.includes(Buffer.from("ftyp")) || // MP4
-            fileBuffer.includes(Buffer.from("moov")) || // MP4 metadata
-            fileBuffer.includes(Buffer.from([0x00, 0x00, 0x00])); // General binary
-
-          if (!hasVideoSignature) {
-            console.log(`❌ [Attempt ${attempt}] File doesn't appear to be a video`);
-            reject(new Error(`Downloaded file is not a video format`));
-            return;
-          }
-
-          if (code === 0) {
-            const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
-            console.log(
-              `✅ [Attempt ${attempt}] Successfully downloaded ${sizeMB}MB with ${config.name}`
-            );
-            resolve(true);
-          } else {
-            reject(new Error(`curl exited with code ${code}`));
-          }
-        } catch (statError) {
-          console.log(`❌ [Attempt ${attempt}] File check failed: ${statError.message}`);
-          reject(new Error(`File validation failed: ${statError.message}`));
+        // Check for HTML error pages (Cloudflare blocking)
+        const fileStart = fileBuffer.toString("utf8", 0, 50);
+        if (
+          fileStart.includes("<!DOCTYPE") ||
+          fileStart.includes("<html") ||
+          fileStart.includes("<HTML")
+        ) {
+          console.log(`❌ [Attempt ${attempt}] Downloaded HTML error page instead of video`);
+          reject(new Error(`Server returned HTML error page - likely blocked`));
+          return;
         }
-      });
 
-      curl.on("error", (error) => {
-        console.log(`❌ [Attempt ${attempt}] Curl process error: ${error.message}`);
-        if (error.code === "ENOENT") {
-          console.log(`Curl not found at: ${CURL_PATH}`);
-          console.log("Please ensure curl is installed and accessible");
+        // Check for valid video format
+        const hasMP4Header =
+          fileBuffer.includes(Buffer.from([0x00, 0x00, 0x00])) &&
+          (fileBuffer.includes(Buffer.from("ftyp")) || fileBuffer.includes(Buffer.from("moov")));
+
+        if (!hasMP4Header) {
+          console.log(`❌ [Attempt ${attempt}] File is not a valid video format`);
+          reject(new Error(`Downloaded file is not a valid video format`));
+          return;
         }
-        reject(new Error(`Curl execution failed: ${error.message}`));
-      });
-    }, config.timing.preDelay);
+
+        if (code === 0) {
+          const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
+          console.log(`✅ [Attempt ${attempt}] Successfully downloaded ${sizeMB}MB video`);
+          resolve(true);
+        } else {
+          reject(new Error(`curl exited with code ${code}: ${stderr}`));
+        }
+      } catch (statError) {
+        console.log(`❌ [Attempt ${attempt}] File validation failed: ${statError.message}`);
+        reject(new Error(`File validation failed: ${statError.message}`));
+      }
+    });
+
+    curl.on("error", (error) => {
+      console.log(`❌ [Attempt ${attempt}] Curl process error: ${error.message}`);
+      reject(new Error(`Curl execution failed: ${error.message}`));
+    });
   });
 };
 
@@ -400,32 +375,50 @@ export const downloadVideoWithRandomizedCurl = async (url, referer, outputPath, 
  * @returns {Promise<boolean>} - Whether download was successful
  */
 export const downloadWithRetry = async (url, referer, outputPath, maxAttempts = 3) => {
+  // Try different strategies on each attempt
+  const strategies = [
+    { name: "Direct", delay: 0 },
+    { name: "With session delay", delay: 2000 },
+    { name: "Fallback mode", delay: 5000 },
+  ];
+
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      console.log(`Starting download attempt ${attempt}/${maxAttempts}`);
+      const strategy = strategies[Math.min(attempt - 1, strategies.length - 1)];
+      console.log(`Download attempt ${attempt}/${maxAttempts} - Strategy: ${strategy.name}`);
 
       // Clean up any previous partial download
       if (fs.existsSync(outputPath)) {
         fs.unlinkSync(outputPath);
       }
 
-      // Add progressive delay between attempts
-      if (attempt > 1) {
-        const retryDelay = 2000 + attempt * 1000 + Math.random() * 2000; // 3-5s, 4-6s, 5-7s
-        console.log(`Waiting ${Math.round(retryDelay)}ms before retry with new fingerprint...`);
-        await new Promise((resolve) => setTimeout(resolve, retryDelay));
+      // Apply strategy-specific delay
+      if (strategy.delay > 0) {
+        console.log(`Applying ${strategy.delay}ms delay for strategy: ${strategy.name}`);
+        await new Promise((resolve) => setTimeout(resolve, strategy.delay));
       }
 
       await downloadVideoWithRandomizedCurl(url, referer, outputPath, attempt);
+      console.log(`✅ Success with strategy: ${strategy.name}`);
       return true; // Success!
     } catch (error) {
-      console.log(`Attempt ${attempt} failed: ${error.message}`);
+      console.log(`❌ Attempt ${attempt} failed: ${error.message}`);
 
       if (attempt === maxAttempts) {
         console.error(`All ${maxAttempts} download attempts failed`);
-        throw new Error(
-          `Download failed after ${maxAttempts} attempts with different fingerprints`
-        );
+
+        // Enhanced error reporting
+        if (error.message.includes("HTML error page")) {
+          throw new Error(
+            `Server consistently blocking requests - received HTML instead of video after ${maxAttempts} attempts`
+          );
+        } else if (error.message.includes("empty file")) {
+          throw new Error(
+            `Server returning empty responses - possible network or authentication issue`
+          );
+        } else {
+          throw new Error(`Download failed after ${maxAttempts} attempts: ${error.message}`);
+        }
       }
 
       // Clean up failed attempt
@@ -444,8 +437,7 @@ export const downloadWithRetry = async (url, referer, outputPath, maxAttempts = 
  */
 export const getFileSizeWithRandomizedCurl = async (url, referer) => {
   return new Promise((resolve) => {
-    const config = generateRandomRequestConfig();
-
+    // Create adaptive HEAD request
     const curlArgs = [
       "-I", // HEAD request only
       "-L", // Follow redirects
@@ -457,20 +449,23 @@ export const getFileSizeWithRandomizedCurl = async (url, referer) => {
       "--max-redirs",
       "3",
 
-      // Headers
+      // Core headers
       "-A",
-      config.userAgent,
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
       "-H",
-      `Accept: ${config.headers.accept}`,
+      "Accept: video/mp4,video/*,application/octet-stream,*/*;q=0.8",
       "-H",
-      `Accept-Language: ${config.headers.acceptLanguage}`,
+      "Accept-Language: en-US,en;q=0.5",
       "-H",
       `Referer: ${referer}`,
-      "-H",
-      `Sec-Fetch-Site: ${config.headers.secFetchSite}`,
 
       url,
     ];
+
+    // Add HTTP/2 if supported
+    if (CURL_CAPABILITIES.hasHTTP2) {
+      curlArgs.splice(-1, 0, "--http2");
+    }
 
     const curl = spawn(CURL_PATH, curlArgs);
     let stdout = "";
@@ -485,6 +480,7 @@ export const getFileSizeWithRandomizedCurl = async (url, referer) => {
         const fileSize = match ? parseInt(match[1], 10) : null;
         resolve(fileSize);
       } else {
+        // Don't log failures for HEAD requests - they often fail but downloads still work
         resolve(null);
       }
     });
@@ -502,8 +498,7 @@ export const getFileSizeWithRandomizedCurl = async (url, referer) => {
  */
 export const establishSession = async (referer) => {
   return new Promise((resolve) => {
-    const config = generateRandomRequestConfig();
-
+    // Create adaptive session establishment
     const curlArgs = [
       "-L", // Follow redirects
       "-s", // Silent mode
@@ -514,34 +509,31 @@ export const establishSession = async (referer) => {
       "--max-redirs",
       "3",
 
-      // Browser headers for page visit
+      // Browser headers for page visits
       "-A",
-      config.userAgent,
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
       "-H",
-      "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+      "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       "-H",
-      `Accept-Language: ${config.headers.acceptLanguage}`,
-      "-H",
-      "Accept-Encoding: gzip, deflate, br",
+      "Accept-Language: en-US,en;q=0.5",
       "-H",
       "Cache-Control: no-cache",
       "-H",
       "Upgrade-Insecure-Requests: 1",
-      "-H",
-      "Sec-Fetch-Dest: document",
-      "-H",
-      "Sec-Fetch-Mode: navigate",
-      "-H",
-      "Sec-Fetch-Site: none",
-      "-H",
-      "Sec-Fetch-User: ?1",
 
-      // Output to /dev/null since we just want to establish session
       "-o",
       "/dev/null",
-
       referer,
     ];
+
+    // Add enhanced features if available
+    if (CURL_CAPABILITIES.hasHTTP2) {
+      curlArgs.splice(-2, 0, "--http2");
+    }
+    if (CURL_CAPABILITIES.hasBrotli) {
+      curlArgs.splice(-2, 0, "--compressed");
+      curlArgs.splice(-2, 0, "-H", "Accept-Encoding: gzip, deflate, br");
+    }
 
     console.log(`Establishing session by visiting: ${referer.substring(0, 50)}...`);
 
