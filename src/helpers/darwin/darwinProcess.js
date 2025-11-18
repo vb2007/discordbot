@@ -84,12 +84,12 @@ const messageGen = (title, href, comments) => {
  * Fetch videos from feed
  * @returns {Promise<Array>} - Array of video objects
  */
-const fetchVideosFromFeed = async () => {
+const fetchAndDistributeVideos = async (client, guildConfigs) => {
   try {
     const html = await httpsGet(darwinConfig.feedUrl);
     const $ = load(html);
     const contentBlock = $(".content-block > div");
-    const videosToProcess = [];
+    let distributedCount = 0;
 
     for (const node of contentBlock) {
       try {
@@ -116,17 +116,27 @@ const fetchVideosFromFeed = async () => {
           continue;
         }
 
-        console.log(`Discovered "${title.trim()}" at "${videoLocation}"`);
-        videosToProcess.push({ title, href: videoLocation, comments: href });
+        console.log(`Discovered new video: "${title.trim()}" at "${videoLocation}"`);
+
+        //immediately distribute to all channels
+        const video = { title: title.trim(), href: videoLocation, comments: href };
+        await distributeVideo(client, guildConfigs, video);
+
+        const addedToCache = await addToCache(videoLocation, href, title.trim());
+        if (addedToCache) {
+          distributedCount++;
+        } else {
+          console.log(`Warning: Failed to add to cache: ${videoLocation}`);
+        }
       } catch (error) {
         console.error(`Error processing item: ${error}`);
       }
     }
 
-    return videosToProcess;
+    return distributedCount;
   } catch (error) {
     console.error(`Error fetching videos from feed: ${error}`);
-    return [];
+    return 0;
   }
 };
 
@@ -172,25 +182,13 @@ export const runDarwinProcess = async (client) => {
 
     console.log(`Found ${guildConfigs.length} Darwin configurations`);
 
-    const videosToProcess = await fetchVideosFromFeed();
-    console.log(`Discovered ${videosToProcess.length} new videos to process`);
+    const distributedCount = await fetchAndDistributeVideos(client, guildConfigs);
 
-    if (videosToProcess.length === 0) {
-      console.log("No new videos to process");
-      return;
+    if (distributedCount === 0) {
+      console.log("No new videos to distribute");
+    } else {
+      console.log(`Darwin process completed: ${distributedCount} video(s) distributed`);
     }
-
-    for (const video of videosToProcess) {
-      const addedToCache = await addToCache(video.href);
-      if (!addedToCache) {
-        console.log(`Failed to add to cache, skipping: ${video.href}`);
-        continue;
-      }
-
-      await distributeVideo(client, guildConfigs, video);
-    }
-
-    console.log("Darwin process completed successfully");
   } catch (error) {
     console.error(`Error running Darwin process: ${error}`);
   }
