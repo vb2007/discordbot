@@ -13,8 +13,102 @@ on:
         type: string
 
 jobs:
+  setup-curl:
+    runs-on: self-hosted
+    outputs:
+      curl-updated: ${{ steps.curl-check.outputs.updated }}
+
+    steps:
+      - name: Check current curl version
+        id: curl-check
+        run: |
+          echo "Checking current curl version..."
+          CURRENT_VERSION=""
+          if command -v /usr/local/bin/curl &> /dev/null; then
+            CURRENT_VERSION=$(/usr/local/bin/curl --version | head -1 | awk '{print $2}')
+            echo "Current local curl version: $CURRENT_VERSION"
+          elif command -v curl &> /dev/null; then
+            CURRENT_VERSION=$(curl --version | head -1 | awk '{print $2}')
+            echo "Current system curl version: $CURRENT_VERSION"
+          else
+            echo "No curl found"
+          fi
+
+          LATEST_TAG=$(curl -s https://api.github.com/repos/curl/curl/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          LATEST_VERSION=$(echo "$LATEST_TAG" | sed 's/curl-//' | sed 's/_/./g')
+          echo "Latest available version: $LATEST_VERSION"
+
+          #compare versions
+          if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+            echo "Curl needs updating: $CURRENT_VERSION -> $LATEST_VERSION"
+            echo "updated=true" >> $GITHUB_OUTPUT
+          else
+            echo "Curl is already up to date: $CURRENT_VERSION"
+            echo "updated=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install curl dependencies
+        if: steps.curl-check.outputs.updated == 'true'
+        run: |
+          echo "Installing dependencies for compiling curl..."
+          sudo apt update
+          sudo apt install -y \
+            build-essential \
+            libssl-dev \
+            libnghttp2-dev \
+            zlib1g-dev \
+            libpsl-dev \
+            libbrotli-dev \
+            libzstd-dev \
+            libssh2-1-dev \
+            librtmp-dev \
+            libldap2-dev \
+            libidn2-dev \
+            libkrb5-dev \
+            autotools-dev
+
+      - name: Build and install latest version of curl
+        if: steps.curl-check.outputs.updated == 'true'
+        run: |
+          echo "Building latest curl..."
+          cd /tmp
+
+          TAG_NAME=$(curl -s https://api.github.com/repos/curl/curl/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          VERSION=$(echo "$TAG_NAME" | sed 's/curl-//' | sed 's/_/./g')
+          DOWNLOAD_URL="https://curl.se/download/curl-${VERSION}.tar.gz"
+
+          echo "Downloading curl $VERSION..."
+          wget -v "$DOWNLOAD_URL" -O curl-latest.tar.gz
+
+          echo "Extracting and building..."
+          tar -xzf curl-latest.tar.gz
+          cd curl-${VERSION}
+
+          ./configure --prefix=/usr/local \
+                      --with-openssl \
+                      --with-nghttp2 \
+                      --with-libpsl \
+                      --with-brotli \
+                      --with-zstd \
+                      --enable-http2 \
+                      --enable-ldap \
+                      --enable-ldaps \
+                      --disable-static \
+                      --enable-shared
+
+          make -j$(nproc)
+          sudo make install
+          sudo ldconfig
+
+          echo "✅ Curl installation completed"
+          /usr/local/bin/curl --version
+
+          cd /tmp
+          rm -rf curl-latest.tar.gz curl-${VERSION}
+
   deploy:
     runs-on: self-hosted # REQUIRES SOME SUDO EXECUTION PRIVILEGES WITHOUT A PASSWORD PROMPT
+    needs: setup-curl
 
     steps:
       - name: Stopping systemd service
@@ -36,10 +130,10 @@ jobs:
       #   with:
       #     node-version: "24.8.0"
 
-      - name: Intalling Node.js dependencies
+      - name: Installing Node.js dependencies
         working-directory: /home/vb2007/prod/discordbot
         env:
-          PATH: /home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          PATH: /usr/local/bin:/home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         run: |
           rm -rf node_modules
           npm ci
@@ -48,7 +142,7 @@ jobs:
       - name: Deploying possible new commands
         working-directory: /home/vb2007/prod/discordbot
         env:
-          PATH: /home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          PATH: /usr/local/bin:/home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         run: |
           echo "Starting command deployment..."
           deployOutput=$(npm run deploy 2>&1)
@@ -65,7 +159,7 @@ jobs:
       - name: Updating command data
         working-directory: /home/vb2007/prod/discordbot
         env:
-          PATH: /home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          PATH: /usr/local/bin:/home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         run: |
           echo "Starting table creation and command data update..."
           queriesOutput=$(npm run create-tables 2>&1)
