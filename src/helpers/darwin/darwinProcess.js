@@ -1,7 +1,7 @@
 import { load } from "cheerio";
 import fs from "fs";
 import path from "path";
-import { pipeline } from "stream/promises";
+import { spawn } from "child_process";
 
 import { query } from "../db.js";
 import { transcodeVideo, getFileSizeMB } from "./darwinTranscode.js";
@@ -9,6 +9,124 @@ import { isInCache, addToCache } from "./darwinCache.js";
 
 import config from "../../../config.json" with { type: "json" };
 const darwinConfig = config.darwin;
+
+/**
+ * Download video using system curl (better TLS fingerprint)
+ * @param {string} url - Video URL
+ * @param {string} referer - Referer URL (comments page)
+ * @param {string} outputPath - Where to save the file
+ * @returns {Promise<boolean>} - Whether download was successful
+ */
+const downloadVideoWithCurl = async (url, referer, outputPath) => {
+  return new Promise((resolve, reject) => {
+    const curlArgs = [
+      "-L", // Follow redirects
+      "-A",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+      "-H",
+      "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "-H",
+      "Accept-Language: en-US,en;q=0.5",
+      "-H",
+      "Accept-Encoding: gzip, deflate, br",
+      "-H",
+      "Upgrade-Insecure-Requests: 1",
+      "-H",
+      "Sec-Fetch-Dest: document",
+      "-H",
+      "Sec-Fetch-Mode: navigate",
+      "-H",
+      "Sec-Fetch-Site: cross-site",
+      "-H",
+      "Sec-Fetch-User: ?1",
+      "-H",
+      `Referer: ${referer}`,
+      "-H",
+      "Cache-Control: no-cache",
+      "-H",
+      "Pragma: no-cache",
+      "-o",
+      outputPath,
+      "--compressed",
+      "--http2",
+      url,
+    ];
+
+    const curl = spawn("curl", curlArgs);
+
+    let stderr = "";
+
+    curl.stderr.on("data", (data) => {
+      stderr += data.toString();
+    });
+
+    curl.on("close", (code) => {
+      if (code === 0) {
+        resolve(true);
+      } else {
+        reject(new Error(`curl exited with code ${code}: ${stderr}`));
+      }
+    });
+
+    curl.on("error", (error) => {
+      reject(new Error(`Failed to spawn curl: ${error.message}`));
+    });
+  });
+};
+
+/**
+ * Get file size using curl HEAD request
+ * @param {string} url - Video URL
+ * @param {string} referer - Referer URL (comments page)
+ * @returns {Promise<number|null>} - File size in bytes, or null if failed
+ */
+const getFileSizeWithCurl = async (url, referer) => {
+  return new Promise((resolve) => {
+    const curlArgs = [
+      "-I", // HEAD request only
+      "-L", // Follow redirects
+      "-s", // Silent mode
+      "-A",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+      "-H",
+      "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "-H",
+      "Accept-Language: en-US,en;q=0.5",
+      "-H",
+      "Sec-Fetch-Dest: document",
+      "-H",
+      "Sec-Fetch-Mode: navigate",
+      "-H",
+      "Sec-Fetch-Site: cross-site",
+      "-H",
+      "Sec-Fetch-User: ?1",
+      "-H",
+      `Referer: ${referer}`,
+      "--http2",
+      url,
+    ];
+
+    const curl = spawn("curl", curlArgs);
+    let stdout = "";
+
+    curl.stdout.on("data", (data) => {
+      stdout += data.toString();
+    });
+
+    curl.on("close", (code) => {
+      if (code === 0) {
+        const match = stdout.match(/content-length:\s*(\d+)/i);
+        resolve(match ? parseInt(match[1], 10) : null);
+      } else {
+        resolve(null);
+      }
+    });
+
+    curl.on("error", () => {
+      resolve(null);
+    });
+  });
+};
 
 /**
  * Get the final destination of a URL (follow redirects)
@@ -38,7 +156,6 @@ const getDestination = async (url) => {
 const getVideoLocation = async (href, markerOne, markerTwo) => {
   try {
     const response = await fetch(href, {
-      //if it isn't set to "darwin" the scraping fails for some reason
       headers: { "User-Agent": "darwin" },
       // headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0" }
     });
@@ -66,7 +183,7 @@ const getVideoLocation = async (href, markerOne, markerTwo) => {
  * @param {number} fileSize - File size in MB
  * @returns {string} - Formatted message
  */
-const messageGen = (title, href, directStreamLink, comments, canBeStreamed, fileSize) => {
+const messageGen = (title, href, comments, canBeStreamed, fileSize, directStreamLink = "") => {
   return `${canBeStreamed ? `[[ STREAMING & DOWNLOAD ]](${directStreamLink})` : `[[ ORIGINAL MP4 ]](${href})`}  -  [[ FORUM POST ]](<${comments}>)\n${title}${canBeStreamed ? `\nSize: ${fileSize}MB` : `\nSize (might won't load): ${fileSize}MB`}`;
 };
 
@@ -93,38 +210,42 @@ const processVideo = async (video) => {
       return null;
     }
 
-    const response = await fetch(href);
-
-    if (!response.ok) {
-      console.error(`${href} ${response.statusText}`);
-      return null;
-    }
-
-    const contentLength = parseInt(response.headers.get("Content-Length"), 10);
-    if (contentLength && contentLength > 50 * 1024 * 1024) {
-      console.log("Skipping download: File size exceeds limit (50MB)");
-
-      const fileSize = (contentLength / 1000000).toFixed(0);
-      // Return info for too large videos
-      return {
-        title,
-        href,
-        comments,
-        canBeStreamed: false,
-        directStreamLink: "",
-        fileSize,
-        tooBig: true,
-      };
-    }
-
     const videoId = href.split("/").pop().replace(".mp4", "");
     const tempFilePath = path.join(darwinConfig.tempDir, `${videoId}_original.mp4`);
     const transcodedFilePath = path.join(darwinConfig.tempDir, `${videoId}_transcoded.mp4`);
     const finalFilePath = path.join(darwinConfig.targetDir, `${videoId}.mp4`);
     const directStreamLink = `${darwinConfig.cdnUrl}/${videoId}.mp4`;
 
-    console.log(`Downloading video to temp location: ${tempFilePath}`);
-    await pipeline(response.body, fs.createWriteStream(tempFilePath));
+    // Check file size before downloading
+    console.log(`Checking file size for: ${href}`);
+    const fileSizeBytes = await getFileSizeWithCurl(href, comments);
+
+    if (fileSizeBytes) {
+      const fileSizeMB = (fileSizeBytes / 1024 / 1024).toFixed(2);
+      console.log(`File size: ${fileSizeMB}MB`);
+
+      if (fileSizeBytes > darwinConfig.maxDownloadSize * 1024 * 1024) {
+        console.log(`File exceeds limit (${darwinConfig.maxDownloadSize}MB), using direct link`);
+        return {
+          title,
+          href,
+          comments,
+          canBeStreamed: false,
+          fileSize: fileSizeMB,
+        };
+      }
+    } else {
+      console.log("Could not determine file size, will proceed with download");
+    }
+
+    console.log(`Downloading video using curl: ${href}`);
+    try {
+      await downloadVideoWithCurl(href, comments, tempFilePath);
+      console.log("Successfully downloaded using curl");
+    } catch (curlError) {
+      console.error(`Curl download failed: ${curlError.message}`);
+      return null;
+    }
 
     if (!fs.existsSync(tempFilePath)) {
       console.error(`Error when saving temporary file: ${tempFilePath}`);
@@ -133,6 +254,19 @@ const processVideo = async (video) => {
 
     const originalSize = getFileSizeMB(tempFilePath);
     console.log(`Original file size: ${originalSize}MB`);
+
+    // Double-check size after download (fallback if HEAD request didn't work)
+    if (originalSize > darwinConfig.maxDownloadSize) {
+      console.log(`File too large (${originalSize}MB), removing and using direct link`);
+      fs.unlinkSync(tempFilePath);
+      return {
+        title,
+        href,
+        comments,
+        canBeStreamed: false,
+        fileSize: originalSize.toFixed(2),
+      };
+    }
 
     try {
       console.log("Starting video transcoding process...");
@@ -159,14 +293,13 @@ const processVideo = async (video) => {
       }
       console.log("Temporary files cleaned up");
 
-      // Return success result
       return {
         title,
         href,
         comments,
-        directStreamLink,
         canBeStreamed: true,
         fileSize: transcodedSize,
+        directStreamLink,
       };
     } catch (error) {
       console.error(`Transcoding failed, attempting to use original file: ${error}`);
@@ -188,15 +321,15 @@ const processVideo = async (video) => {
         }
 
         const finalSize = getFileSizeMB(finalFilePath);
-        const canStream = finalSize < 50; // I will run out of storage & network bandwidth quick if that's higher
+        const canStream = finalSize <= darwinConfig.maxDownloadSize;
 
         return {
           title,
           href,
           comments,
-          directStreamLink,
           canBeStreamed: canStream,
           fileSize: finalSize,
+          directStreamLink,
         };
       } catch (fallbackError) {
         console.error(`Failed to use original file as fallback: ${fallbackError}`);
@@ -217,9 +350,9 @@ const processVideo = async (video) => {
  * @returns {Promise<void>}
  */
 const distributeVideo = async (client, guildConfigs, processedVideo) => {
-  const { title, href, comments, directStreamLink, canBeStreamed, fileSize } = processedVideo;
+  const { title, href, comments, canBeStreamed, fileSize, directStreamLink } = processedVideo;
 
-  const message = messageGen(title, href, directStreamLink, comments, canBeStreamed, fileSize);
+  const message = messageGen(title, href, comments, canBeStreamed, fileSize, directStreamLink);
 
   for (const config of guildConfigs) {
     try {
@@ -248,6 +381,7 @@ const fetchVideosFromFeed = async () => {
   try {
     const response = await fetch(darwinConfig.feedUrl, {
       headers: { "User-Agent": "darwin" },
+      // headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36" }
     });
 
     const html = await response.text();
@@ -338,8 +472,8 @@ export const runDarwinProcess = async (client) => {
           if (result) {
             processedVideos.push(result);
 
-            // If it's a "too big" video, distribute immediately
-            if (result.tooBig) {
+            // If video wasn't downloaded, distribute immediately
+            if (!result.canBeStreamed) {
               await distributeVideo(client, guildConfigs, result);
             }
           }
@@ -363,8 +497,8 @@ export const runDarwinProcess = async (client) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
-    // Filter out "too big" videos that were already distributed
-    const videosToDistribute = processedVideos.filter((video) => !video.tooBig);
+    // Filter out videos that weren't downloaded (already distributed)
+    const videosToDistribute = processedVideos.filter((video) => video.canBeStreamed);
     console.log(
       `Successfully processed ${videosToDistribute.length} videos, distributing to ${guildConfigs.length} channels`
     );
