@@ -112,11 +112,11 @@ const fetchAndDistributeVideos = async (client, guildConfigs) => {
 
         const isVideoInCache = await isInCache(videoLocation);
         if (isVideoInCache) {
-          console.log(`Skipping cached video: ${title.trim()}`);
+          // console.log(`Skipping cached video: ${title.trim()}`);
           continue;
         }
 
-        console.log(`Discovered new video: "${title.trim()}" at "${videoLocation}"`);
+        // console.log(`Discovered new video: "${title.trim()}" at "${videoLocation}"`);
 
         //immediately distribute to all channels
         const video = { title: title.trim(), href: videoLocation, comments: href };
@@ -152,12 +152,12 @@ const distributeVideo = async (client, guildConfigs, video) => {
 
   for (const config of guildConfigs) {
     try {
-      console.log(`Sending video to guild ${config.guildId}, channel ${config.channelId}`);
+      // console.log(`Sending video to guild ${config.guildId}, channel ${config.channelId}`);
       const channel = await client.channels.fetch(config.channelId);
 
       if (channel) {
         await channel.send(message);
-        console.log(`Successfully sent to ${config.channelName} (${config.channelId})`);
+        // console.log(`Successfully sent to ${config.channelName} (${config.channelId})`);
       } else {
         console.error(`Failed to fetch channel ${config.channelId}`);
       }
@@ -176,18 +176,18 @@ export const runDarwinProcess = async (client) => {
     const guildConfigs = await query("SELECT * FROM configDarwin");
 
     if (guildConfigs.length === 0) {
-      console.log("No Darwin configurations found");
+      // console.log("No Darwin configurations found");
       return;
     }
 
-    console.log(`Found ${guildConfigs.length} Darwin configurations`);
+    // console.log(`Found ${guildConfigs.length} Darwin configurations`);
 
     const distributedCount = await fetchAndDistributeVideos(client, guildConfigs);
 
     if (distributedCount === 0) {
-      console.log("No new videos to distribute");
+      // console.log("No new videos to distribute");
     } else {
-      console.log(`Darwin process completed: ${distributedCount} video(s) distributed`);
+      // console.log(`Darwin process completed: ${distributedCount} video(s) distributed`);
     }
   } catch (error) {
     console.error(`Error running Darwin process: ${error}`);

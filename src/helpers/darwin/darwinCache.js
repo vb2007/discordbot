@@ -37,7 +37,7 @@ export const addToCache = async (directVideoUrl, forumPostUrl, videoTitle) => {
     }
 
     const videoId = extractVideoId(directVideoUrl);
-    console.log(`Adding "${videoTitle}" (ID: ${videoId}) to Darwin's cache`);
+    // console.log(`Adding "${videoTitle}" (ID: ${videoId}) to Darwin's cache`);
 
     try {
       await query(
