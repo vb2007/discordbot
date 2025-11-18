@@ -3,7 +3,7 @@ permissions: {}
 
 on:
   push:
-    branches: [dev-darwin-curl-fix]
+    branches: [main]
   workflow_dispatch:
     inputs:
       branch:
