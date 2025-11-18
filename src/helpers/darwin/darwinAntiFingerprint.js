@@ -1,5 +1,6 @@
 import { spawn } from "child_process";
 import fs from "fs";
+import { execSync } from "child_process";
 
 /**
  * Browser fingerprint configurations for randomization
@@ -9,8 +10,6 @@ const BROWSER_CONFIGS = [
     name: "Chrome 120 Windows",
     userAgent:
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    ciphers: "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256",
-    curves: "X25519:prime256v1:secp384r1",
     headers: {
       accept: "video/mp4,video/*,application/octet-stream,*/*;q=0.8",
       acceptLanguage: "en-US,en;q=0.9",
@@ -21,8 +20,6 @@ const BROWSER_CONFIGS = [
     name: "Chrome 119 macOS",
     userAgent:
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-    ciphers: "TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256",
-    curves: "prime256v1:X25519:secp384r1",
     headers: {
       accept: "video/webm,video/ogg,video/*;q=0.9,application/ogg;q=0.7,audio/*;q=0.6,*/*;q=0.5",
       acceptLanguage: "en-US,en;q=0.9",
@@ -33,8 +30,6 @@ const BROWSER_CONFIGS = [
     name: "Chrome 118 Linux",
     userAgent:
       "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
-    ciphers: "TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256",
-    curves: "secp384r1:X25519:prime256v1",
     headers: {
       accept: "*/*",
       acceptLanguage: "en-US,en;q=0.8,de;q=0.6",
@@ -44,8 +39,6 @@ const BROWSER_CONFIGS = [
   {
     name: "Firefox 120",
     userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0",
-    ciphers: "TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256",
-    curves: "X25519:secp384r1",
     headers: {
       accept: "video/*,audio/*,*/*;q=0.8",
       acceptLanguage: "en-US,en;q=0.5",
@@ -56,8 +49,6 @@ const BROWSER_CONFIGS = [
     name: "Safari-like Chrome",
     userAgent:
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15",
-    ciphers: "TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256",
-    curves: "prime256v1:secp384r1:X25519",
     headers: {
       accept: "video/mp4,video/*,*/*;q=0.8",
       acceptLanguage: "en-GB,en-US;q=0.9,en;q=0.8",
@@ -74,6 +65,119 @@ const HEADER_VARIATIONS = {
   cacheControls: ["no-cache", "no-cache, no-store", "max-age=0", "no-cache, max-age=0"],
   connections: ["keep-alive", "close"],
   rateLimits: ["5M", "8M", "10M", "12M", "15M"],
+};
+
+/**
+ * Find the correct curl executable path
+ * @returns {string} Path to curl executable
+ */
+const findCurlPath = () => {
+  const possiblePaths = [
+    "/usr/local/bin/curl",
+    "/usr/bin/curl",
+    "/opt/homebrew/bin/curl",
+    "curl", // system PATH
+  ];
+
+  for (const path of possiblePaths) {
+    try {
+      if (path === "curl") {
+        // Check if curl is in PATH
+        execSync("which curl", { stdio: "ignore" });
+        return "curl";
+      } else {
+        // Check if file exists and is executable
+        if (fs.existsSync(path)) {
+          return path;
+        }
+      }
+    } catch (error) {
+      // Continue to next path
+    }
+  }
+
+  // Default fallback
+  return "curl";
+};
+
+/**
+ * Verify curl capabilities synchronously
+ * @param {string} curlPath - Path to curl executable
+ * @returns {Object} Curl capabilities info
+ */
+const verifyCurlCapabilities = (curlPath) => {
+  try {
+    const result = execSync(`${curlPath} --version`, { encoding: "utf8", timeout: 5000 });
+    const versionMatch = result.match(/curl\s+([^\s]+)/);
+    const version = versionMatch ? versionMatch[1] : "unknown";
+
+    return {
+      version,
+      hasHTTP2: result.includes("HTTP2"),
+      hasHTTP3: result.includes("HTTP3"),
+      hasTLS13: result.includes("TLS"),
+      hasBrotli: result.includes("brotli"),
+      working: true,
+    };
+  } catch (error) {
+    return { working: false, error: error.message };
+  }
+};
+
+// Cache the curl path and verify capabilities on module load
+const CURL_PATH = findCurlPath();
+const CURL_CAPABILITIES = verifyCurlCapabilities(CURL_PATH);
+
+if (CURL_CAPABILITIES.working) {
+  console.log(`✅ Using curl ${CURL_CAPABILITIES.version} at: ${CURL_PATH}`);
+  console.log(
+    `Features: HTTP2=${CURL_CAPABILITIES.hasHTTP2}, HTTP3=${CURL_CAPABILITIES.hasHTTP3}, Brotli=${CURL_CAPABILITIES.hasBrotli}`
+  );
+} else {
+  console.error(`❌ Curl verification failed: ${CURL_CAPABILITIES.error}`);
+  console.error(`Please ensure curl is properly installed and accessible`);
+}
+
+/**
+ * Test curl with a simple request
+ * @returns {Promise<boolean>} Whether curl is working
+ */
+export const testCurl = async () => {
+  return new Promise((resolve) => {
+    console.log("🧪 Testing curl functionality...");
+    const curl = spawn(CURL_PATH, ["-s", "-I", "https://httpbin.org/get"]);
+    let stderr = "";
+
+    curl.stderr.on("data", (data) => {
+      stderr += data.toString();
+    });
+
+    curl.on("close", (code) => {
+      if (code === 0) {
+        console.log("✅ Curl test successful");
+        resolve(true);
+      } else {
+        console.error(`❌ Curl test failed with code ${code}: ${stderr}`);
+        resolve(false);
+      }
+    });
+
+    curl.on("error", (error) => {
+      console.error(`❌ Curl test error: ${error.message}`);
+      resolve(false);
+    });
+  });
+};
+
+/**
+ * Get curl information for debugging
+ * @returns {Object} Curl path and capabilities
+ */
+export const getCurlInfo = () => {
+  return {
+    path: CURL_PATH,
+    capabilities: CURL_CAPABILITIES,
+  };
 };
 
 /**
@@ -149,16 +253,6 @@ export const downloadVideoWithRandomizedCurl = async (url, referer, outputPath, 
       "--max-time",
       config.timing.maxTime.toString(),
 
-      // TLS randomization
-      "--tls-max",
-      "1.3",
-      "--ciphers",
-      config.ciphers,
-      "--curves",
-      config.curves,
-      "--ssl-reqd",
-      "--ssl-no-revoke",
-
       // Browser fingerprint
       "-A",
       config.userAgent,
@@ -167,7 +261,7 @@ export const downloadVideoWithRandomizedCurl = async (url, referer, outputPath, 
       "-H",
       `Accept-Language: ${config.headers.acceptLanguage}`,
       "-H",
-      `Accept-Encoding: ${config.variations.acceptEncoding}`,
+      `Accept-Encoding: identity`,
       "-H",
       `Cache-Control: ${config.variations.cacheControl}`,
       "-H",
@@ -202,12 +296,12 @@ export const downloadVideoWithRandomizedCurl = async (url, referer, outputPath, 
       `[Attempt ${attempt}] Using fingerprint: ${config.name} (Session: ${config.sessionId})`
     );
     console.log(
-      `TLS: ${config.ciphers.split(":")[0]} | Rate: ${config.variations.rateLimit} | Delay: ${Math.round(config.timing.preDelay)}ms`
+      `Browser: ${config.userAgent.split(" ")[0]} | Rate: ${config.variations.rateLimit} | Delay: ${Math.round(config.timing.preDelay)}ms`
     );
 
     // Random pre-request delay
     setTimeout(() => {
-      const curl = spawn("/usr/local/bin/curl", curlArgs);
+      const curl = spawn(CURL_PATH, curlArgs);
       let stderr = "";
 
       curl.stderr.on("data", (data) => {
@@ -231,11 +325,8 @@ export const downloadVideoWithRandomizedCurl = async (url, referer, outputPath, 
           return;
         }
 
-        // Check for successful response codes
-        const hasSuccessResponse =
-          stderr.includes("HTTP/2 200") ||
-          stderr.includes("HTTP/1.1 200") ||
-          stderr.includes("200 OK");
+        // In silent mode, we rely on exit code and file size for success detection
+        const hasSuccessResponse = code === 0;
 
         try {
           const stats = fs.statSync(outputPath);
@@ -273,15 +364,11 @@ export const downloadVideoWithRandomizedCurl = async (url, referer, outputPath, 
             return;
           }
 
-          if (code === 0 && hasSuccessResponse) {
+          if (code === 0) {
             const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
             console.log(
               `✅ [Attempt ${attempt}] Successfully downloaded ${sizeMB}MB with ${config.name}`
             );
-            resolve(true);
-          } else if (code === 0) {
-            // Curl succeeded but no clear success response - might still be valid
-            console.log(`⚠️ [Attempt ${attempt}] Download completed but unclear response status`);
             resolve(true);
           } else {
             reject(new Error(`curl exited with code ${code}`));
@@ -294,6 +381,10 @@ export const downloadVideoWithRandomizedCurl = async (url, referer, outputPath, 
 
       curl.on("error", (error) => {
         console.log(`❌ [Attempt ${attempt}] Curl process error: ${error.message}`);
+        if (error.code === "ENOENT") {
+          console.log(`Curl not found at: ${CURL_PATH}`);
+          console.log("Please ensure curl is installed and accessible");
+        }
         reject(new Error(`Curl execution failed: ${error.message}`));
       });
     }, config.timing.preDelay);
@@ -366,12 +457,6 @@ export const getFileSizeWithRandomizedCurl = async (url, referer) => {
       "--max-redirs",
       "3",
 
-      // TLS settings
-      "--ciphers",
-      config.ciphers,
-      "--curves",
-      config.curves,
-
       // Headers
       "-A",
       config.userAgent,
@@ -387,7 +472,7 @@ export const getFileSizeWithRandomizedCurl = async (url, referer) => {
       url,
     ];
 
-    const curl = spawn("/usr/local/bin/curl", curlArgs);
+    const curl = spawn(CURL_PATH, curlArgs);
     let stdout = "";
 
     curl.stdout.on("data", (data) => {
@@ -429,12 +514,6 @@ export const establishSession = async (referer) => {
       "--max-redirs",
       "3",
 
-      // TLS settings
-      "--ciphers",
-      config.ciphers,
-      "--curves",
-      config.curves,
-
       // Browser headers for page visit
       "-A",
       config.userAgent,
@@ -466,7 +545,7 @@ export const establishSession = async (referer) => {
 
     console.log(`Establishing session by visiting: ${referer.substring(0, 50)}...`);
 
-    const curl = spawn("/usr/local/bin/curl", curlArgs);
+    const curl = spawn(CURL_PATH, curlArgs);
 
     curl.on("close", (code) => {
       if (code === 0) {

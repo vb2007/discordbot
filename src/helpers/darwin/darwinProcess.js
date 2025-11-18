@@ -10,6 +10,8 @@ import {
   downloadWithRetry,
   getFileSizeWithRandomizedCurl,
   establishSession,
+  testCurl,
+  getCurlInfo,
 } from "./darwinAntiFingerprint.js";
 
 import config from "../../../config.json" with { type: "json" };
@@ -154,6 +156,16 @@ const processVideo = async (video) => {
       console.log("Successfully downloaded using randomized fingerprint");
     } catch (downloadError) {
       console.error(`All download attempts failed: ${downloadError.message}`);
+
+      // Test curl again if downloads are failing
+      if (downloadError.message.includes("ENOENT") || downloadError.message.includes("spawn")) {
+        console.log("🔧 Re-testing curl due to spawn errors...");
+        const curlStillWorking = await testCurl();
+        if (!curlStillWorking) {
+          console.error("❌ Curl is no longer working - stopping Darwin process");
+        }
+      }
+
       return null;
     }
 
@@ -347,6 +359,17 @@ const fetchVideosFromFeed = async () => {
  */
 export const runDarwinProcess = async (client) => {
   try {
+    // Test curl functionality before starting
+    console.log("🔧 Verifying curl setup...");
+    const curlInfo = getCurlInfo();
+    console.log(`Curl info:`, curlInfo);
+
+    const curlWorking = await testCurl();
+    if (!curlWorking) {
+      console.error("❌ Curl test failed - cannot proceed with downloads");
+      return;
+    }
+
     // Get all guild configurations
     const guildConfigs = await query("SELECT * FROM configDarwin");
 
