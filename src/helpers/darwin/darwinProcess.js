@@ -6,127 +6,20 @@ import { spawn } from "child_process";
 import { query } from "../db.js";
 import { transcodeVideo, getFileSizeMB } from "./darwinTranscode.js";
 import { isInCache, addToCache } from "./darwinCache.js";
+import {
+  downloadWithRetry,
+  getFileSizeWithRandomizedCurl,
+  establishSession,
+} from "./darwinAntiFingerprint.js";
 
 import config from "../../../config.json" with { type: "json" };
 const darwinConfig = config.darwin;
 
 /**
- * Download video using system curl (better TLS fingerprint)
- * @param {string} url - Video URL
- * @param {string} referer - Referer URL (comments page)
- * @param {string} outputPath - Where to save the file
- * @returns {Promise<boolean>} - Whether download was successful
+ * Note: Download functions have been moved to darwinAntiFingerprint.js
+ * This module now provides advanced TLS fingerprint randomization
+ * to evade Cloudflare's bot detection systems.
  */
-const downloadVideoWithCurl = async (url, referer, outputPath) => {
-  return new Promise((resolve, reject) => {
-    const curlArgs = [
-      "-L", // Follow redirects
-      "-A",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
-      "-H",
-      "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      "-H",
-      "Accept-Language: en-US,en;q=0.5",
-      "-H",
-      "Accept-Encoding: gzip, deflate, br",
-      "-H",
-      "Upgrade-Insecure-Requests: 1",
-      "-H",
-      "Sec-Fetch-Dest: document",
-      "-H",
-      "Sec-Fetch-Mode: navigate",
-      "-H",
-      "Sec-Fetch-Site: cross-site",
-      "-H",
-      "Sec-Fetch-User: ?1",
-      "-H",
-      `Referer: ${referer}`,
-      "-H",
-      "Cache-Control: no-cache",
-      "-H",
-      "Pragma: no-cache",
-      "-o",
-      outputPath,
-      "--compressed",
-      "--http2",
-      url,
-    ];
-
-    const curl = spawn("curl", curlArgs);
-
-    let stderr = "";
-
-    curl.stderr.on("data", (data) => {
-      stderr += data.toString();
-    });
-
-    curl.on("close", (code) => {
-      if (code === 0) {
-        resolve(true);
-      } else {
-        reject(new Error(`curl exited with code ${code}: ${stderr}`));
-      }
-    });
-
-    curl.on("error", (error) => {
-      reject(new Error(`Failed to spawn curl: ${error.message}`));
-    });
-  });
-};
-
-/**
- * Get file size using curl HEAD request
- * @param {string} url - Video URL
- * @param {string} referer - Referer URL (comments page)
- * @returns {Promise<number|null>} - File size in bytes, or null if failed
- */
-const getFileSizeWithCurl = async (url, referer) => {
-  return new Promise((resolve) => {
-    const curlArgs = [
-      "-I", // HEAD request only
-      "-L", // Follow redirects
-      "-s", // Silent mode
-      "-A",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
-      "-H",
-      "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      "-H",
-      "Accept-Language: en-US,en;q=0.5",
-      "-H",
-      "Sec-Fetch-Dest: document",
-      "-H",
-      "Sec-Fetch-Mode: navigate",
-      "-H",
-      "Sec-Fetch-Site: cross-site",
-      "-H",
-      "Sec-Fetch-User: ?1",
-      "-H",
-      `Referer: ${referer}`,
-      "--http2",
-      url,
-    ];
-
-    const curl = spawn("curl", curlArgs);
-    let stdout = "";
-
-    curl.stdout.on("data", (data) => {
-      stdout += data.toString();
-    });
-
-    curl.on("close", (code) => {
-      if (code === 0) {
-        const match = stdout.match(/content-length:\s*(\d+)/i);
-        resolve(match ? parseInt(match[1], 10) : null);
-      } else {
-        resolve(null);
-      }
-    });
-
-    curl.on("error", () => {
-      resolve(null);
-    });
-  });
-};
 
 /**
  * Get the final destination of a URL (follow redirects)
@@ -218,7 +111,7 @@ const processVideo = async (video) => {
 
     // Check file size before downloading
     console.log(`Checking file size for: ${href}`);
-    const fileSizeBytes = await getFileSizeWithCurl(href, comments);
+    const fileSizeBytes = await getFileSizeWithRandomizedCurl(href, comments);
 
     if (fileSizeBytes) {
       const fileSizeMB = (fileSizeBytes / 1024 / 1024).toFixed(2);
@@ -238,12 +131,29 @@ const processVideo = async (video) => {
       console.log("Could not determine file size, will proceed with download");
     }
 
-    console.log(`Downloading video using curl: ${href}`);
+    console.log(`Downloading video using anti-fingerprint curl: ${href}`);
+
+    // Establish session by visiting the referrer page first (like a real browser)
     try {
-      await downloadVideoWithCurl(href, comments, tempFilePath);
-      console.log("Successfully downloaded using curl");
-    } catch (curlError) {
-      console.error(`Curl download failed: ${curlError.message}`);
+      await establishSession(comments);
+      // Wait a bit after session establishment before downloading video
+      const sessionDelay = 1000 + Math.random() * 2000; // 1-3 seconds
+      console.log(`Post-session delay: ${Math.round(sessionDelay)}ms`);
+      await new Promise((resolve) => setTimeout(resolve, sessionDelay));
+    } catch (sessionError) {
+      console.log(`Session establishment failed, continuing anyway: ${sessionError.message}`);
+    }
+
+    // Add random delay to avoid appearing automated
+    const preDownloadDelay = 500 + Math.random() * 1500; // 0.5-2 seconds
+    console.log(`Pre-download delay: ${Math.round(preDownloadDelay)}ms`);
+    await new Promise((resolve) => setTimeout(resolve, preDownloadDelay));
+
+    try {
+      await downloadWithRetry(href, comments, tempFilePath, 3);
+      console.log("Successfully downloaded using randomized fingerprint");
+    } catch (downloadError) {
+      console.error(`All download attempts failed: ${downloadError.message}`);
       return null;
     }
 
@@ -484,8 +394,10 @@ export const runDarwinProcess = async (client) => {
           }
         }
 
+        // Increased delay between video processing to reduce detection
         if (videoIndex < videosToProcess.length) {
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          const processingDelay = 1000 + Math.random() * 2000; // 1-3 seconds
+          await new Promise((resolve) => setTimeout(resolve, processingDelay));
         }
       }
     }
