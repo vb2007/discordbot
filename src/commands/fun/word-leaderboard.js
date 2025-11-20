@@ -44,7 +44,7 @@ export default {
 
     const embedReply = embedReplyPrimaryColor(
       `Word Leaderboard: "${targetWord}"`,
-      `${usersQuery.length !== 0 ? `Leaderboard of users whose messages contained the word "${targetWord}" the most:` : `No user has used the word "${targetWord}" in their messages so far.`}`,
+      `${usersQuery.length !== 0 ? `Leaderboard of users whose messages contained the word **${targetWord}** the most:` : `No user has used the word **${targetWord}** in their messages so far.`}`,
       interaction
     );
 
