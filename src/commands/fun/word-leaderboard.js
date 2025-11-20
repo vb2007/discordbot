@@ -2,6 +2,19 @@ import { SlashCommandBuilder } from "discord.js";
 import { query } from "../../helpers/db.js";
 
 export default {
-  data: new SlashCommandBuilder(),
+  data: new SlashCommandBuilder()
+    .setName("word-leaderboard")
+    .setDescription(
+      "Counts a specified word in the current server and sends back a leaderboard with the users who used that word the most."
+    )
+    .addStringOption((option) =>
+      option
+        .setName("word")
+        .setDescription("The word that will get counted.")
+        .setRequired(true)
+        .setMinLength(2)
+        .setMaxLength(12)
+    )
+    .setDMPermission(false),
   async execute(interaction) {},
 };
