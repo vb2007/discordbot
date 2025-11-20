@@ -43,7 +43,6 @@ export default {
        LIMIT 10`,
       [currentServerId, `%${targetWord}%`]
     );
-    console.log(usersQuery);
 
     let leaderboardContent = "";
     for (let i = 0; i < usersQuery.length; i++) {
