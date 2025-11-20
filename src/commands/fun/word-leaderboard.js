@@ -1,12 +1,14 @@
 import { SlashCommandBuilder } from "discord.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
 import { embedReplyPrimaryColor } from "../../helpers/embeds/embed-reply.js";
 import { query } from "../../helpers/db.js";
 
 export default {
   data: new SlashCommandBuilder()
     .setName("word-leaderboard")
+    // Counts a specified word in the current server and sends back a leaderboard with the users who used that word the most.
     .setDescription(
-      "Counts a specified word in the current server and sends back a leaderboard with the users who used that word the most."
+      "Gives back a word count leaderboard with the top users who used that word the most."
     )
     .addStringOption((option) =>
       option
@@ -24,5 +26,12 @@ export default {
     }
 
     const targetWord = interaction.options.getString("word");
+    const currentServerId = interaction.guild.id;
+
+    const usersQuery = await db.query(
+      `SELECT COUNT(DISTINCT senderUserId), senderUserName FROM messageLog WHERE serverId = ${currentServerId} AND messageContent LIKE %${targetWord}%`
+    );
+
+    console.log(usersQuery);
   },
 };
