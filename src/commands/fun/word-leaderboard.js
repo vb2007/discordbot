@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 import { embedReplyPrimaryColor } from "../../helpers/embeds/embed-reply.js";
 import { positionEmojis } from "../../helpers/format.js";
 import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
-import { replyAndLog } from "../../helpers/reply.js";
+import { logToFileAndDatabase } from "../../helpers/logger.js";
 import { query } from "../../helpers/db.js";
 
 const commandName = "word-leaderboard";
@@ -24,6 +24,8 @@ export default {
     )
     .setDMPermission(false),
   async execute(interaction) {
+    await interaction.deferReply();
+
     const guildCheck = checkIfNotInGuild(commandName, interaction);
     if (guildCheck) {
       return await replyAndLog(interaction, guildCheck);
@@ -63,10 +65,11 @@ export default {
       `Word Leaderboard: "${targetWord}"`,
       usersQuery.length !== 0
         ? `Leaderboard of users whose messages contained the word **${targetWord}** the most:\n\n${leaderboardContent}`
-        : `No user has used the word **${targetWord}** in their messages so far.`,
+        : `:x: No user has used the word **${targetWord}** in their messages so far.`,
       interaction
     );
 
-    return replyAndLog(interaction, embedReply);
+    await interaction.editReply({ embeds: [embedReply] });
+    await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
   },
 };
