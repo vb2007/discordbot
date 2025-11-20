@@ -29,9 +29,9 @@ export const logToDB = async (message) => {
           ]
         );
 
-        console.log(
-          `Logged message "${message.content}" to database from ${senderUserName} in ${serverName}.`
-        );
+        // console.log(
+        //   `Logged message "${message.content}" to database from ${senderUserName} in ${serverName}.`
+        // );
       }
     }
   } catch (error) {
