@@ -1,7 +1,8 @@
 import { SlashCommandBuilder } from "discord.js";
-import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
 import { embedReplyPrimaryColor } from "../../helpers/embeds/embed-reply.js";
 import { query } from "../../helpers/db.js";
+import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import { replyAndLog } from "../../helpers/reply.js";
 
 const commandName = "word-leaderboard";
 
@@ -39,7 +40,10 @@ export default {
        LIMIT 10`,
       [currentServerId, `%${targetWord}%`]
     );
-
     console.log(usersQuery);
+
+    const embedReply = embedReplyPrimaryColor(`Word Leaderboard: "${targetWord}"`, "", interaction);
+
+    return replyAndLog(interaction, embedReply);
   },
 };
