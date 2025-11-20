@@ -42,9 +42,37 @@ export default {
     );
     console.log(usersQuery);
 
+    let leaderboardContent;
+    const positionEmojis = {
+      1: ":first_place:",
+      2: ":second_place:",
+      3: ":third_place:",
+      4: ":number_4:",
+      5: ":number_5:",
+      6: ":number_6:",
+      7: ":number_7:",
+      8: ":number_8:",
+      9: ":number_9:",
+      10: ":number_10:",
+    };
+
+    for (let i = 0; i < usersQuery.length; i++) {
+      const userResult = usersQuery[i];
+      const emoji = positionEmojis[i + 1];
+
+      const username =
+        (await interaction.guild.members.fetch(userResult.senderUserId).user.username) ||
+        userResult.senderUserName ||
+        "Unkown username";
+
+      leaderboardContent += `${emoji} <@${userResult.senderUserId}> (${username}): **#${userResult.wordCount}**\n`;
+    }
+
     const embedReply = embedReplyPrimaryColor(
       `Word Leaderboard: "${targetWord}"`,
-      `${usersQuery.length !== 0 ? `Leaderboard of users whose messages contained the word **${targetWord}** the most:` : `No user has used the word **${targetWord}** in their messages so far.`}`,
+      usersQuery.length !== 0
+        ? `Leaderboard of users whose messages contained the word **${targetWord}** the most:\n\n${leaderboardContent}`
+        : `No user has used the word **${targetWord}** in their messages so far.`,
       interaction
     );
 
