@@ -60,10 +60,13 @@ export default {
       const userResult = usersQuery[i];
       const emoji = positionEmojis[i + 1];
 
-      const username =
-        (await interaction.guild.members.fetch(userResult.senderUserId).user.username) ||
-        userResult.senderUserName ||
-        "Unkown username";
+      let username;
+      try {
+        const member = await interaction.guild.members.fetch(userResult.senderUserId);
+        username = member.user.username;
+      } catch (error) {
+        username = userResult.senderUserName || "Unknown username";
+      }
 
       leaderboardContent += `${emoji} <@${userResult.senderUserId}> (${username}): **#${userResult.wordCount}**\n`;
     }
