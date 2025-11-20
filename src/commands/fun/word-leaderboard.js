@@ -1,4 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
+import { embedReplyPrimaryColor } from "../../helpers/embeds/embed-reply.js";
 import { query } from "../../helpers/db.js";
 
 export default {
@@ -16,5 +17,12 @@ export default {
         .setMaxLength(12)
     )
     .setDMPermission(false),
-  async execute(interaction) {},
+  async execute(interaction) {
+    const guildCheck = checkIfNotInGuild(commandName, interaction);
+    if (guildCheck) {
+      return await replyAndLog(interaction, guildCheck);
+    }
+
+    const targetWord = interaction.options.getString("word");
+  },
 };
