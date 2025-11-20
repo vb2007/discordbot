@@ -79,7 +79,7 @@ client.once(Events.ClientReady, (readyClient) => {
 
   setInterval(() => {
     if (darwinProcessRunning) {
-      console.log("Darwin process already running, skipping this execution");
+      // console.log("Darwin process already running, skipping this execution");
       return;
     }
 

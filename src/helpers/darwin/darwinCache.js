@@ -32,7 +32,7 @@ export const addToCache = async (directVideoUrl, forumPostUrl, videoTitle) => {
   try {
     const exists = await isInCache(directVideoUrl);
     if (exists) {
-      console.log(`URL already in cache: ${directVideoUrl}`);
+      // console.log(`URL already in cache: ${directVideoUrl}`);
       return true;
     }
 
@@ -76,7 +76,7 @@ export const addToCache = async (directVideoUrl, forumPostUrl, videoTitle) => {
 export const isInCache = async (url) => {
   try {
     const videoId = extractVideoId(url);
-    console.log(`Checking "${url}" (ID: ${videoId}) in Darwin's cache`);
+    // console.log(`Checking "${url}" (ID: ${videoId}) in Darwin's cache`);
 
     const result = await query(
       "SELECT directVideoUrl FROM darwinCache WHERE directVideoUrl = ? OR videoId = ?",
