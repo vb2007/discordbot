@@ -31,7 +31,13 @@ export default {
     const currentServerId = interaction.guild.id;
 
     const usersQuery = await query(
-      `SELECT COUNT(DISTINCT senderUserId), senderUserName FROM messageLog WHERE serverId = ${currentServerId} AND messageContent LIKE %${targetWord}%`
+      `SELECT senderUserId, senderUserName, COUNT(*) as wordCount
+       FROM messageLog
+       WHERE serverId = ? AND messageContent LIKE ?
+       GROUP BY senderUserId
+       ORDER BY wordCount DESC
+       LIMIT 10`,
+      [currentServerId, `%${targetWord}%`]
     );
 
     console.log(usersQuery);
