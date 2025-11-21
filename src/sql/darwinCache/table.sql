@@ -9,6 +9,6 @@ CREATE TABLE IF NOT EXISTS `darwinCache` (
     `originalFileSize` DECIMAL NOT NULL,
     `processedFileSize` DECIMAL DEFAULT NULL,
     `processedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY (`videoUrl`),
+    UNIQUE KEY (`directVideoUrl`),
     UNIQUE KEY (`videoId`)
 );

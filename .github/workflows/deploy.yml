@@ -36,7 +36,7 @@ jobs:
       #   with:
       #     node-version: "24.8.0"
 
-      - name: Intalling Node.js dependencies
+      - name: Installing Node.js dependencies
         working-directory: /home/vb2007/prod/discordbot
         env:
           PATH: /home/vb2007/.nvm/versions/node/v24.8.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

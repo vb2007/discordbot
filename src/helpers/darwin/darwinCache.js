@@ -22,23 +22,28 @@ const extractVideoId = (url) => {
 };
 
 /**
- * Add a URL to Darwin's cache
- * @param {string} url - The video URL to cache
+ * Add a video to Darwin's cache
+ * @param {string} directVideoUrl - The direct video URL
+ * @param {string} forumPostUrl - The forum post URL
+ * @param {string} videoTitle - The video title
  * @returns {Promise<boolean>} - Whether the operation was successful
  */
-export const addToCache = async (url) => {
+export const addToCache = async (directVideoUrl, forumPostUrl, videoTitle) => {
   try {
-    const exists = await isInCache(url);
+    const exists = await isInCache(directVideoUrl);
     if (exists) {
-      console.log(`URL already in cache: ${url}`);
+      // console.log(`URL already in cache: ${directVideoUrl}`);
       return true;
     }
 
-    const videoId = extractVideoId(url);
-    console.log(`Adding "${url}" (ID: ${videoId}) to Darwin's cache`);
+    const videoId = extractVideoId(directVideoUrl);
+    // console.log(`Adding "${videoTitle}" (ID: ${videoId}) to Darwin's cache`);
 
     try {
-      await query("INSERT INTO darwinCache (videoUrl, videoId) VALUES (?, ?)", [url, videoId]);
+      await query(
+        "INSERT INTO darwinCache (directVideoUrl, forumPostUrl, videoId, videoTitle) VALUES (?, ?, ?, ?)",
+        [directVideoUrl, forumPostUrl, videoId, videoTitle]
+      );
       return true;
     } catch (sqlError) {
       //handle duplicate key error (MySQL error code 1062) (edge case, if source reuses the same id)
@@ -49,7 +54,7 @@ export const addToCache = async (url) => {
         if (idExists.length > 0) {
           console.log(`Another URL already uses videoId ${videoId}, treating as cached`);
         } else {
-          console.log(`URL ${url} is a duplicate entry`);
+          console.log(`URL ${directVideoUrl} is a duplicate entry`);
         }
 
         return true;
@@ -71,10 +76,10 @@ export const addToCache = async (url) => {
 export const isInCache = async (url) => {
   try {
     const videoId = extractVideoId(url);
-    console.log(`Checking "${url}" (ID: ${videoId}) in Darwin's cache`);
+    // console.log(`Checking "${url}" (ID: ${videoId}) in Darwin's cache`);
 
     const result = await query(
-      "SELECT videoUrl FROM darwinCache WHERE videoUrl = ? OR videoId = ?",
+      "SELECT directVideoUrl FROM darwinCache WHERE directVideoUrl = ? OR videoId = ?",
       [url, videoId]
     );
     return result.length > 0;
