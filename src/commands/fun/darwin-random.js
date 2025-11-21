@@ -27,12 +27,12 @@ export default {
     const directVideoUrl = randomVideo[0].directVideoUrl;
     const forumPostUrl = randomVideo[0].forumPostUrl;
     const videoTitle = randomVideo[0].videoTitle;
-    const processedAt = randomVideo[0].processedAt;
+    const processedAt = Math.floor(new Date(randomVideo[0].processedAt).getTime() / 1000);
 
     const messageContent =
       `[[ STREAMING & DOWNLOAD ]](${directVideoUrl})  -  [[ FORUM POST ]](<${forumPostUrl}>)\n` +
       `**Title**: ${videoTitle}\n` +
-      `**Processed at**: ${processedAt}`;
+      `**Processed at**: <t:${processedAt}:F>`;
 
     await baseReplyAndLog(interaction, messageContent);
   },
