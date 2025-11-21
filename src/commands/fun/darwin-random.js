@@ -32,7 +32,7 @@ export default {
     const messageContent =
       `[[ STREAMING & DOWNLOAD ]](${directVideoUrl})  -  [[ FORUM POST ]](<${forumPostUrl}>)\n` +
       `**Title**: ${videoTitle}\n` +
-      `**Processed at**: <t:${processedAt}:F>`;
+      `**Processed at**: <t:${processedAt}:R>`;
 
     await baseReplyAndLog(interaction, messageContent);
   },
