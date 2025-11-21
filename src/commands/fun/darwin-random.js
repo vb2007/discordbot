@@ -14,7 +14,12 @@ export default {
     .setDMPermission(true),
   async execute(interaction) {
     const randomVideo = query(
-      "SELECT videoId, processedAt FROM darwinCache ORDER BY RAND() LIMIT 1;"
+      `SELECT originalFileUrl, forumPostUrl, title, processedAt
+      FROM darwinCache
+      WHERE forumPostUrl IS NOT NULL
+        AND title IS NOT NULL
+      ORDER BY RANDOM()
+      LIMIT 1`
     );
 
     const videoId = randomVideo[0].videoId;
