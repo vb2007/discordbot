@@ -13,7 +13,7 @@ export default {
     .setNSFW(false)
     .setDMPermission(true),
   async execute(interaction) {
-    const randomVideo = query(
+    const randomVideo = await query(
       `SELECT directVideoUrl, forumPostUrl, videoTitle, processedAt
       FROM darwinCache
       WHERE forumPostUrl IS NOT NULL
@@ -22,15 +22,18 @@ export default {
       LIMIT 1`
     );
 
+    console.log(randomVideo);
+
     const directVideoUrl = randomVideo[0].directVideoUrl;
     const forumPostUrl = randomVideo[0].forumPostUrl;
     const videoTitle = randomVideo[0].videoTitle;
     const processedAt = randomVideo[0].processedAt;
 
-    const messageContent = `[[ STREAMING & DOWNLOAD ]](${directVideoUrl})  -  [[ FORUM POST ]](<${forumPostUrl}>)\n
-      Title: ${videoTitle}
-      \nProcessed at: ${processedAt}`;
+    const messageContent =
+      `[[ STREAMING & DOWNLOAD ]](${directVideoUrl})  -  [[ FORUM POST ]](<${forumPostUrl}>)\n` +
+      `**Title**: ${videoTitle}\n` +
+      `**Processed at**: ${processedAt}`;
 
-    await baseReplyAndLog(messageContent, messageContent);
+    await baseReplyAndLog(interaction, messageContent);
   },
 };

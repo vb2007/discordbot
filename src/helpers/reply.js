@@ -5,7 +5,7 @@ export const replyAndLog = async (interaction, embedReply) => {
   await logToFileAndDatabase(interaction, JSON.stringify(embedReply.toJSON()));
 };
 
-export const baseReplyAndLog = async (interaction, message) => {
+export const baseReplyAndLog = async (interaction, messageContent) => {
   await interaction.reply(messageContent);
   await logToFileAndDatabase(interaction, messageContent);
 };
