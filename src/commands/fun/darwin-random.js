@@ -14,30 +14,23 @@ export default {
     .setDMPermission(true),
   async execute(interaction) {
     const randomVideo = query(
-      `SELECT originalFileUrl, forumPostUrl, title, processedAt
+      `SELECT directVideoUrl, forumPostUrl, videoTitle, processedAt
       FROM darwinCache
       WHERE forumPostUrl IS NOT NULL
-        AND title IS NOT NULL
-      ORDER BY RANDOM()
+        AND videoTitle IS NOT NULL
+      ORDER BY RAND()
       LIMIT 1`
     );
 
-    const videoId = randomVideo[0].videoId;
-    const directStreamLink = `${darwinConfig.cdnUrl}/${videoId}.mp4`;
+    const directVideoUrl = randomVideo[0].directVideoUrl;
+    const forumPostUrl = randomVideo[0].forumPostUrl;
+    const videoTitle = randomVideo[0].videoTitle;
+    const processedAt = randomVideo[0].processedAt;
 
-    const messageContent = `[[ STREAMING & DOWNLOAD ]](${directStreamLink})  -  [[ FORUM POST ]](<${comments}>)\nTitle: {}\nProcessed at: {}\nSize: {}`;
+    const messageContent = `[[ STREAMING & DOWNLOAD ]](${directVideoUrl})  -  [[ FORUM POST ]](<${forumPostUrl}>)\n
+      Title: ${videoTitle}
+      \nProcessed at: ${processedAt}`;
 
-    const embedReply = embedReplyPrimaryColorWithFields(
-      "Random video from Darwin's database",
-      "",
-      [
-        { name: "Title", value: "", inline: false },
-        { name: "Processed at", value: "", inline: true },
-        { name: "Size", value: "", inline: true },
-      ],
-      interaction
-    );
-
-    await baseReplyAndLog(messageContent, embedReply, "a");
+    await baseReplyAndLog(messageContent, messageContent);
   },
 };
