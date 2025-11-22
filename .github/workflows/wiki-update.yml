@@ -2,8 +2,7 @@ name: Update Wiki Commands
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "src/data/commandData.csv"
   workflow_dispatch:
