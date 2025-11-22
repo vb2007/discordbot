@@ -25,15 +25,17 @@
 24,ban,moderation,Bans a specified member from the server.
 25,purge,moderation,Purges (mass deletes) a specified amount of messages from the current channel.
 26,config-autorole,administration,"Sets / modifies / disables the autorole feature. When a new member joins the server, a specified role will get assigned to them automatically."
-28,config-welcome,administration,"Sets / modifies / disables the welcome messages feature. When a new member joins the server, the bot send a specified welcome message."
-30,config-logging,administration,Sets / modifies / disables the channel where event on the server will get logged
-32,config-bridge,administration,Sets / modifies / disables bridging all messages from one channel to another.
-34,rename,administration,Renames a specified user to a specified nickname in the current server.
-35,slowmode,administration,Sets / disables the slowmode for a specified channel.
-36,config-goodbye,administration,"Sets / modifies / disables the goodbye messages feature. When a member leaves the server, the bot send a specified goodbye message."
-82,coinflip-fun,fun,Flips a coin that has a 50/50 chance landing on heads or tails. Has an economy (*/coinflip*) version with gambling.
-112,blackjack,economy,Lets you play a game of blackjack with a specified amount. You can pick **Hit** or **Stand** until the player or the house wins
-192,config-darwin,administration,Sets / modifies / disables Darwin's occasional video scraping & posting feature.
-193,cigany,fun,"Says ""fuj"" and sends a random pic of a ""person"" from a specific race."
-194,cooldown,economy,Lets you check your or other users economy cooldowns for all or a specified economy command.
-195,invite,utility,Gives you back a link for inviting the bot to any server where you have permissions to do so.
+27,config-welcome,administration,"Sets / modifies / disables the welcome messages feature. When a new member joins the server, the bot send a specified welcome message."
+28,config-logging,administration,Sets / modifies / disables the channel where event on the server will get logged
+29,config-bridge,administration,Sets / modifies / disables bridging all messages from one channel to another.
+30,rename,administration,Renames a specified user to a specified nickname in the current server.
+31,slowmode,administration,Sets / disables the slowmode for a specified channel.
+32,config-goodbye,administration,"Sets / modifies / disables the goodbye messages feature. When a member leaves the server, the bot send a specified goodbye message."
+33,coinflip-fun,fun,Flips a coin that has a 50/50 chance landing on heads or tails. Has an economy (*/coinflip*) version with gambling.
+34,blackjack,economy,Lets you play a game of blackjack with a specified amount. You can pick **Hit** or **Stand** until the player or the house wins
+35,config-darwin,administration,Sets / modifies / disables Darwin's occasional video scraping & posting feature.
+36,cigany,fun,"Says ""fuj"" and sends a random pic of a ""person"" from a specific race."
+37,cooldown,economy,Lets you check your or other users economy cooldowns for all or a specified economy command.
+38,invite,utility,Gives you back a link for inviting the bot to any server where you have permissions to do so.
+39,word-leaderboard,fun,Counts a specified word in the current server and sends back a leaderboard with the users who used that word the most through all their previous messages.
+40,darwin-random,fun,"Sends back a random, streamable video from Darwin's database."
