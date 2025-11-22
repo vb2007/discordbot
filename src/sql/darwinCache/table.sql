@@ -1,14 +1,13 @@
 -- discordbot.darwinCache definition
 
-CREATE TABLE IF NOT EXISTS `darwinCache` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `directVideoUrl` VARCHAR(255) NOT NULL,
-    `forumPostUrl` VARCHAR(255) NOT NULL,
-    `videoId` VARCHAR(100) NOT NULL,
-    `videoTitle` VARCHAR(180) NOT NULL,
-    `originalFileSize` DECIMAL NOT NULL,
-    `processedFileSize` DECIMAL DEFAULT NULL,
-    `processedAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY (`directVideoUrl`),
-    UNIQUE KEY (`videoId`)
+CREATE TABLE `darwinCache` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `directVideoUrl` varchar(255) NOT NULL,
+  `forumPostUrl` varchar(255) NOT NULL DEFAULT '',
+  `videoId` varchar(100) NOT NULL,
+  `videoTitle` varchar(180) NOT NULL DEFAULT '',
+  `processedAt` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `videoId` (`videoId`),
+  UNIQUE KEY `directVideoUrl` (`directVideoUrl`)
 );
