@@ -18,8 +18,6 @@ export default {
       LIMIT 1`
     );
 
-    console.log(randomVideo);
-
     const directVideoUrl = randomVideo[0].directVideoUrl;
     const forumPostUrl = randomVideo[0].forumPostUrl;
     const videoTitle = randomVideo[0].videoTitle;
