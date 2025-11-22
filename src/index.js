@@ -75,11 +75,11 @@ let darwinProcessRunning = false;
 // Notify hoster on console if the app is ready & about the Darwin process's status
 client.once(Events.ClientReady, (readyClient) => {
   console.log(`Bot is ready! Logged in as ${readyClient.user.tag}`);
-  console.log("Initializing Darwin video processing system...");
+  // console.log("Initializing Darwin video processing system...");
 
   setInterval(() => {
     if (darwinProcessRunning) {
-      console.log("Darwin process already running, skipping this execution");
+      // console.log("Darwin process already running, skipping this execution");
       return;
     }
 
