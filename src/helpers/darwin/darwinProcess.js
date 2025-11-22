@@ -77,7 +77,7 @@ const getVideoLocation = async (href, markerOne, markerTwo) => {
  * @returns {string} - Formatted message
  */
 const messageGen = (title, href, comments) => {
-  return `[[ STREAMING & DOWNLOAD ]](${href})  -  [[ FORUM POST ]](<${comments}>)\n${title}`;
+  return `[[ STREAMING & DOWNLOAD ]](${href})  -  [[ FORUM POST ]](<${comments}>)\n**${title}**`;
 };
 
 /**
