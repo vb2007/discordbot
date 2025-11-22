@@ -5,7 +5,7 @@ import { baseReplyAndLog } from "../../helpers/reply.js";
 export default {
   data: new SlashCommandBuilder()
     .setName("darwin-random")
-    .setDescription("Sends back a random streamable video from Darwin's database.")
+    .setDescription("Sends back a random, streamable video from Darwin's database.")
     .setNSFW(false) //should be true, but fucking discord forces id checks to view NSFW channel. i won't comply.
     .setDMPermission(true),
   async execute(interaction) {
