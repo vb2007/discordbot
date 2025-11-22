@@ -1,6 +1,6 @@
 -- discordbot.darwinCache definition
 
-CREATE TABLE `darwinCache` (
+CREATE TABLE IF NOT EXISTS `darwinCache` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `directVideoUrl` varchar(255) NOT NULL,
   `forumPostUrl` varchar(255) NOT NULL DEFAULT '',
