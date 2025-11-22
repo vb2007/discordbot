@@ -34,10 +34,6 @@
     "feedUrl" : "https://theync.com/most-recent/",
     "interval" : 120000,
     "markerOne" : "https://theync.com/media/video",
-    "markerTwo" : "https://theync.com",
-    "maxDownloadSize" : 50,
-    "targetDir" : "/path/to/videos/folder",
-    "tempDir" : "/path/to/videos/folder/transcodes",
-    "cdnUrl" : "https://cdn.vb2007.hu/darwin"
+    "markerTwo" : "https://theync.com"
   }
 }
