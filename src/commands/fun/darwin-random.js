@@ -1,10 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { query } from "../../helpers/db.js";
-import { embedReplyPrimaryColorWithFields } from "../../helpers/embeds/embed-reply.js";
 import { baseReplyAndLog } from "../../helpers/reply.js";
-
-import config from "../../../config.json" with { type: "json" };
-const darwinConfig = config.darwin;
 
 export default {
   data: new SlashCommandBuilder()
