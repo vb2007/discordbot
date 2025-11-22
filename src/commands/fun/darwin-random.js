@@ -6,7 +6,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName("darwin-random")
     .setDescription("Sends back a random streamable video from Darwin's database.")
-    .setNSFW(false)
+    .setNSFW(false) //should be true, but fucking discord forces id checks to view NSFW channel. i won't comply.
     .setDMPermission(true),
   async execute(interaction) {
     const randomVideo = await query(
