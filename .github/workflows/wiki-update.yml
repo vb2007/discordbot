@@ -1,5 +1,8 @@
 name: Update Wiki Commands
 
+permissions:
+  contents: write #gives both read & write access
+
 on:
   push:
     branches: [main]
@@ -12,9 +15,6 @@ on:
         required: false
         default: "main"
         type: string
-
-permissions:
-  contents: write #gives both read & write access
 
 jobs:
   update-wiki:
