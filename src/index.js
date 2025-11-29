@@ -10,6 +10,10 @@ import config from "../config.json" with { type: "json" };
 import "dotenv/config";
 const token = process.env.TOKEN;
 
+//for displaying version is bot's status
+import packageJson from "../package.json" with { type: "json" };
+const version = packageJson.version;
+
 import { getConnection } from "./helpers/db.js";
 import { runDarwinProcess } from "./helpers/darwin/darwinProcess.js";
 import { validateConfig } from "./scripts/verify-config-syntax.js";
@@ -218,8 +222,8 @@ const setActivity = () => {
 
   client.user.setActivity({
     status: "online",
-    type: ActivityType.Playing,
-    name: "with stolen user data.",
+    type: ActivityType.Custom,
+    name: `Running v${version}`,
   });
 
   // console.log("Re-announced bot's activity.");
