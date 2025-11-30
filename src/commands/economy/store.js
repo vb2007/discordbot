@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import { embedReplyPrimaryColorWithFields } from "../../helpers/embeds/embed-reply.js";
 import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
+import { replyAndLog } from "../../helpers/reply.js";
 import { query } from "../../helpers/db.js";
 
 const commandName = "store";
@@ -19,7 +20,7 @@ export default {
       return await replyAndLog(interaction, guildCheck);
     }
 
-    const storeQuery = query(
+    const storeQuery = await query(
       `SELECT name, price, description FROM economyStore ORDER BY price ASC`
     );
     console.log(storeQuery);
