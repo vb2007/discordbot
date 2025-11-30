@@ -23,12 +23,16 @@ export default {
     const storeQuery = await query(
       `SELECT name, price, description FROM economyStore ORDER BY price ASC`
     );
-    console.log(storeQuery);
+    const fields = storeQuery.map((item) => ({
+      name: `${item.name} - \`$${item.price}\``,
+      value: item.description,
+      inline: false,
+    }));
 
     const embedReply = embedReplyPrimaryColorWithFields(
       "Store",
-      "Use the `/buy`(`name`) command to purchase any of these items.",
-      {},
+      "Use the `/buy`(**item name**) command to purchase any of these items.",
+      fields,
       interaction
     );
 
