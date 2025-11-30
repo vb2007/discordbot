@@ -137,9 +137,8 @@ const init = async () => {
   });
 
   await parseAndUpdateCSV("economyStore.csv", "economyStore", {
-    columns: ["id", "price", "name", "description"],
+    columns: ["price", "name", "description"],
     identifier: "name",
-    skipUpdate: ["id"],
   });
 
   process.exit(0);
