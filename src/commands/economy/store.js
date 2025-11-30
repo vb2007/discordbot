@@ -8,7 +8,9 @@ const commandName = "store";
 export default {
   data: new SlashCommandBuilder()
     .setName(commandName)
-    .setDescription("")
+    .setDescription(
+      "Returns a store page with various purchaseable items that can help with your economy status."
+    )
     .setNSFW(false)
     .setDMPermission(false),
   async execute(interaction) {
@@ -17,7 +19,17 @@ export default {
       return await replyAndLog(interaction, guildCheck);
     }
 
-    const embedReply = embedReplyPrimaryColorWithFields("Store", "", {}, interaction);
+    const storeQuery = query(
+      `SELECT name, price, description FROM economyStore ORDER BY price ASC`
+    );
+    console.log(storeQuery);
+
+    const embedReply = embedReplyPrimaryColorWithFields(
+      "Store",
+      "Use the `/buy`(`name`) command to purchase any of these items.",
+      {},
+      interaction
+    );
 
     return await replyAndLog(interaction, embedReply);
   },
