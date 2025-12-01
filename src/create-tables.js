@@ -24,45 +24,69 @@ const readSQLFiles = (dir) => {
   return sqlQueries;
 };
 
-const updateCommandData = async () => {
+//parses CSV line into array of values
+const parseCSVLine = (line) => {
+  const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^,"]*))/g;
+  const values = [];
+  let match;
+
+  while ((match = regex.exec(line))) {
+    const value = match[1] || match[2];
+    values.push(value ? value.replace(/""/g, '"').trim() : "");
+  }
+
+  return values;
+};
+
+//universal function to parse and update CSV data into database tables
+const parseAndUpdateCSV = async (csvFileName, tableName, columnMapping) => {
   try {
-    const csvPath = path.join(__dirname, "data", "commandData.csv");
+    const csvPath = path.join(__dirname, "data", csvFileName);
     const csvContent = fs.readFileSync(csvPath, "utf8");
 
-    const commands = csvContent
-      .split("\n")
+    //parse CSV and extract headers
+    const lines = csvContent.split("\n").filter((line) => line.trim());
+    const headers = parseCSVLine(lines[0]);
+
+    const rows = lines
       .slice(1)
-      .filter((line) => line.trim())
       .map((line) => {
-        //csv parsing
-        const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^,"]*))/g;
-        const values = [];
-        let match;
+        const values = parseCSVLine(line);
 
-        while ((match = regex.exec(line))) {
-          const value = match[1] || match[2];
-          values.push(value ? value.replace(/""/g, '"').trim() : "");
-        }
+        if (values.length < headers.length) return null;
 
-        if (values.length < 4) return null;
+        //create object with header-value pairs
+        const row = {};
+        headers.forEach((header, index) => {
+          row[header] = values[index];
+        });
 
-        const [id, name, category, description] = values;
-        return { name, category, description };
+        return row;
       })
-      .filter((cmd) => cmd !== null);
+      .filter((row) => row !== null);
 
-    for (const cmd of commands) {
-      console.log(`Processing command: ${cmd.name}`);
+    //prepare SQL query
+    const columns = columnMapping.columns;
+    const placeholders = columns.map(() => "?").join(", ");
+    const updateClause = columns
+      .filter((col) => !columnMapping.skipUpdate?.includes(col))
+      .map((col) => `${col} = VALUES(${col})`)
+      .join(", ");
 
-      await query(
-        "INSERT INTO commandData (name, category, description) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE category = VALUES(category), description = VALUES(description)",
-        [cmd.name, cmd.category, cmd.description]
-      );
+    const insertQuery = `INSERT INTO ${tableName} (${columns.join(", ")}) VALUES (${placeholders}) ON DUPLICATE KEY UPDATE ${updateClause}`;
+
+    for (const row of rows) {
+      const identifier = row[columnMapping.identifier] || row.name || row.id;
+      console.log(`Processing ${tableName}: ${identifier}`);
+
+      const values = columns.map((col) => row[col]);
+
+      await query(insertQuery, values);
     }
 
-    console.log("Command data has been updated successfully.");
+    console.log(`${tableName} data has been updated successfully.`);
   } catch (error) {
-    console.error("Error updating command data:", error);
+    console.error(`Error updating ${tableName} data:`, error);
     console.error("Error details:", error.stack);
   }
 };
@@ -106,7 +130,17 @@ const createTables = async () => {
 
 const init = async () => {
   await createTables();
-  await updateCommandData();
+
+  await parseAndUpdateCSV("commandData.csv", "commandData", {
+    columns: ["name", "category", "description"],
+    identifier: "name",
+  });
+
+  await parseAndUpdateCSV("economyStore.csv", "economyStore", {
+    columns: ["price", "name", "description"],
+    identifier: "name",
+  });
+
   process.exit(0);
 };
 

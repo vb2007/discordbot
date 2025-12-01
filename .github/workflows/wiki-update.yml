@@ -1,5 +1,8 @@
 name: Update Wiki Commands
 
+permissions:
+  contents: write #gives both read & write access
+
 on:
   push:
     branches: [main]
@@ -31,10 +34,10 @@ jobs:
 
       - name: Update Wiki
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Clone wiki repo
-          git clone https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.wiki.git wiki
+          git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git wiki
 
           # Copy new content
           cp src/data/commands.md ./wiki/Commands.md
