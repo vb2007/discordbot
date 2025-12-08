@@ -10,5 +10,9 @@ import { query } from "../../helpers/db.js";
 const commandName = "buy";
 
 export default {
-  data,
+  data: new SlashCommandBuilder()
+    .setName("buy")
+    .setDescription("Let's you buy a specified item.")
+    .setNSFW(false)
+    .setDMPermission(false),
 };
