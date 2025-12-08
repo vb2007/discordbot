@@ -15,4 +15,10 @@ export default {
     .setDescription("Let's you buy a specified item.")
     .setNSFW(false)
     .setDMPermission(false),
+  async execute(interaction) {
+    const guildCheck = checkIfNotInGuild(commandName, interaction);
+    if (guildCheck) {
+      return await replyAndLog(interaction, guildCheck);
+    }
+  },
 };
