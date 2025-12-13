@@ -31,7 +31,7 @@ export default {
 
     const embedReply = embedReplyPrimaryColorWithFields(
       "Store",
-      "Use the `/buy`(**item name**) command to purchase any of these items.",
+      "Use the `/buy`(**item-name**) command to purchase any of these items.",
       fields,
       interaction
     );

@@ -33,16 +33,14 @@ export default {
 
     const itemName = interaction.options.getString("item-name");
 
-    const allItemsQuery = query("SELECT price, name FROM economyStore");
-    const allItems = allItemsQuery.map((item) => ({
-      price: item.price,
-      name: item.name,
-    }));
+    const allItemsQuery = await query("SELECT price, name FROM economyStore");
+    const validItem = allItemsQuery.find((item) => item.name === itemName);
 
-    if (!allItems.name.contains(itemName)) {
+    if (!validItem) {
       const embedReply = embedReplyWarningColor(
-        "Buy: Error",
-        `The item \`${itemName}\` isn't a valid item.\nUse the \`/store\` command to see all purchaseable items.`
+        "Buy: Invalid Item",
+        `\`${itemName}\` isn't a valid item.\nUse the \`/store\` command to see all purchaseable items.`,
+        interaction
       );
 
       return await replyAndLog(interaction, embedReply);
