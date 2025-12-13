@@ -13,6 +13,14 @@ export default {
   data: new SlashCommandBuilder()
     .setName("buy")
     .setDescription("Let's you buy a specified item.")
+    .addStringOption((option) =>
+      option
+        .setName("item-name")
+        .setDescription("The item's name you would like to buy (use /shop for complete list).")
+        .setMinLength(2)
+        .setMaxLength(10)
+        .setRequired(true)
+    )
     .setNSFW(false)
     .setDMPermission(false),
   async execute(interaction) {
@@ -20,5 +28,7 @@ export default {
     if (guildCheck) {
       return await replyAndLog(interaction, guildCheck);
     }
+
+    const itemName = interaction.options.getString("item-name");
   },
 };
