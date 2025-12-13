@@ -2,6 +2,8 @@ import { SlashCommandBuilder } from "discord.js";
 import {
   embedReplySuccessColor,
   embedReplyFailureColor,
+  embedReply,
+  embedReplyWarningColor,
 } from "../../helpers/embeds/embed-reply.js";
 import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
 import { replyAndLog } from "../../helpers/reply.js";
@@ -16,7 +18,7 @@ export default {
     .addStringOption((option) =>
       option
         .setName("item-name")
-        .setDescription("The item's name you would like to buy (use /shop for complete list).")
+        .setDescription("The item's exact name you would like to buy.")
         .setMinLength(2)
         .setMaxLength(10)
         .setRequired(true)
@@ -30,5 +32,20 @@ export default {
     }
 
     const itemName = interaction.options.getString("item-name");
+
+    const allItemsQuery = query("SELECT price, name FROM economyStore");
+    const allItems = allItemsQuery.map((item) => ({
+      price: item.price,
+      name: item.name,
+    }));
+
+    if (!allItems.name.contains(itemName)) {
+      const embedReply = embedReplyWarningColor(
+        "Buy: Error",
+        `The item \`${itemName}\` isn't a valid item.\nUse the \`/store\` command to see all purchaseable items.`
+      );
+
+      return await replyAndLog(interaction, embedReply);
+    }
   },
 };
