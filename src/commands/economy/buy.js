@@ -45,5 +45,18 @@ export default {
             );
             return await replyAndLog(interaction, embed);
         }
+
+        const [userBalance] = await query("SELECT balance FROM economy WHERE userId = ?", [
+            interaction.user.id,
+        ]);
+
+        if (!userBalance || userBalance.balance < item.price) {
+            const embed = embedReplyFailureColor(
+                "Buy: Insufficient Funds",
+                `You don't have enough money to buy \`${item.name}\` (Price: ${item.price}).`,
+                interaction
+            );
+            return await replyAndLog(interaction, embed);
+        }
     },
 };
