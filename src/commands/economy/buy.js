@@ -2,7 +2,6 @@ import { SlashCommandBuilder } from "discord.js";
 import {
     embedReplySuccessColor,
     embedReplyFailureColor,
-    embedReply,
     embedReplyWarningColor,
 } from "../../helpers/embeds/embed-reply.js";
 import { checkIfNotInGuild } from "../../helpers/command-validation/general.js";
@@ -32,6 +31,7 @@ export default {
         }
 
         const itemName = interaction.options.getString("item-name");
+        const interactionUserId = interaction.user.id;
 
         const [item] = await query("SELECT id, price, name FROM economyStore WHERE name = ?", [
             itemName,
@@ -47,16 +47,47 @@ export default {
         }
 
         const [userBalance] = await query("SELECT balance FROM economy WHERE userId = ?", [
-            interaction.user.id,
+            interactionUserId,
         ]);
 
         if (!userBalance || userBalance.balance < item.price) {
-            const embed = embedReplyFailureColor(
+            const embed = embedReplyWarningColor(
                 "Buy: Insufficient Funds",
-                `You don't have enough money to buy \`${item.name}\` (Price: ${item.price}).`,
+                `You don't have enough money to buy \`${item.name}\`. Price: \`$${item.price}\`.`,
                 interaction
             );
+
             return await replyAndLog(interaction, embed);
+        }
+
+        try {
+            await query("UPDATE economy SET balance = balance - ? WHERE userId = ?", [
+                item.price,
+                interactionUserId,
+            ]);
+
+            await query(
+                `INSERT INTO economyInventory (userId, itemId, quantity)
+                    VALUES (?, ?, 1)
+                    ON DUPLICATE KEY UPDATE quantity = quantity + 1`,
+                [interactionUserId, item.id]
+            );
+
+            const embedReply = embedReplySuccessColor(
+                "Buy: Successful",
+                `You've successfully bought \`${item.name}\` for \`$${item.price}\`!`,
+                interaction
+            );
+
+            return await replyAndLog(interaction, embedReply);
+        } catch (error) {
+            const embedReply = embedReplyFailureColor(
+                "Buy: Error",
+                "An error occurred while processing the purchase.",
+                interaction
+            );
+
+            return await replyAndLog(interaction, embedReply);
         }
     },
 };
