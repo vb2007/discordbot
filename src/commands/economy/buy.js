@@ -19,7 +19,7 @@ export default {
                 .setName("item-name")
                 .setDescription("The item's exact name you would like to buy.")
                 .setMinLength(2)
-                .setMaxLength(10)
+                .setMaxLength(20)
                 .setRequired(true)
         )
         .setNSFW(false)
